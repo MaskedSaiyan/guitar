@@ -1,37 +1,33 @@
 const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 const enharmonics = {
-  "Cb": "B",
-  "Db": "C#",
-  "Eb": "D#",
-  "Fb": "E",
-  "Gb": "F#",
-  "Ab": "G#",
-  "Bb": "A#"
+  "Cb": "B", "Db": "C#", "Eb": "D#", "Fb": "E",
+  "Gb": "F#", "Ab": "G#", "Bb": "A#"
 };
 
-const tunings = {
-  standard: ["E", "A", "D", "G", "B", "E"],
-  dropd:    ["D", "A", "D", "G", "B", "E"],
-  halfdowntuning: ["D#", "G#", "C#", "F#", "A#", "D#"], // Eb tuning
-  dropc:    ["C", "G", "C", "F", "A", "D"]
+const tuningsByInstrument = {
+  guitar6: {
+    "Standard (E A D G B E)": ["E", "A", "D", "G", "B", "E"],
+    "Drop D (D A D G B E)": ["D", "A", "D", "G", "B", "E"],
+    "Eb Tuning (Eb Ab Db Gb Bb Eb)": ["D#", "G#", "C#", "F#", "A#", "D#"],
+    "Drop C (C G C F A D)": ["C", "G", "C", "F", "A", "D"]
+  },
+  bass4: {
+    "Standard (E A D G)": ["E", "A", "D", "G"],
+    "Drop D (D A D G)": ["D", "A", "D", "G"]
+  },
+  guitar7: {
+    "Standard (B E A D G B E)": ["B", "E", "A", "D", "G", "B", "E"],
+    "Drop A (A E A D G B E)": ["A", "E", "A", "D", "G", "B", "E"]
+  }
 };
 
 const fretMarkers = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 
 const noteColors = {
-  "C": "#ff6b6b",
-  "C#": "#ffa502",
-  "D": "#feca57",
-  "D#": "#1dd1a1",
-  "E": "#54a0ff",
-  "F": "#5f27cd",
-  "F#": "#576574",
-  "G": "#10ac84",
-  "G#": "#00d2d3",
-  "A": "#ff9ff3",
-  "A#": "#c56cf0",
-  "B": "#00cec9"
+  "C": "#ff6b6b", "C#": "#ffa502", "D": "#feca57", "D#": "#1dd1a1",
+  "E": "#54a0ff", "F": "#5f27cd", "F#": "#576574", "G": "#10ac84",
+  "G#": "#00d2d3", "A": "#ff9ff3", "A#": "#c56cf0", "B": "#00cec9"
 };
 
 function normalizeNote(note) {
@@ -43,6 +39,22 @@ function noteIndex(note) {
   return allNotes.indexOf(normalizeNote(note));
 }
 
+function updateTuningOptions() {
+  const instrument = document.getElementById("instrumentSelect").value;
+  const tuningSelect = document.getElementById("tuningSelect");
+  tuningSelect.innerHTML = "";
+
+  const options = tuningsByInstrument[instrument];
+  for (const name in options) {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    tuningSelect.appendChild(opt);
+  }
+
+  drawFretboard(); // refresca al cambiar
+}
+
 function drawFretboard() {
   const container = document.getElementById("fretboard");
   container.innerHTML = "";
@@ -50,8 +62,9 @@ function drawFretboard() {
   const rawInput = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
   const inputNotes = rawInput.map(normalizeNote);
 
-  const tuningKey = document.getElementById("tuningSelect").value;
-  const tuning = tunings[tuningKey];
+  const instrument = document.getElementById("instrumentSelect").value;
+  const tuningName = document.getElementById("tuningSelect").value;
+  const tuning = tuningsByInstrument[instrument][tuningName];
   const stringCount = tuning.length;
 
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
@@ -65,6 +78,10 @@ function drawFretboard() {
     stringLabel.className = "fret-label";
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
+
+    const nut = document.createElement("div");
+    nut.className = "open-bar";
+    string.appendChild(nut);
 
     for (let fret = 0; fret <= 24; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
@@ -120,3 +137,5 @@ function drawFretboard() {
 
   document.getElementById("tablature").textContent = tablatureLines.join("\n");
 }
+
+window.onload = updateTuningOptions;
