@@ -42,10 +42,10 @@ function drawFretboard() {
     const string = document.createElement("div");
     string.className = "string";
 
-    // Agrega número de cuerda
+    // Mostrar la nota abierta + número de cuerda
     const stringLabel = document.createElement("div");
     stringLabel.className = "fret-label";
-    stringLabel.textContent = `#${stringCount - i}`;
+    stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
 
     for (let fret = 0; fret <= 24; fret++) {
