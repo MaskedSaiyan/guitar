@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualizador de Notas – v0.2</title>
+  <title>Visualizador de Notas – v0.3</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,21 +11,26 @@
 
   <input type="text" id="notesInput" placeholder="Ej. E A C o Eb Ab" />
 
-  <select id="tuningSelect" onchange="drawFretboard()">
-    <option value="standard">Standard (E A D G B E)</option>
-    <option value="dropd">Drop D (D A D G B E)</option>
-    <option value="halfdowntuning">Eb Tuning (Eb Ab Db Gb Bb Eb)</option>
-    <option value="dropc">Drop C (C G C F A D)</option>
-  </select>
+  <div>
+    <label>Instrumento:</label>
+    <select id="instrumentSelect" onchange="updateTuningOptions()">
+      <option value="guitar6">Guitarra 6 cuerdas</option>
+      <option value="bass4">Bajo 4 cuerdas</option>
+      <option value="guitar7">Guitarra 7 cuerdas</option>
+    </select>
 
-  <button onclick="drawFretboard()">Mostrar</button>
+    <label>Afinación:</label>
+    <select id="tuningSelect"></select>
+
+    <button onclick="drawFretboard()">Mostrar</button>
+  </div>
 
   <div id="fretboard"></div>
 
   <pre id="tablature" style="margin-top: 2em; font-family: 'Courier New', monospace; text-align: left;"></pre>
 
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
-    v0.2
+    v0.3
   </footer>
 
   <script src="script.js"></script>
