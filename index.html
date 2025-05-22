@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Afinación de Guitarra</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Buscador de Notas en la Guitarra</h1>
+
+  <label>Notas (separadas por espacio):</label>
+  <input type="text" id="notesInput" placeholder="Ej. E A C" />
+
+  <label>Cuerdas:</label>
+  <select id="stringCount">
+    <option value="6">Guitarra (6)</option>
+    <option value="4">Bajo (4)</option>
+    <option value="7">Guitarra (7)</option>
+  </select>
+
+  <button onclick="findNotes()">Buscar</button>
+
+  <div id="output"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
