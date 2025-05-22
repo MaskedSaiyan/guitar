@@ -13,14 +13,13 @@ body {
 }
 
 #fretboard {
-  display: grid;
-  justify-content: center;
+  display: inline-block;
   margin-top: 2em;
 }
 
 .string {
   display: grid;
-  grid-template-columns: 60px repeat(26, 40px); /* etiqueta + open + nut + 24 trastes */
+  grid-template-columns: 60px 40px 40px repeat(24, 40px);
   position: relative;
   align-items: center;
   border-top: 3px solid #aaa;
@@ -114,7 +113,7 @@ body {
   background-color: #eee;
 }
 
-/* 🎯 Responsive para pantallas pequeñas */
+/* Responsive */
 @media (max-width: 600px) {
   .fret {
     height: 32px;
