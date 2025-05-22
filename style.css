@@ -1,11 +1,47 @@
 body {
   font-family: sans-serif;
-  margin: 2em;
+  text-align: center;
 }
-input, select, button {
-  margin: 0.5em 0;
-}
-#output {
+
+#fretboard {
+  display: grid;
+  grid-auto-rows: 40px;
+  justify-content: center;
   margin-top: 1em;
-  white-space: pre-wrap;
+}
+
+.string {
+  display: grid;
+  grid-template-columns: repeat(13, 40px);
+}
+
+.fret {
+  border: 1px solid #ccc;
+  position: relative;
+  background-color: #f9f9f9;
+}
+
+.dot {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: black;
+  border-radius: 50%;
+}
+
+.note-marker {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: orange;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  color: white;
+  font-size: 12px;
+  line-height: 20px;
 }
