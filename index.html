@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualizador de Notas – v0.1</title>
+  <title>Visualizador de Notas – v0.2</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
 
-  <input type="text" id="notesInput" placeholder="Ej. E A C" />
-  <select id="stringCount">
-    <option value="6">Guitarra (6)</option>
-    <option value="4">Bajo (4)</option>
-    <option value="7">Guitarra (7)</option>
+  <input type="text" id="notesInput" placeholder="Ej. E A C o Eb Ab" />
+
+  <select id="tuningSelect" onchange="drawFretboard()">
+    <option value="standard">Standard (E A D G B E)</option>
+    <option value="dropd">Drop D (D A D G B E)</option>
+    <option value="halfdowntuning">Eb Tuning (Eb Ab Db Gb Bb Eb)</option>
+    <option value="dropc">Drop C (C G C F A D)</option>
   </select>
+
   <button onclick="drawFretboard()">Mostrar</button>
 
   <div id="fretboard"></div>
@@ -22,7 +25,7 @@
   <pre id="tablature" style="margin-top: 2em; font-family: 'Courier New', monospace; text-align: left;"></pre>
 
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
-    v0.1
+    v0.2
   </footer>
 
   <script src="script.js"></script>
