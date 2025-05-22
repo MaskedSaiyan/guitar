@@ -1,8 +1,8 @@
 const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 const enharmonics = {
-  "Cb": "B", "Db": "C#", "Eb": "D#", "Fb": "E",
-  "Gb": "F#", "Ab": "G#", "Bb": "A#"
+  "CB": "B", "DB": "C#", "EB": "D#", "FB": "E",
+  "GB": "F#", "AB": "G#", "BB": "A#"
 };
 
 const tuningsByInstrument = {
@@ -31,8 +31,8 @@ const noteColors = {
 };
 
 function normalizeNote(note) {
-  note = note.toUpperCase();
-  return enharmonics[note] || note;
+  const upper = note.toUpperCase();
+  return enharmonics[upper] || upper;
 }
 
 function noteIndex(note) {
@@ -59,7 +59,12 @@ function drawFretboard() {
   const container = document.getElementById("fretboard");
   container.innerHTML = "";
 
-  const rawInput = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
+  const rawInput = document.getElementById("notesInput").value
+    .trim()
+    .toUpperCase()
+    .split(/\s+/)
+    .filter(n => n); // limpia vacíos
+
   const inputNotes = rawInput.map(normalizeNote);
 
   const instrument = document.getElementById("instrumentSelect").value;
@@ -113,7 +118,7 @@ function drawFretboard() {
         }
       }
 
-      if (inputNotes.includes(note)) {
+      if (inputNotes.includes(normalizeNote(note))) {
         const marker = document.createElement("div");
         marker.className = "note-marker";
         marker.style.backgroundColor = noteColors[note] || "#999";
@@ -136,7 +141,7 @@ function drawFretboard() {
 
     for (let fret = 0; fret <= 24; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
-      if (inputNotes.includes(note)) {
+      if (inputNotes.includes(normalizeNote(note))) {
         line += fret < 10 ? `-${fret}-` : `${fret}-`;
       } else {
         line += "---";
