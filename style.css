@@ -1,24 +1,26 @@
 body {
   font-family: sans-serif;
   text-align: center;
+  padding: 2em;
+  background-color: #f0f0f0;
 }
 
 #fretboard {
   display: grid;
-  grid-auto-rows: 40px;
   justify-content: center;
-  margin-top: 1em;
+  margin-top: 2em;
 }
 
 .string {
   display: grid;
-  grid-template-columns: repeat(13, 40px);
+  grid-template-columns: 40px repeat(25, 40px); /* cuerda # + 24 trastes */
 }
 
 .fret {
   border: 1px solid #ccc;
   position: relative;
-  background-color: #f9f9f9;
+  background-color: #fff;
+  height: 40px;
 }
 
 .dot {
@@ -26,10 +28,28 @@ body {
   bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background-color: black;
   border-radius: 50%;
+}
+
+.double-dot::before,
+.double-dot::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  width: 6px;
+  height: 6px;
+  background-color: black;
+  border-radius: 50%;
+}
+
+.double-dot::before {
+  left: 12px;
+}
+.double-dot::after {
+  right: 12px;
 }
 
 .note-marker {
@@ -37,11 +57,18 @@ body {
   top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: orange;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  color: white;
+  width: 24px;
+  height: 24px;
   font-size: 12px;
-  line-height: 20px;
+  font-weight: bold;
+  line-height: 24px;
+  color: white;
+}
+
+.fret-label {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
