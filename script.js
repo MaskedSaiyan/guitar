@@ -79,7 +79,6 @@ function drawFretboard() {
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
 
-    // Nota abierta (open string)
     const openFret = document.createElement("div");
     openFret.className = "fret open";
     const noteOpen = normalizeNote(openNote);
@@ -94,12 +93,11 @@ function drawFretboard() {
 
     string.appendChild(openFret);
 
-    // Cejuela
     const nut = document.createElement("div");
     nut.className = "fret nut";
+    nut.textContent = "║";
     string.appendChild(nut);
 
-    // Trastes 1–24
     for (let fret = 1; fret <= 24; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
