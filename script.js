@@ -1,10 +1,21 @@
-const standardTunings = {
-  6: ["E", "A", "D", "G", "B", "E"],
-  7: ["B", "E", "A", "D", "G", "B", "E"],
-  4: ["E", "A", "D", "G"]
+const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+const enharmonics = {
+  "Cb": "B",
+  "Db": "C#",
+  "Eb": "D#",
+  "Fb": "E",
+  "Gb": "F#",
+  "Ab": "G#",
+  "Bb": "A#"
 };
 
-const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const tunings = {
+  standard: ["E", "A", "D", "G", "B", "E"],
+  dropd:    ["D", "A", "D", "G", "B", "E"],
+  halfdowntuning: ["D#", "G#", "C#", "F#", "A#", "D#"], // Eb tuning
+  dropc:    ["C", "G", "C", "F", "A", "D"]
+};
 
 const fretMarkers = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
 
@@ -23,17 +34,25 @@ const noteColors = {
   "B": "#00cec9"
 };
 
+function normalizeNote(note) {
+  note = note.toUpperCase();
+  return enharmonics[note] || note;
+}
+
 function noteIndex(note) {
-  return allNotes.indexOf(note.toUpperCase());
+  return allNotes.indexOf(normalizeNote(note));
 }
 
 function drawFretboard() {
   const container = document.getElementById("fretboard");
   container.innerHTML = "";
 
-  const inputNotes = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
-  const stringCount = parseInt(document.getElementById("stringCount").value);
-  const tuning = standardTunings[stringCount];
+  const rawInput = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
+  const inputNotes = rawInput.map(normalizeNote);
+
+  const tuningKey = document.getElementById("tuningSelect").value;
+  const tuning = tunings[tuningKey];
+  const stringCount = tuning.length;
 
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
 
@@ -99,6 +118,5 @@ function drawFretboard() {
     tablatureLines.push(line);
   }
 
-  const tablatureBlock = document.getElementById("tablature");
-  tablatureBlock.textContent = tablatureLines.join("\n");
+  document.getElementById("tablature").textContent = tablatureLines.join("\n");
 }
