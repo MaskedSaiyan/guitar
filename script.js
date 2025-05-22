@@ -79,11 +79,10 @@ function drawFretboard() {
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
 
-    // Nota abierta (0)
-    const noteOpen = normalizeNote(openNote);
+    // Nota abierta (open string)
     const openFret = document.createElement("div");
-    openFret.className = "fret";
-    openFret.textContent = "0";
+    openFret.className = "fret open";
+    const noteOpen = normalizeNote(openNote);
 
     if (inputNotes.includes(noteOpen)) {
       const marker = document.createElement("div");
@@ -92,6 +91,7 @@ function drawFretboard() {
       marker.textContent = noteOpen;
       openFret.appendChild(marker);
     }
+
     string.appendChild(openFret);
 
     // Cejuela
@@ -129,7 +129,7 @@ function drawFretboard() {
     container.appendChild(string);
   }
 
-  // Generar tablatura
+  // Tablatura
   let tablatureLines = [];
 
   for (let i = stringCount - 1; i >= 0; i--) {
