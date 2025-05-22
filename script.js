@@ -42,7 +42,6 @@ function drawFretboard() {
     const string = document.createElement("div");
     string.className = "string";
 
-    // Mostrar la nota abierta + número de cuerda
     const stringLabel = document.createElement("div");
     stringLabel.className = "fret-label";
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
@@ -80,4 +79,26 @@ function drawFretboard() {
 
     container.appendChild(string);
   }
+
+  // 🎸 Generar tablatura invertida
+  let tablatureLines = [];
+
+  for (let i = stringCount - 1; i >= 0; i--) {
+    const openNote = tuning[i];
+    let line = openNote.toLowerCase() + "|";
+
+    for (let fret = 0; fret <= 24; fret++) {
+      const note = allNotes[(noteIndex(openNote) + fret) % 12];
+      if (inputNotes.includes(note)) {
+        line += fret < 10 ? `-${fret}-` : `${fret}-`;
+      } else {
+        line += "---";
+      }
+    }
+
+    tablatureLines.push(line);
+  }
+
+  const tablatureBlock = document.getElementById("tablature");
+  tablatureBlock.textContent = tablatureLines.join("\n");
 }
