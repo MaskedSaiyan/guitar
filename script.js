@@ -53,6 +53,10 @@ function drawFretboard() {
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
 
+      if (fret === 0) {
+        fretDiv.textContent = "0";
+      }
+
       if (i === Math.floor(stringCount / 2)) {
         if (fret === 12) {
           fretDiv.classList.add("double-dot");
