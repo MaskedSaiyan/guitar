@@ -5,27 +5,50 @@ const standardTunings = {
 };
 
 const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const fretMarkers = [3, 5, 7, 9, 12];
 
 function noteIndex(note) {
   return allNotes.indexOf(note.toUpperCase());
 }
 
-function findNotes() {
-  const input = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
-  const strings = parseInt(document.getElementById("stringCount").value);
-  const tuning = standardTunings[strings];
+function drawFretboard() {
+  const container = document.getElementById("fretboard");
+  container.innerHTML = "";
 
-  let result = "";
+  const inputNotes = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
+  const stringCount = parseInt(document.getElementById("stringCount").value);
+  const tuning = standardTunings[stringCount];
 
-  tuning.forEach((openNote, stringIndex) => {
-    result += `\nCuerda ${strings - stringIndex} (${openNote}):\n`;
+  container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
+
+  for (let i = 0; i < stringCount; i++) {
+    const openNote = tuning[i];
+    const string = document.createElement("div");
+    string.className = "string";
+
     for (let fret = 0; fret <= 12; fret++) {
-      const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
-      if (input.includes(noteAtFret)) {
-        result += ` traste ${fret}: ${noteAtFret}\n`;
-      }
-    }
-  });
+      const note = allNotes[(noteIndex(openNote) + fret) % 12];
+      const fretDiv = document.createElement("div");
+      fretDiv.className = "fret";
 
-  document.getElementById("output").textContent = result;
+      // Dots visuales del diapasón
+      if (i === Math.floor(stringCount / 2) && fretMarkers.includes(fret)) {
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        fretDiv.appendChild(dot);
+      }
+
+      // Marcar nota buscada
+      if (inputNotes.includes(note)) {
+        const marker = document.createElement("div");
+        marker.className = "note-marker";
+        marker.textContent = note;
+        fretDiv.appendChild(marker);
+      }
+
+      string.appendChild(fretDiv);
+    }
+
+    container.appendChild(string);
+  }
 }
