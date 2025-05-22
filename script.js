@@ -52,7 +52,7 @@ function updateTuningOptions() {
     tuningSelect.appendChild(opt);
   }
 
-  drawFretboard(); // refresca al cambiar
+  drawFretboard();
 }
 
 function drawFretboard() {
@@ -79,18 +79,31 @@ function drawFretboard() {
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
 
+    // Nota abierta (0)
+    const noteOpen = normalizeNote(openNote);
+    const openFret = document.createElement("div");
+    openFret.className = "fret";
+    openFret.textContent = "0";
+
+    if (inputNotes.includes(noteOpen)) {
+      const marker = document.createElement("div");
+      marker.className = "note-marker";
+      marker.style.backgroundColor = noteColors[noteOpen] || "#999";
+      marker.textContent = noteOpen;
+      openFret.appendChild(marker);
+    }
+    string.appendChild(openFret);
+
+    // Cejuela
     const nut = document.createElement("div");
-    nut.className = "open-bar";
+    nut.className = "fret nut";
     string.appendChild(nut);
 
-    for (let fret = 0; fret <= 24; fret++) {
+    // Trastes 1–24
+    for (let fret = 1; fret <= 24; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
-
-      if (fret === 0) {
-        fretDiv.textContent = "0";
-      }
 
       if (i === Math.floor(stringCount / 2)) {
         if (fret === 12) {
@@ -116,7 +129,7 @@ function drawFretboard() {
     container.appendChild(string);
   }
 
-  // 🎸 Generar tablatura invertida
+  // Generar tablatura
   let tablatureLines = [];
 
   for (let i = stringCount - 1; i >= 0; i--) {
