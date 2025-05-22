@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Diapasón Visual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualizador de Notas – v0.1</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Visualizador de Notas</h1>
+  <h1>Visualizador de Notas en el Diapasón</h1>
 
   <input type="text" id="notesInput" placeholder="Ej. E A C" />
   <select id="stringCount">
@@ -17,6 +18,10 @@
   <button onclick="drawFretboard()">Mostrar</button>
 
   <div id="fretboard"></div>
+
+  <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
+    v0.1
+  </footer>
 
   <script src="script.js"></script>
 </body>
