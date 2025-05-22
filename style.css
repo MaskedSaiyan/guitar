@@ -13,7 +13,9 @@ body {
 
 .string {
   display: grid;
-  grid-template-columns: 40px repeat(25, 40px); /* cuerda # + 24 trastes */
+  grid-template-columns: 60px repeat(25, 40px);
+  border-bottom: 2px solid #ccc;
+  position: relative;
 }
 
 .fret {
@@ -21,6 +23,11 @@ body {
   position: relative;
   background-color: #fff;
   height: 40px;
+}
+
+.fret:first-child {
+  background-color: #f0f0f0;
+  border-left: 3px solid #666;
 }
 
 .dot {
@@ -71,4 +78,5 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #eee;
 }
