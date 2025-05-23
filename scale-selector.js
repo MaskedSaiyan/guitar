@@ -33,6 +33,11 @@ function updateNotesDisplay() {
   const intervals = scales[scale];
   const notes = getScaleNotes(root, intervals);
   document.getElementById("noteOutput").textContent = notes.join(" – ");
+
+  // También actualiza el mástil si existe la función
+  if (typeof highlightFretboard === 'function') {
+    highlightFretboard(notes, root);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
