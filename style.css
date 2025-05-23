@@ -130,4 +130,14 @@ body {
     font-size: 12px;
     line-height: 32px;
   }
+  
+  .fret.active {
+  background-color: #fffae6;
+  border-radius: 4px;
+}
+
+.fret.root {
+  background-color: #ffd700;
+  font-weight: bold;
+}
 }
