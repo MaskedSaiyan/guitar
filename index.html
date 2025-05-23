@@ -8,7 +8,32 @@
 </head>
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
+<h2>Selector de Escala</h2>
 
+<label for="rootSelect">Nota raíz:</label>
+<select id="rootSelect">
+  <option>C</option>
+  <option>C#</option>
+  <option>D</option>
+  <option>D#</option>
+  <option>E</option>
+  <option>F</option>
+  <option>F#</option>
+  <option>G</option>
+  <option>G#</option>
+  <option>A</option>
+  <option>A#</option>
+  <option>B</option>
+</select>
+
+<label for="scaleSelect">Escala:</label>
+<select id="scaleSelect">
+  <!-- opciones generadas por JS -->
+</select>
+
+<p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
+
+<script src="scale-selector.js"></script>
   <input type="text" id="notesInput" placeholder="Ej. E A C o Eb Ab" />
 
   <div>
