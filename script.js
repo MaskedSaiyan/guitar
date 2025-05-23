@@ -157,3 +157,22 @@ function drawFretboard() {
 }
 
 window.onload = updateTuningOptions;
+
+function highlightFretboard(scaleNotes, rootNote) {
+  const frets = document.querySelectorAll('.fret');
+  frets.forEach(fret => {
+    const noteEl = fret.querySelector('span');
+    const note = noteEl ? noteEl.textContent : null;
+    if (note && scaleNotes.includes(note)) {
+      fret.classList.add('active');
+      if (note === rootNote) {
+        fret.classList.add('root');
+      } else {
+        fret.classList.remove('root');
+      }
+    } else {
+      fret.classList.remove('active');
+      fret.classList.remove('root');
+    }
+  });
+}
