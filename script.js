@@ -153,6 +153,7 @@ function drawFretboard() {
 
   document.getElementById("tablature").textContent = tablatureLines.join("\n");
   document.getElementById("fretboard-wrapper").scrollLeft = 0;
+  showSuggestedScalesFromInput?.();
 
 }
 
