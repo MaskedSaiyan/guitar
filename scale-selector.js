@@ -117,38 +117,48 @@ function suggestChordsFromInput() {
   const detectedChords = [];
 
   allNotes.forEach(root => {
-    const intervals = {
-      major: [0, 4, 7],
-      minor: [0, 3, 7],
-      power: [0, 7]
+    const intervalMap = {
+      major: [0, 4, 7], // 1 3 5
+      minor: [0, 3, 7], // 1 b3 5
+      power: [0, 7],    // 1 5
     };
 
-    Object.entries(intervals).forEach(([type, steps]) => {
-      const notes = steps.map(i => allNotes[(noteIndex(root) + i) % 12]);
-      const found = notes.every(n => input.includes(n));
+    Object.entries(intervalMap).forEach(([type, steps]) => {
+      const chordNotes = steps.map(i => allNotes[(noteIndex(root) + i) % 12]);
+      const presentNotes = chordNotes.filter(n => input.includes(n));
+      const missingNotes = chordNotes.filter(n => !input.includes(n));
 
-      if (found) {
+      if (presentNotes.length === chordNotes.length) {
+        // acorde completo
         let name = type === "power" ? `${root}5` : `${root}${type === "major" ? "" : "m"}`;
-        detectedChords.push({ name, root, type, notes });
+        detectedChords.push({ name, notes: chordNotes, type, root, missing: [] });
+      } else if (presentNotes.length >= 2 && type !== "power") {
+        // acorde incompleto útil (ej: Am sin E)
+        let name = `${root}${type === "major" ? "" : "m"} (incompleto)`;
+        detectedChords.push({ name, notes: presentNotes, type, root, missing: missingNotes });
       }
     });
   });
 
   if (detectedChords.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "No se detectaron acordes completos.";
+    li.textContent = "No se detectaron acordes.";
     chordList.appendChild(li);
     return;
   }
 
-  // Mostrar acordes encontrados
+  // Mostrar acordes
   detectedChords.slice(0, 6).forEach(chord => {
     const li = document.createElement("li");
-    li.textContent = `${chord.name} (${chord.notes.join(" ")})`;
+    let txt = `${chord.name} (${chord.notes.join(" ")})`;
+    if (chord.missing.length > 0) {
+      txt += ` – Falta: ${chord.missing.join(" ")}`;
+    }
+    li.textContent = txt;
     chordList.appendChild(li);
   });
 
-  // Analizar progresión (muy simple)
+  // Sugerir progresión y tonalidad
   const roots = detectedChords.map(c => c.root);
   const uniqueRoots = [...new Set(roots)];
   const possibleTonalities = {};
@@ -179,5 +189,6 @@ function suggestChordsFromInput() {
     chordList.appendChild(tone);
   }
 }
+
 
 
