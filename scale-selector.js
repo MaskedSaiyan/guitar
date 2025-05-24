@@ -100,3 +100,52 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("rootSelect").addEventListener("change", updateNotesDisplay);
   document.getElementById("scaleSelect").addEventListener("change", updateNotesDisplay);
 });
+
+function suggestChordsFromInput() {
+  const input = document.getElementById("notesInput").value
+    .trim()
+    .toUpperCase()
+    .split(/\s+/)
+    .map(normalizeNote)
+    .filter(n => allNotes.includes(n));
+
+  const chordList = document.getElementById("chordList");
+  chordList.innerHTML = "";
+
+  if (input.length < 2 || input.length > 4) return;
+
+  const chords = [];
+
+  allNotes.forEach(root => {
+    const major = [0, 4, 7].map(i => allNotes[(noteIndex(root) + i) % 12]);
+    const minor = [0, 3, 7].map(i => allNotes[(noteIndex(root) + i) % 12]);
+    const power = [0, 7].map(i => allNotes[(noteIndex(root) + i) % 12]);
+
+    const inputSet = new Set(input);
+
+    const containsAll = notes => notes.every(n => inputSet.has(n));
+
+    if (containsAll(major)) {
+      chords.push(`${root} mayor`);
+    }
+    if (containsAll(minor)) {
+      chords.push(`${root} menor`);
+    }
+    if (containsAll(power)) {
+      chords.push(`${root}5 (power chord)`);
+    }
+  });
+
+  if (chords.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "Sin acordes claros, prueba con más notas";
+    chordList.appendChild(li);
+  } else {
+    chords.slice(0, 5).forEach(chord => {
+      const li = document.createElement("li");
+      li.textContent = chord;
+      chordList.appendChild(li);
+    });
+  }
+}
+
