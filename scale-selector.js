@@ -112,40 +112,72 @@ function suggestChordsFromInput() {
   const chordList = document.getElementById("chordList");
   chordList.innerHTML = "";
 
-  if (input.length < 2 || input.length > 4) return;
+  if (input.length < 2) return;
 
-  const chords = [];
+  const detectedChords = [];
 
   allNotes.forEach(root => {
-    const major = [0, 4, 7].map(i => allNotes[(noteIndex(root) + i) % 12]);
-    const minor = [0, 3, 7].map(i => allNotes[(noteIndex(root) + i) % 12]);
-    const power = [0, 7].map(i => allNotes[(noteIndex(root) + i) % 12]);
+    const intervals = {
+      major: [0, 4, 7],
+      minor: [0, 3, 7],
+      power: [0, 7]
+    };
 
-    const inputSet = new Set(input);
+    Object.entries(intervals).forEach(([type, steps]) => {
+      const notes = steps.map(i => allNotes[(noteIndex(root) + i) % 12]);
+      const found = notes.every(n => input.includes(n));
 
-    const containsAll = notes => notes.every(n => inputSet.has(n));
-
-    if (containsAll(major)) {
-      chords.push(`${root} mayor`);
-    }
-    if (containsAll(minor)) {
-      chords.push(`${root} menor`);
-    }
-    if (containsAll(power)) {
-      chords.push(`${root}5 (power chord)`);
-    }
+      if (found) {
+        let name = type === "power" ? `${root}5` : `${root}${type === "major" ? "" : "m"}`;
+        detectedChords.push({ name, root, type, notes });
+      }
+    });
   });
 
-  if (chords.length === 0) {
+  if (detectedChords.length === 0) {
     const li = document.createElement("li");
-    li.textContent = "Sin acordes claros, prueba con más notas";
+    li.textContent = "No se detectaron acordes completos.";
     chordList.appendChild(li);
-  } else {
-    chords.slice(0, 5).forEach(chord => {
-      const li = document.createElement("li");
-      li.textContent = chord;
-      chordList.appendChild(li);
+    return;
+  }
+
+  // Mostrar acordes encontrados
+  detectedChords.slice(0, 6).forEach(chord => {
+    const li = document.createElement("li");
+    li.textContent = `${chord.name} (${chord.notes.join(" ")})`;
+    chordList.appendChild(li);
+  });
+
+  // Analizar progresión (muy simple)
+  const roots = detectedChords.map(c => c.root);
+  const uniqueRoots = [...new Set(roots)];
+  const possibleTonalities = {};
+
+  Object.keys(scales).forEach(scaleName => {
+    allNotes.forEach(root => {
+      const scaleNotes = getScaleNotes(root, scales[scaleName]);
+      const hits = uniqueRoots.filter(n => scaleNotes.includes(n));
+      if (hits.length >= 2) {
+        const key = `${root} ${scaleName}`;
+        possibleTonalities[key] = hits.length;
+      }
     });
+  });
+
+  const best = Object.entries(possibleTonalities).sort((a, b) => b[1] - a[1])[0];
+
+  if (best) {
+    const [key, matchCount] = best;
+    const progression = detectedChords.map(c => c.name).join(" – ");
+
+    const prog = document.createElement("li");
+    prog.innerHTML = `<strong>🎶 Progresión sugerida:</strong> ${progression}`;
+    chordList.appendChild(prog);
+
+    const tone = document.createElement("li");
+    tone.innerHTML = `<strong>🔑 Tonalidad probable:</strong> ${key}`;
+    chordList.appendChild(tone);
   }
 }
+
 
