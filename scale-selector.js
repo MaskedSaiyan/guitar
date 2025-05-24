@@ -41,10 +41,59 @@ function updateNotesDisplay() {
   }
 
   if (typeof drawFretboard === 'function') {
-    drawFretboard();  // actualiza el mástil automáticamente
+    drawFretboard();
   }
 }
 
+function showSuggestedScalesFromInput() {
+  const input = document.getElementById("notesInput").value
+    .trim()
+    .toUpperCase()
+    .split(/\s+/)
+    .map(normalizeNote)
+    .filter(n => allNotes.includes(n));
+
+  const suggestionList = document.getElementById("suggestionList");
+  suggestionList.innerHTML = "";
+
+  if (input.length === 0) return;
+
+  const matches = [];
+
+  Object.keys(scales).forEach(scaleName => {
+    allNotes.forEach(root => {
+      const scaleNotes = getScaleNotes(root, scales[scaleName]);
+      const matchCount = input.filter(n => scaleNotes.includes(n)).length;
+
+      if (matchCount > 0) {
+        const matchPercent = Math.round((matchCount / scaleNotes.length) * 100);
+        matches.push({ root, scaleName, matchCount, matchPercent });
+      }
+    });
+  });
+
+  matches
+    .sort((a, b) => b.matchPercent - a.matchPercent || b.matchCount - a.matchCount)
+    .slice(0, 5)
+    .forEach(match => {
+      const li = document.createElement("li");
+      li.textContent = `${match.root} ${match.scaleName}`;
+
+      const percentSpan = document.createElement("span");
+      percentSpan.textContent = ` – ${match.matchPercent}% de coincidencia`;
+
+      if (match.matchPercent >= 90) {
+        percentSpan.style.color = "green";
+      } else if (match.matchPercent >= 70) {
+        percentSpan.style.color = "orange";
+      } else {
+        percentSpan.style.color = "red";
+      }
+
+      li.appendChild(percentSpan);
+      suggestionList.appendChild(li);
+    });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   populateScaleSelector();
