@@ -166,6 +166,9 @@
     if (typeof updateTuningOptions === "function") updateTuningOptions();
     if (typeof populateScaleSelector === "function") populateScaleSelector();
     if (typeof updateNotesDisplay === "function") updateNotesDisplay();
+      if (tabId === 'chordExplorerTab' && typeof renderChordExplorer === "function") {
+  renderChordExplorer();
+}
   });
 </script>
 
