@@ -174,3 +174,15 @@ body {
   display: block;
 }
 
+.chord-button {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.chord-button:hover {
+  background-color: #f0f0f0;
+}
+

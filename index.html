@@ -47,6 +47,8 @@
     <div class="tab-buttons">
       <button onclick="switchTab('scalesTab')" id="btnscalesTab" class="active">🎼 Escalas</button>
       <button onclick="switchTab('circleTab')" id="btncircleTab">🔄 Círculo de Quintas</button>
+      <button onclick="switchTab('chordExplorerTab')" id="btnchordExplorerTab">🧭 Explorador de Acordes</button>
+
     </div>
 
     <div id="scalesTab" class="tab-content active">
@@ -78,6 +80,18 @@
       <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
     </div>
   </div>
+
+  <div id="chordExplorerTab" class="tab-content">
+  <label for="chordRootSelect">Nota raíz:</label>
+  <select id="chordRootSelect" onchange="renderChordExplorer()">
+    <option>C</option><option>C#</option><option>D</option><option>D#</option>
+    <option>E</option><option>F</option><option>F#</option><option>G</option>
+    <option>G#</option><option>A</option><option>A#</option><option>B</option>
+  </select>
+
+  <div id="chordExplorer" style="margin-top: 2em; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+</div>
+
 
   <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
   <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" />
