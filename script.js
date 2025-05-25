@@ -150,7 +150,9 @@ function drawFretboard() {
   suggestChordsFromInput?.();
 }
 
-window.onload = updateTuningOptions;
+document.addEventListener("DOMContentLoaded", () => {
+  updateTuningOptions();
+});
 
 function highlightFretboard(scaleNotes, rootNote) {
   const frets = document.querySelectorAll('.fret');
