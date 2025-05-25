@@ -1,14 +1,14 @@
 let circleInitialized = false;
 
-// 🎵 Conversión entre bemoles y sostenidos
-const enharmonics = {
+// ✅ Versión local solo para circle.js
+const enharmonicsCircle = {
   "Db": "C#",
   "Eb": "D#",
   "Gb": "F#",
   "Ab": "G#",
   "Bb": "A#"
 };
-const normalizeToSharp = n => enharmonics[n] || n;
+const normalizeToSharp = n => enharmonicsCircle[n] || n;
 
 const displayAsBemol = {
   "C#": "Db",
@@ -36,7 +36,6 @@ function initCircleOfFifths() {
   svg.style.border = "1px solid #ccc";
   rootCircle.appendChild(svg);
 
-  // Notas mayores (afuera)
   notes.forEach((note, i) => {
     const angle = (i / 12) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
@@ -60,7 +59,6 @@ function initCircleOfFifths() {
     svg.appendChild(text);
   });
 
-  // Notas menores (adentro)
   minorNotes.forEach((note, i) => {
     const angle = (i / 12) * (2 * Math.PI) - Math.PI / 2;
     const x = center + (radius - 40) * Math.cos(angle);
@@ -101,10 +99,10 @@ function showCircleChords(noteClicked, mode) {
   let majorRoot, minorRoot;
   if (mode === "major") {
     majorRoot = note;
-    minorRoot = allNotes[(allNotes.indexOf(note) + 9) % 12]; // menor relativa
+    minorRoot = allNotes[(allNotes.indexOf(note) + 9) % 12];
   } else {
     minorRoot = note;
-    majorRoot = allNotes[(allNotes.indexOf(note) + 3) % 12]; // mayor relativa
+    majorRoot = allNotes[(allNotes.indexOf(note) + 3) % 12];
   }
 
   const rootIndex = allNotes.indexOf(majorRoot);
@@ -130,12 +128,10 @@ function showCircleChords(noteClicked, mode) {
     • Relativa menor: ${toDisplay(minorRoot)} menor
   `;
 
-  // Mostrar I – IV – V + menor relativa
   const inputNotes = [I, IV, V, minorRoot];
   document.getElementById("notesInput").value = inputNotes.map(toDisplay).join(" ");
   if (typeof drawFretboard === 'function') drawFretboard();
 
-  // 🎨 Resaltado
   const textNodes = document.querySelectorAll("#circleOfFifths text");
   textNodes.forEach(el => {
     el.setAttribute("fill", el.classList.contains("outer") ? "#333" : "#666");
@@ -159,6 +155,3 @@ function showCircleChords(noteClicked, mode) {
     }
   });
 }
-
-console.log("✅ circle.js loaded");
-console.log("typeof initCircleOfFifths:", typeof initCircleOfFifths);
