@@ -117,30 +117,35 @@
   </footer>
 
   <!-- Scripts con defer -->
-  <script src="utils.js" defer></script>
-  <script src="chords.js" defer></script>
-  <script src="script.js" defer></script>
-  <script src="scale-selector.js" defer></script>
-  <script src="circle.js" defer></script> <!-- ❌ sin defer -->
+<!-- ✅ Todos con defer y en orden correcto -->
+<script src="utils.js" defer></script>
+<script src="chords.js" defer></script>
+<script src="script.js" defer></script> <!-- define drawFretboard -->
+<script src="scale-selector.js" defer></script>
+<script src="circle.js" defer></script> <!-- usa drawFretboard -->
 
+<!-- ✅ Este SIN defer y va al final -->
+<script>
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+    document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
 
-  <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
-      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.getElementById('btn' + tabId).classList.add('active');
 
-      document.getElementById(tabId).classList.add('active');
-      document.getElementById('btn' + tabId).classList.add('active');
+    const showSuggestions = (tabId === 'scalesTab');
+    document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
+    document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
 
-      const showSuggestions = (tabId === 'scalesTab');
-      document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
-      document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
-
-      if (tabId === 'circleTab') {
+    if (tabId === 'circleTab') {
+      if (typeof initCircleOfFifths === "function") {
         initCircleOfFifths();
+      } else {
+        console.warn("⚠️ initCircleOfFifths no disponible");
       }
     }
-  </script>
-  <script src="circle.js"></script> <!-- ❌ sin defer -->
+  }
+</script>
+
 </body>
 </html>
