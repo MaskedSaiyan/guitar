@@ -60,26 +60,24 @@ function drawFretboard() {
   container.innerHTML = "";
 
   const rawInput = document.getElementById("notesInput").value
-  .trim()
-  .split(/\s+/)
-  .filter(n => n);
+    .trim()
+    .split(/\s+/)
+    .filter(n => n);
 
-let inputNotes = [];
+  let inputNotes = [];
 
+  rawInput.forEach(token => {
     if (token.length === 1 || (token.length === 2 && /[#b]/.test(token[1]))) {
-  // Es una nota simple como C o C# o Db
-  inputNotes.push(normalizeNote(token));
-} else {
-  const notes = chordToNotes(token);
-  if (notes.length > 0) {
-    inputNotes.push(...notes);
-  } else {
-    inputNotes.push(normalizeNote(token)); // fallback si el acorde no se reconoce
-  }
-}
-
-
-});
+      inputNotes.push(normalizeNote(token));
+    } else {
+      const notes = chordToNotes(token);
+      if (notes.length > 0) {
+        inputNotes.push(...notes);
+      } else {
+        inputNotes.push(normalizeNote(token));
+      }
+    }
+  });
 
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
@@ -169,7 +167,6 @@ let inputNotes = [];
   document.getElementById("fretboard-wrapper").scrollLeft = 0;
   showSuggestedScalesFromInput?.();
   suggestChordsFromInput?.();
-
 }
 
 window.onload = updateTuningOptions;
