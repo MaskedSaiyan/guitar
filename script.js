@@ -60,12 +60,20 @@ function drawFretboard() {
   container.innerHTML = "";
 
   const rawInput = document.getElementById("notesInput").value
-    .trim()
-    .toUpperCase()
-    .split(/\s+/)
-    .filter(n => n); // limpia vacíos
+  .trim()
+  .split(/\s+/)
+  .filter(n => n);
 
-  const inputNotes = rawInput.map(normalizeNote);
+let inputNotes = [];
+
+rawInput.forEach(token => {
+  const notes = chordToNotes(token);
+  if (notes.length > 0) {
+    inputNotes.push(...notes);
+  } else {
+    inputNotes.push(normalizeNote(token));
+  }
+});
 
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
