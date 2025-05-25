@@ -159,3 +159,6 @@ function showCircleChords(noteClicked, mode) {
     }
   });
 }
+
+console.log("✅ circle.js loaded");
+console.log("typeof initCircleOfFifths:", typeof initCircleOfFifths);
