@@ -88,12 +88,6 @@ function showSuggestedScalesFromInput() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  populateScaleSelector();
-  document.getElementById("rootSelect").addEventListener("change", updateNotesDisplay);
-  document.getElementById("scaleSelect").addEventListener("change", updateNotesDisplay);
-});
-
 function suggestChordsFromInput() {
   const input = document.getElementById("notesInput").value
     .trim()

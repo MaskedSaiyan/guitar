@@ -125,6 +125,7 @@
 <script src="circle.js" defer></script> <!-- usa drawFretboard -->
 
 <!-- ✅ Este SIN defer y va al final -->
+
 <script>
   function switchTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
@@ -137,15 +138,19 @@
     document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
     document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
 
-    if (tabId === 'circleTab') {
-      if (typeof initCircleOfFifths === "function") {
-        initCircleOfFifths();
-      } else {
-        console.warn("⚠️ initCircleOfFifths no disponible");
-      }
+    if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
+      initCircleOfFifths();
     }
   }
+
+  // ✅ Llamada unificada una vez al cargar TODO
+  window.addEventListener("DOMContentLoaded", () => {
+    if (typeof updateTuningOptions === "function") {
+      updateTuningOptions();
+    }
+  });
 </script>
+
 
 </body>
 </html>
