@@ -1,4 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
+let circleInitialized = false;
+
+function initCircleOfFifths() {
+  if (circleInitialized) return;
+  circleInitialized = true;
+
   const rootCircle = document.getElementById("circleOfFifths");
   const svgNS = "http://www.w3.org/2000/svg";
   const radius = 150;
@@ -68,39 +73,37 @@ document.addEventListener("DOMContentLoaded", () => {
   centerText.setAttribute("fill", "#aaa");
   centerText.textContent = "Mayor afuera, menor adentro";
   svg.appendChild(centerText);
+}
 
-  function showCircleChords(rootNote) {
-    const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    const normalize = n => (n === "Db" ? "C#" : n === "Bb" ? "A#" : n);
-    const rootIndex = allNotes.indexOf(normalize(rootNote));
-    const I = allNotes[rootIndex];
-    const IV = allNotes[(rootIndex + 5) % 12];
-    const V = allNotes[(rootIndex + 7) % 12];
+function showCircleChords(rootNote) {
+  const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const normalize = n => (n === "Db" ? "C#" : n === "Bb" ? "A#" : n);
+  const rootIndex = allNotes.indexOf(normalize(rootNote));
+  const I = allNotes[rootIndex];
+  const IV = allNotes[(rootIndex + 5) % 12];
+  const V = allNotes[(rootIndex + 7) % 12];
 
-    const box = document.getElementById("circleChords") || (() => {
-      const div = document.createElement("div");
-      div.id = "circleChords";
-      div.style.marginTop = "1em";
-      div.style.fontSize = "0.95em";
-      div.style.color = "#333";
-      rootCircle.appendChild(div);
-      return div;
-    })();
+  const box = document.getElementById("circleChords") || (() => {
+    const div = document.createElement("div");
+    div.id = "circleChords";
+    div.style.marginTop = "1em";
+    div.style.fontSize = "0.95em";
+    div.style.color = "#333";
+    document.getElementById("circleOfFifths").appendChild(div);
+    return div;
+  })();
 
-    box.innerHTML = `
-      <strong>🎶 Progresión I – IV – V en ${I} mayor:</strong><br>
-      • I: ${I} – Mayor<br>
-      • IV: ${IV} – Mayor<br>
-      • V: ${V} – Mayor
-    `;
+  box.innerHTML = `
+    <strong>🎶 Progresión I – IV – V en ${I} mayor:</strong><br>
+    • I: ${I} – Mayor<br>
+    • IV: ${IV} – Mayor<br>
+    • V: ${V} – Mayor
+  `;
 
-      const notesInScale = [0, 2, 4, 5, 7, 9, 11].map(
-  i => allNotes[(rootIndex + i) % 12]
-);
-
-document.getElementById("notesInput").value = notesInScale.join(" ");
-
-if (typeof drawFretboard === 'function') {
-  drawFretboard();
-  }
-});
+  // También llenar notesInput con la escala mayor y actualizar mástil
+  const notesInScale = [0, 2, 4, 5, 7, 9, 11].map(
+    i => allNotes[(rootIndex + i) % 12]
+  );
+  document.getElementById("notesInput").value = notesInScale.join(" ");
+  if (typeof drawFretboard === 'function') drawFretboard();
+}
