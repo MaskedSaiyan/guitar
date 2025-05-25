@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     text.addEventListener("click", () => {
       document.getElementById("rootSelect").value = note.replace("b", "#") === "Db" ? "C#" : note;
       updateNotesDisplay();
+      showCircleChords(note);
     });
 
     svg.appendChild(text);
@@ -53,12 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
     text.addEventListener("click", () => {
       document.getElementById("rootSelect").value = note.replace("b", "#") === "Bb" ? "A#" : note;
       updateNotesDisplay();
+      showCircleChords(note);
     });
 
     svg.appendChild(text);
   });
 
-  // título visual
   const centerText = document.createElementNS(svgNS, "text");
   centerText.setAttribute("x", center);
   centerText.setAttribute("y", center);
@@ -67,4 +68,30 @@ document.addEventListener("DOMContentLoaded", () => {
   centerText.setAttribute("fill", "#aaa");
   centerText.textContent = "Mayor afuera, menor adentro";
   svg.appendChild(centerText);
+
+  function showCircleChords(rootNote) {
+    const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const normalize = n => (n === "Db" ? "C#" : n === "Bb" ? "A#" : n);
+    const rootIndex = allNotes.indexOf(normalize(rootNote));
+    const I = allNotes[rootIndex];
+    const IV = allNotes[(rootIndex + 5) % 12];
+    const V = allNotes[(rootIndex + 7) % 12];
+
+    const box = document.getElementById("circleChords") || (() => {
+      const div = document.createElement("div");
+      div.id = "circleChords";
+      div.style.marginTop = "1em";
+      div.style.fontSize = "0.95em";
+      div.style.color = "#333";
+      rootCircle.appendChild(div);
+      return div;
+    })();
+
+    box.innerHTML = `
+      <strong>🎶 Progresión I – IV – V en ${I} mayor:</strong><br>
+      • I: ${I} – Mayor<br>
+      • IV: ${IV} – Mayor<br>
+      • V: ${V} – Mayor
+    `;
+  }
 });
