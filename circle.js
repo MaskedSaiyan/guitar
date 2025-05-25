@@ -1,5 +1,24 @@
 let circleInitialized = false;
 
+// 🎵 Conversión entre bemoles y sostenidos
+const enharmonics = {
+  "Db": "C#",
+  "Eb": "D#",
+  "Gb": "F#",
+  "Ab": "G#",
+  "Bb": "A#"
+};
+const normalizeToSharp = n => enharmonics[n] || n;
+
+const displayAsBemol = {
+  "C#": "Db",
+  "D#": "Eb",
+  "F#": "Gb",
+  "G#": "Ab",
+  "A#": "Bb"
+};
+const toDisplay = n => displayAsBemol[n] || n;
+
 function initCircleOfFifths() {
   if (circleInitialized) return;
   circleInitialized = true;
@@ -17,6 +36,7 @@ function initCircleOfFifths() {
   svg.style.border = "1px solid #ccc";
   rootCircle.appendChild(svg);
 
+  // Notas mayores (afuera)
   notes.forEach((note, i) => {
     const angle = (i / 12) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
@@ -40,6 +60,7 @@ function initCircleOfFifths() {
     svg.appendChild(text);
   });
 
+  // Notas menores (adentro)
   minorNotes.forEach((note, i) => {
     const angle = (i / 12) * (2 * Math.PI) - Math.PI / 2;
     const x = center + (radius - 40) * Math.cos(angle);
@@ -75,8 +96,7 @@ function initCircleOfFifths() {
 
 function showCircleChords(noteClicked, mode) {
   const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  const normalize = n => (n === "Db" ? "C#" : n === "Bb" ? "A#" : n);
-  const note = normalize(noteClicked);
+  const note = normalizeToSharp(noteClicked);
 
   let majorRoot, minorRoot;
   if (mode === "major") {
@@ -103,16 +123,16 @@ function showCircleChords(noteClicked, mode) {
   })();
 
   box.innerHTML = `
-    <strong>🎶 Progresión I – IV – V en ${I} mayor:</strong><br>
-    • I: ${I} – Mayor<br>
-    • IV: ${IV} – Mayor<br>
-    • V: ${V} – Mayor<br>
-    • Relativa menor: ${minorRoot} menor
+    <strong>🎶 Progresión I – IV – V en ${toDisplay(I)} mayor:</strong><br>
+    • I: ${toDisplay(I)} – Mayor<br>
+    • IV: ${toDisplay(IV)} – Mayor<br>
+    • V: ${toDisplay(V)} – Mayor<br>
+    • Relativa menor: ${toDisplay(minorRoot)} menor
   `;
 
   // Mostrar I – IV – V + menor relativa
   const inputNotes = [I, IV, V, minorRoot];
-  document.getElementById("notesInput").value = inputNotes.join(" ");
+  document.getElementById("notesInput").value = inputNotes.map(toDisplay).join(" ");
   if (typeof drawFretboard === 'function') drawFretboard();
 
   // 🎨 Resaltado
@@ -124,7 +144,7 @@ function showCircleChords(noteClicked, mode) {
 
   textNodes.forEach(el => {
     const txt = el.textContent;
-    const norm = normalize(txt);
+    const norm = normalizeToSharp(txt);
 
     if (el.classList.contains("outer")) {
       if (norm === I) el.setAttribute("fill", "#d4af37");
