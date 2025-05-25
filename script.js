@@ -59,26 +59,7 @@ function drawFretboard() {
   const container = document.getElementById("fretboard");
   container.innerHTML = "";
 
-  const rawInput = document.getElementById("notesInput").value
-    .trim()
-    .split(/\s+/)
-    .filter(n => n);
-
-  let inputNotes = [];
-
-  rawInput.forEach(token => {
-    if (token.length === 1 || (token.length === 2 && /[#b]/.test(token[1]))) {
-      inputNotes.push(normalizeNote(token));
-    } else {
-      const notes = chordToNotes(token);
-      if (notes.length > 0) {
-        inputNotes.push(...notes);
-      } else {
-        inputNotes.push(normalizeNote(token));
-      }
-    }
-  });
-
+  const inputNotes = getExpandedNotesFromInput();
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
   const tuning = tuningsByInstrument[instrument][tuningName];
@@ -189,3 +170,4 @@ function highlightFretboard(scaleNotes, rootNote) {
     }
   });
 }
+
