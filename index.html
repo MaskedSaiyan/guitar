@@ -143,18 +143,29 @@
 
 <script>
   function switchTab(tabId) {
+    // Oculta todos los contenidos de tabs
     document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+
+    // Quita highlight a todos los botones
     document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
 
+    // Activa el tab que seleccionaste
     document.getElementById(tabId).classList.add('active');
     document.getElementById('btn' + tabId).classList.add('active');
 
+    // Mostrar/ocultar sugerencias si aplica
     const showSuggestions = (tabId === 'scalesTab');
     document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
     document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
 
+    // Activar render del círculo de quintas
     if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
       initCircleOfFifths();
+    }
+
+    // Activar render del explorador de acordes
+    if (tabId === 'chordExplorerTab' && typeof renderChordExplorer === "function") {
+      renderChordExplorer();
     }
   }
 
