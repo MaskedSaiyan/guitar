@@ -1,5 +1,4 @@
 const scales = {
-    const input = getExpandedNotesFromInput().filter(n => allNotes.includes(n));"Major (Ionian)":         [0, 2, 4, 5, 7, 9, 11],
   "Minor (Aeolian)":        [0, 2, 3, 5, 7, 8, 10],
   "Dorian":                 [0, 2, 3, 5, 7, 9, 10],
   "Phrygian":               [0, 1, 3, 5, 7, 8, 10],
