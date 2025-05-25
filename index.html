@@ -9,6 +9,11 @@
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
 
+  <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
+
+<script src="scale-selector.js"></script>
+  <input type="text" id="notesInput" placeholder="Ej. E A C o Eb Ab" />
+  
   <div>
     <label>Instrumento:</label>
     <select id="instrumentSelect" onchange="updateTuningOptions()">
@@ -60,10 +65,7 @@
   <!-- opciones generadas por JS -->
 </select>
 
-<p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
 
-<script src="scale-selector.js"></script>
-  <input type="text" id="notesInput" placeholder="Ej. E A C o Eb Ab" />
 
   <h2>Círculo de Quintas</h2>
 <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
