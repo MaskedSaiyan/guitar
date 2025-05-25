@@ -158,14 +158,11 @@
   }
 
   // ✅ Llamada unificada una vez al cargar TODO
-  window.addEventListener("DOMContentLoaded", () => {
-    if (typeof updateTuningOptions === "function") {
-      updateTuningOptions();
-    }
 
-    if (typeof updateScaleSelector === "function") {
-    updateScaleSelector("C");
-  }
+  window.addEventListener("DOMContentLoaded", () => {
+    if (typeof updateTuningOptions === "function") updateTuningOptions();
+    if (typeof populateScaleSelector === "function") populateScaleSelector();
+    if (typeof updateNotesDisplay === "function") updateNotesDisplay();
   });
 </script>
 
