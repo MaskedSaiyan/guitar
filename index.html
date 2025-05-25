@@ -11,9 +11,8 @@
 
   <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
 
-<script src="scale-selector.js"></script>
   <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" />
-  
+
   <div>
     <label>Instrumento:</label>
     <select id="instrumentSelect" onchange="updateTuningOptions()">
@@ -40,48 +39,70 @@
   </div>
 
   <div id="chordSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
-  <strong>Acordes sugeridos:</strong>
-  <ul id="chordList"></ul>
-</div>
+    <strong>Acordes sugeridos:</strong>
+    <ul id="chordList"></ul>
+  </div>
 
-  <h2>Selector de Escala</h2>
+  <h2>Modo de Visualización</h2>
+  <div class="tabs">
+    <div class="tab-buttons">
+      <button onclick="switchTab('scalesTab')" id="btnScales" class="active">🎼 Escalas</button>
+      <button onclick="switchTab('circleTab')" id="btnCircle">🔄 Círculo de Quintas</button>
+    </div>
 
-<label for="rootSelect">Nota raíz:</label>
-<select id="rootSelect">
-  <option>C</option>
-  <option>C#</option>
-  <option>D</option>
-  <option>D#</option>
-  <option>E</option>
-  <option>F</option>
-  <option>F#</option>
-  <option>G</option>
-  <option>G#</option>
-  <option>A</option>
-  <option>A#</option>
-  <option>B</option>
-</select>
+    <div id="scalesTab" class="tab-content active">
+      <label for="rootSelect">Nota raíz:</label>
+      <select id="rootSelect">
+        <option>C</option>
+        <option>C#</option>
+        <option>D</option>
+        <option>D#</option>
+        <option>E</option>
+        <option>F</option>
+        <option>F#</option>
+        <option>G</option>
+        <option>G#</option>
+        <option>A</option>
+        <option>A#</option>
+        <option>B</option>
+      </select>
 
-<label for="scaleSelect">Escala:</label>
-<select id="scaleSelect">
-  <!-- opciones generadas por JS -->
-</select>
+      <label for="scaleSelect">Escala:</label>
+      <select id="scaleSelect">
+        <!-- opciones generadas por JS -->
+      </select>
 
-<p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
+      <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
+    </div>
 
-  <h2>Círculo de Quintas</h2>
-<div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
+    <div id="circleTab" class="tab-content">
+      <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
+    </div>
+  </div>
 
-  
-  
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
     v0.6
   </footer>
 
+  <!-- Scripts -->
   <script src="utils.js"></script>
   <script src="chords.js"></script>
   <script src="script.js"></script>
+  <script src="scale-selector.js"></script>
   <script src="circle.js"></script>
-  
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      document.getElementById('btn' + tabId.replace('Tab', '')).classList.add('active');
+
+      const showSuggestions = (tabId === 'scalesTab');
+      document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
+      document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
+    }
+  </script>
 </body>
 </html>

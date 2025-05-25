@@ -93,5 +93,14 @@ document.addEventListener("DOMContentLoaded", () => {
       • IV: ${IV} – Mayor<br>
       • V: ${V} – Mayor
     `;
+
+      const notesInScale = [0, 2, 4, 5, 7, 9, 11].map(
+  i => allNotes[(rootIndex + i) % 12]
+);
+
+document.getElementById("notesInput").value = notesInScale.join(" ");
+
+if (typeof drawFretboard === 'function') {
+  drawFretboard();
   }
 });

@@ -141,3 +141,36 @@ body {
   font-weight: bold;
 }
 }
+
+.tabs {
+  margin-top: 2em;
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+.tab-buttons button {
+  padding: 0.5em 1em;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #eee;
+}
+
+.tab-buttons button.active {
+  background-color: #ddd;
+  border-bottom: 2px solid #000;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
