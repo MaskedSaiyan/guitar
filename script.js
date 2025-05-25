@@ -66,13 +66,19 @@ function drawFretboard() {
 
 let inputNotes = [];
 
-rawInput.forEach(token => {
+    if (token.length === 1 || (token.length === 2 && /[#b]/.test(token[1]))) {
+  // Es una nota simple como C o C# o Db
+  inputNotes.push(normalizeNote(token));
+} else {
   const notes = chordToNotes(token);
   if (notes.length > 0) {
     inputNotes.push(...notes);
   } else {
-    inputNotes.push(normalizeNote(token));
+    inputNotes.push(normalizeNote(token)); // fallback si el acorde no se reconoce
   }
+}
+
+
 });
 
   const instrument = document.getElementById("instrumentSelect").value;
