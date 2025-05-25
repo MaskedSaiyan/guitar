@@ -42,7 +42,6 @@
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
 
-  <!-- 🔁 Modo: Tabs arriba -->
   <h2>Modo de Visualización</h2>
   <div class="tabs">
     <div class="tab-buttons">
@@ -68,7 +67,9 @@
       </select>
 
       <label for="scaleSelect">Escala:</label>
-      <select id="scaleSelect"></select>
+      <select id="scaleSelect">
+        <!-- opciones generadas por JS -->
+      </select>
 
       <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
     </div>
@@ -78,7 +79,6 @@
     </div>
   </div>
 
-  <!-- 🎵 Entrada manual de notas -->
   <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
   <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" />
 
@@ -123,24 +123,23 @@
   <script src="scale-selector.js"></script>
   <script src="circle.js"></script>
 
-  <!-- Función para tabs -->
+  <!-- Control de pestañas -->
   <script>
-      function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
-  document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
 
-  document.getElementById(tabId).classList.add('active');
-  document.getElementById('btn' + tabId).classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      document.getElementById('btn' + tabId).classList.add('active');
 
-  const showSuggestions = (tabId === 'scalesTab');
-  document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
-  document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
+      const showSuggestions = (tabId === 'scalesTab');
+      document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
+      document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
 
-  if (tabId === 'circleTab') {
-    initCircleOfFifths(); // Solo una vez
-  }
-}
-
+      if (tabId === 'circleTab') {
+        initCircleOfFifths();
+      }
+    }
   </script>
 </body>
 </html>
