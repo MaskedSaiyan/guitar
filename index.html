@@ -5,12 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visualizador de Notas – v0.6</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .tabs {
+      margin-top: 2em;
+    }
+
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+
+    .tab-buttons button {
+      padding: 0.5em 1em;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background-color: #eee;
+    }
+
+    .tab-buttons button.active {
+      background-color: #ddd;
+      border-bottom: 2px solid #000;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
 
-  <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
+  <!-- 🔁 Modo: Tabs arriba -->
+  <h2>Modo de Visualización</h2>
+  <div class="tabs">
+    <div class="tab-buttons">
+      <button onclick="switchTab('scalesTab')" id="btnscalesTab" class="active">🎼 Escalas</button>
+      <button onclick="switchTab('circleTab')" id="btncircleTab">🔄 Círculo de Quintas</button>
+    </div>
 
+    <div id="scalesTab" class="tab-content active">
+      <label for="rootSelect">Nota raíz:</label>
+      <select id="rootSelect">
+        <option>C</option>
+        <option>C#</option>
+        <option>D</option>
+        <option>D#</option>
+        <option>E</option>
+        <option>F</option>
+        <option>F#</option>
+        <option>G</option>
+        <option>G#</option>
+        <option>A</option>
+        <option>A#</option>
+        <option>B</option>
+      </select>
+
+      <label for="scaleSelect">Escala:</label>
+      <select id="scaleSelect"></select>
+
+      <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
+    </div>
+
+    <div id="circleTab" class="tab-content">
+      <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
+    </div>
+  </div>
+
+  <!-- 🎵 Entrada manual de notas -->
+  <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
   <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" />
 
   <div>
@@ -43,43 +112,6 @@
     <ul id="chordList"></ul>
   </div>
 
-  <h2>Modo de Visualización</h2>
-  <div class="tabs">
-    <div class="tab-buttons">
-      <button onclick="switchTab('scalesTab')" id="btnScales" class="active">🎼 Escalas</button>
-      <button onclick="switchTab('circleTab')" id="btnCircle">🔄 Círculo de Quintas</button>
-    </div>
-
-    <div id="scalesTab" class="tab-content active">
-      <label for="rootSelect">Nota raíz:</label>
-      <select id="rootSelect">
-        <option>C</option>
-        <option>C#</option>
-        <option>D</option>
-        <option>D#</option>
-        <option>E</option>
-        <option>F</option>
-        <option>F#</option>
-        <option>G</option>
-        <option>G#</option>
-        <option>A</option>
-        <option>A#</option>
-        <option>B</option>
-      </select>
-
-      <label for="scaleSelect">Escala:</label>
-      <select id="scaleSelect">
-        <!-- opciones generadas por JS -->
-      </select>
-
-      <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
-    </div>
-
-    <div id="circleTab" class="tab-content">
-      <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
-    </div>
-  </div>
-
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
     v0.6
   </footer>
@@ -91,13 +123,14 @@
   <script src="scale-selector.js"></script>
   <script src="circle.js"></script>
 
+  <!-- Función para tabs -->
   <script>
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
       document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
 
       document.getElementById(tabId).classList.add('active');
-      document.getElementById('btn' + tabId.replace('Tab', '')).classList.add('active');
+      document.getElementById('btn' + tabId).classList.add('active');
 
       const showSuggestions = (tabId === 'scalesTab');
       document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
