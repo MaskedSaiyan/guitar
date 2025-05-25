@@ -69,14 +69,12 @@
       </select>
 
       <label for="scaleSelect">Escala:</label>
-      <select id="scaleSelect">
+      <select id="scaleSelect" onchange="updateNotesDisplay()">
+
         <!-- opciones generadas por JS -->
       </select>
 
       <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
-      <input type="text" id="notesInput" />
-<ul id="suggestionList"></ul>
-<ul id="chordList"></ul>
     </div>
 
     <div id="circleTab" class="tab-content">
