@@ -8,7 +8,36 @@
 </head>
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
-<h2>Selector de Escala</h2>
+
+  <div>
+    <label>Instrumento:</label>
+    <select id="instrumentSelect" onchange="updateTuningOptions()">
+      <option value="guitar6">Guitarra 6 cuerdas</option>
+      <option value="bass4">Bajo 4 cuerdas</option>
+      <option value="guitar7">Guitarra 7 cuerdas</option>
+    </select>
+
+    <label>Afinación:</label>
+    <select id="tuningSelect"></select>
+
+    <button onclick="drawFretboard()">Mostrar</button>
+  </div>
+
+  
+
+  <pre id="tablature" style="margin-top: 2em; font-family: 'Courier New', monospace; text-align: left;"></pre>
+
+  <div id="scaleSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
+    <strong>Escalas sugeridas:</strong>
+    <ul id="suggestionList"></ul>
+  </div>
+
+  <div id="chordSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
+  <strong>Acordes sugeridos:</strong>
+  <ul id="chordList"></ul>
+</div>
+
+  <h2>Selector de Escala</h2>
 
 <label for="rootSelect">Nota raíz:</label>
 <select id="rootSelect">
@@ -36,38 +65,12 @@
 <script src="scale-selector.js"></script>
   <input type="text" id="notesInput" placeholder="Ej. E A C o Eb Ab" />
 
-  <div>
-    <label>Instrumento:</label>
-    <select id="instrumentSelect" onchange="updateTuningOptions()">
-      <option value="guitar6">Guitarra 6 cuerdas</option>
-      <option value="bass4">Bajo 4 cuerdas</option>
-      <option value="guitar7">Guitarra 7 cuerdas</option>
-    </select>
-
-    <label>Afinación:</label>
-    <select id="tuningSelect"></select>
-
-    <button onclick="drawFretboard()">Mostrar</button>
-  </div>
-
   <h2>Círculo de Quintas</h2>
 <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
 
   <div id="fretboard-wrapper">
     <div id="fretboard"></div>
   </div>
-
-  <pre id="tablature" style="margin-top: 2em; font-family: 'Courier New', monospace; text-align: left;"></pre>
-
-  <div id="scaleSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
-    <strong>Escalas sugeridas:</strong>
-    <ul id="suggestionList"></ul>
-  </div>
-
-  <div id="chordSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
-  <strong>Acordes sugeridos:</strong>
-  <ul id="chordList"></ul>
-</div>
   
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
     v0.6
