@@ -52,11 +52,16 @@ function renderChordCircle() {
     dropdown.appendChild(option);
   });
 
+  // Intenta mantener la selección actual si ya había una
+  const prev = document.getElementById("circleChordRoot")?.value;
+  if (prev) dropdown.value = prev;
+
   dropdown.addEventListener("change", renderChordCircle);
   html.appendChild(dropdown);
   foreign.appendChild(html);
   svg.appendChild(foreign);
 
+  // Usar el valor seleccionado real del DOM
   const root = dropdown.value;
 
   suffixes.forEach((suffix, i) => {
@@ -65,8 +70,8 @@ function renderChordCircle() {
     const y = center + radius * Math.sin(angle);
     const chord = root + suffix;
 
-    let chordNotes = chordToNotes?.(chord) || [];
-    let label = chordNotes.length ? chordNotes.join(" ") : chord;
+    const chordNotes = chordToNotes?.(chord) || [];
+    const label = chordNotes.length ? chordNotes.join(" ") : chord;
 
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", x);
@@ -77,10 +82,10 @@ function renderChordCircle() {
     text.setAttribute("fill", chordColors[suffix] || "#333");
     text.textContent = label;
     text.style.cursor = "pointer";
-    text.setAttribute("title", chord); // hover muestra Cmaj7 por ejemplo
+    text.setAttribute("title", chord); // muestra nombre original al hacer hover
 
     text.addEventListener("click", () => {
-      document.getElementById("notesInput").value = chord;
+      document.getElementById("notesInput").value = chordNotes.join(" ");
       if (typeof drawFretboard === "function") drawFretboard();
     });
 
