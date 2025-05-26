@@ -29,7 +29,7 @@ function renderChordCircle() {
   svg.style.border = "1px solid #ccc";
   container.appendChild(svg);
 
-  // Agregar dropdown dentro del SVG
+  // Dropdown dentro del SVG
   const foreign = document.createElementNS(svgNS, "foreignObject");
   foreign.setAttribute("x", center - 50);
   foreign.setAttribute("y", center - 25);
@@ -65,22 +65,19 @@ function renderChordCircle() {
     const y = center + radius * Math.sin(angle);
     const chord = root + suffix;
 
-    let tooltip = "";
-    if (typeof chordToNotes === "function") {
-      const notes = chordToNotes(chord);
-      if (notes.length) tooltip = notes.join(" ");
-    }
+    let chordNotes = chordToNotes?.(chord) || [];
+    let label = chordNotes.length ? chordNotes.join(" ") : chord;
 
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", x);
     text.setAttribute("y", y);
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("dominant-baseline", "middle");
-    text.setAttribute("font-size", "14");
+    text.setAttribute("font-size", "13");
     text.setAttribute("fill", chordColors[suffix] || "#333");
-    text.textContent = chord;
+    text.textContent = label;
     text.style.cursor = "pointer";
-    text.setAttribute("title", tooltip);
+    text.setAttribute("title", chord); // hover muestra Cmaj7 por ejemplo
 
     text.addEventListener("click", () => {
       document.getElementById("notesInput").value = chord;
