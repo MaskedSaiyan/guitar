@@ -3,7 +3,6 @@ function renderChordExplorer() {
 }
 
 function renderChordCircle() {
-  const root = document.getElementById("circleChordRoot").value;
   const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
   const radius = 150;
   const center = 200;
@@ -30,13 +29,42 @@ function renderChordCircle() {
   svg.style.border = "1px solid #ccc";
   container.appendChild(svg);
 
+  // Agregar dropdown dentro del SVG
+  const foreign = document.createElementNS(svgNS, "foreignObject");
+  foreign.setAttribute("x", center - 50);
+  foreign.setAttribute("y", center - 25);
+  foreign.setAttribute("width", 100);
+  foreign.setAttribute("height", 50);
+
+  const html = document.createElement("div");
+  html.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+  html.style.textAlign = "center";
+
+  const dropdown = document.createElement("select");
+  dropdown.id = "circleChordRoot";
+  dropdown.style.fontSize = "14px";
+
+  const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  allNotes.forEach(note => {
+    const option = document.createElement("option");
+    option.value = note;
+    option.textContent = note;
+    dropdown.appendChild(option);
+  });
+
+  dropdown.addEventListener("change", renderChordCircle);
+  html.appendChild(dropdown);
+  foreign.appendChild(html);
+  svg.appendChild(foreign);
+
+  const root = dropdown.value;
+
   suffixes.forEach((suffix, i) => {
     const angle = (i / suffixes.length) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
     const y = center + radius * Math.sin(angle);
     const chord = root + suffix;
 
-    // Tooltip con notas
     let tooltip = "";
     if (typeof chordToNotes === "function") {
       const notes = chordToNotes(chord);
@@ -50,14 +78,9 @@ function renderChordCircle() {
     text.setAttribute("dominant-baseline", "middle");
     text.setAttribute("font-size", "14");
     text.setAttribute("fill", chordColors[suffix] || "#333");
-    text.setAttribute("title", tooltip); // para navegadores que lo soporten
-    text.style.cursor = "pointer";
     text.textContent = chord;
-
-    // También usa tooltip HTML clásico
-    text.addEventListener("mouseenter", () => {
-      text.setAttribute("title", tooltip);
-    });
+    text.style.cursor = "pointer";
+    text.setAttribute("title", tooltip);
 
     text.addEventListener("click", () => {
       document.getElementById("notesInput").value = chord;
@@ -69,7 +92,7 @@ function renderChordCircle() {
 
   const centerText = document.createElementNS(svgNS, "text");
   centerText.setAttribute("x", center);
-  centerText.setAttribute("y", center);
+  centerText.setAttribute("y", center + 30);
   centerText.setAttribute("text-anchor", "middle");
   centerText.setAttribute("font-size", "12");
   centerText.setAttribute("fill", "#888");
