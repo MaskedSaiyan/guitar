@@ -90,7 +90,16 @@
     <option>G#</option><option>A</option><option>A#</option><option>B</option>
   </select>
 
-  <div id="chordExplorer" style="margin-top: 2em; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+  <div style="text-align: center; margin-top: 2em;">
+  <label>Nota raíz:</label>
+  <select id="circleChordRoot" onchange="renderChordCircle()">
+    <option>C</option><option>C#</option><option>D</option><option>D#</option>
+    <option>E</option><option>F</option><option>F#</option><option>G</option>
+    <option>G#</option><option>A</option><option>A#</option><option>B</option>
+  </select>
+</div>
+<div id="chordCircle" style="margin: 2em auto; max-width: 400px;"></div>
+
 </div>
 
 
