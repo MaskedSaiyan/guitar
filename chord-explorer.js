@@ -23,13 +23,14 @@ function renderChordCircle() {
   const container = document.getElementById("chordCircle");
   container.innerHTML = "";
 
+  // SVG principal
   const svg = document.createElementNS(svgNS, "svg");
   svg.setAttribute("width", 400);
-  svg.setAttribute("height", 400);
+  svg.setAttribute("height", 450); // deja espacio extra abajo para texto
   svg.style.border = "1px solid #ccc";
   container.appendChild(svg);
 
-  // Dropdown dentro del SVG
+  // Selector dentro del SVG
   const foreign = document.createElementNS(svgNS, "foreignObject");
   foreign.setAttribute("x", center - 50);
   foreign.setAttribute("y", center - 25);
@@ -52,8 +53,8 @@ function renderChordCircle() {
     dropdown.appendChild(option);
   });
 
-  // Intenta mantener la selección actual si ya había una
-  const prev = document.getElementById("circleChordRoot")?.value;
+  // Restaurar selección anterior si existía
+  const prev = document.querySelector("#circleChordRoot")?.value;
   if (prev) dropdown.value = prev;
 
   dropdown.addEventListener("change", renderChordCircle);
@@ -61,9 +62,24 @@ function renderChordCircle() {
   foreign.appendChild(html);
   svg.appendChild(foreign);
 
-  // Usar el valor seleccionado real del DOM
-  const root = dropdown.value;
+  // ✅ Obtener raíz seleccionada
+  const root = document.querySelector("#circleChordRoot")?.value || "C";
 
+  // Borrar texto anterior (si existía)
+  const existingDisplay = document.getElementById("selectedChordDisplay");
+  if (existingDisplay) existingDisplay.remove();
+
+  // Crear display de acorde clickeado
+  const chordDisplay = document.createElement("div");
+  chordDisplay.id = "selectedChordDisplay";
+  chordDisplay.style.marginTop = "1em";
+  chordDisplay.style.fontSize = "14px";
+  chordDisplay.style.color = "#444";
+  chordDisplay.style.textAlign = "center";
+  chordDisplay.textContent = "Haz clic en un acorde para verlo en el diapasón";
+  container.appendChild(chordDisplay);
+
+  // Mostrar acordes alrededor del círculo
   suffixes.forEach((suffix, i) => {
     const angle = (i / suffixes.length) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
@@ -82,19 +98,21 @@ function renderChordCircle() {
     text.setAttribute("fill", chordColors[suffix] || "#333");
     text.textContent = label;
     text.style.cursor = "pointer";
-    text.setAttribute("title", chord); // muestra nombre original al hacer hover
+    text.setAttribute("title", chord); // tooltip con nombre real
 
     text.addEventListener("click", () => {
       document.getElementById("notesInput").value = chordNotes.join(" ");
+      chordDisplay.textContent = `🎵 Acorde: ${chord} → ${label}`;
       if (typeof drawFretboard === "function") drawFretboard();
     });
 
     svg.appendChild(text);
   });
 
+  // Texto base en SVG
   const centerText = document.createElementNS(svgNS, "text");
   centerText.setAttribute("x", center);
-  centerText.setAttribute("y", center + 30);
+  centerText.setAttribute("y", center + 35);
   centerText.setAttribute("text-anchor", "middle");
   centerText.setAttribute("font-size", "12");
   centerText.setAttribute("fill", "#888");
