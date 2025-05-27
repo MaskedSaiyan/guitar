@@ -134,6 +134,7 @@ function showCircleChords(noteClicked, mode) {
   .map(el => el.textContent);
 
 document.getElementById("notesInput").value = boldNotes.join(" ");
+}, 10);
 
 
   if (typeof drawFretboard === 'function') drawFretboard();
