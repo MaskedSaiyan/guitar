@@ -106,15 +106,17 @@ function drawFretboard() {
       string.appendChild(nut);
     }
 
-    for (let fret = 1; fret <= 24; fret++) {
-      if (fret < fretStart || fret > fretEnd) continue;
-
+    for (let fret = fretStart + 1; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
 
-      if (fret === fretStart) {
+      if (fret === fretStart + 1) {
         fretDiv.style.borderLeft = "2px solid black";
+      }
+
+      if (fret === fretEnd) {
+        fretDiv.style.borderRight = "none";
       }
 
       if (i === Math.floor(stringCount / 2)) {
