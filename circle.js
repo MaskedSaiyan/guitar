@@ -128,7 +128,8 @@ function showCircleChords(noteClicked, mode) {
     • Relativa menor: ${toDisplay(minorRoot)} menor
   `;
 
-  const inputNotes = [I, IV, V, minorRoot];
+  // Solo convertimos las que se muestran como bemoles en el círculo
+  const inputNotes = [I, IV, V, minorRoot].map(toDisplay);
   document.getElementById("notesInput").value = inputNotes.join(" ");
 
   if (typeof drawFretboard === 'function') drawFretboard();
