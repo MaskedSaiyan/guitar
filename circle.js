@@ -129,7 +129,12 @@ function showCircleChords(noteClicked, mode) {
   `;
 
   // ✅ Mostrar en el input las mismas notas que en pantalla
-  document.getElementById("notesInput").value = [I, IV, V, minorRoot].map(toDisplay).join(" ");
+    const boldNotes = [...document.querySelectorAll("#circleOfFifths text")]
+  .filter(el => el.getAttribute("font-weight") === "bold")
+  .map(el => el.textContent);
+
+document.getElementById("notesInput").value = boldNotes.join(" ");
+
 
   if (typeof drawFretboard === 'function') drawFretboard();
 
