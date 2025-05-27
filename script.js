@@ -5,6 +5,12 @@ const enharmonics = {
   "GB": "F#", "AB": "G#", "BB": "A#"
 };
 
+function getNoteFromStringFret(openNote, fret) {
+  const openIndex = noteIndex(openNote);
+  return allNotes[(openIndex + fret) % 12];
+}
+
+
 const tuningsByInstrument = {
   guitar6: {
     "Standard (E A D G B E)": ["E", "A", "D", "G", "B", "E"],
