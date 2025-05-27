@@ -1,28 +1,3 @@
-function renderChordExplorer(root) {
-  if (!root) {
-    root = document.querySelector("#circleChordRoot")?.value || "C";
-  }
-
-  const container = document.getElementById("chordExplorer");
-  container.innerHTML = "";
-
-  const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
-  suffixes.forEach(suffix => {
-    const chord = root + suffix;
-    const btn = document.createElement("button");
-    btn.textContent = chord;
-    btn.className = "chord-button";
-    btn.onclick = () => {
-      const chordNotes = chordToNotes(chord);
-      document.getElementById("notesInput").value = chordNotes.join(" ");
-      const noteOutput = document.getElementById("noteOutput");
-      if (noteOutput) noteOutput.textContent = chordNotes.join(" ");
-      if (typeof drawFretboard === "function") drawFretboard();
-    };
-    container.appendChild(btn);
-  });
-}
-
 function renderChordCircle() {
   const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
   const radius = 150;
@@ -66,19 +41,19 @@ function renderChordCircle() {
     dropdown.appendChild(option);
   });
 
+  // Recuperar valor previo si existe
   const prev = document.querySelector("#circleChordRoot")?.value;
   if (prev) dropdown.value = prev;
 
   dropdown.addEventListener("change", () => {
-    renderChordCircle();
+    renderChordCircle(); // redibuja el círculo con la nueva raíz
   });
 
   html.appendChild(dropdown);
   foreign.appendChild(html);
   svg.appendChild(foreign);
-  html.appendChild(dropdown);
-  foreign.appendChild(html);
-  svg.appendChild(foreign);
+
+  // Ya montado, ahora usar el valor seleccionado
   const root = dropdown.value;
 
   const existingDisplay = document.getElementById("selectedChordDisplay");
@@ -114,8 +89,10 @@ function renderChordCircle() {
     text.addEventListener("click", () => {
       const notesText = chordNotes.join(" ");
       document.getElementById("notesInput").value = notesText;
+
       const noteOutput = document.getElementById("noteOutput");
       if (noteOutput) noteOutput.textContent = notesText;
+
       chordDisplay.textContent = `🎵 Acorde: ${chord}`;
       if (typeof drawFretboard === "function") drawFretboard();
     });
@@ -131,9 +108,4 @@ function renderChordCircle() {
   centerText.setAttribute("fill", "#888");
   centerText.textContent = "Haz clic en un acorde";
   svg.appendChild(centerText);
-}
-
-function renderChordExplorerTab() {
-  renderChordCircle();
-  renderChordExplorer();
 }
