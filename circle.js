@@ -128,17 +128,8 @@ function showCircleChords(noteClicked, mode) {
     • Relativa menor: ${toDisplay(minorRoot)} menor
   `;
 
-  // Solo convertimos las que se muestran como bemoles en el círculo
-  const inputNotes = [I, IV, V, minorRoot].map(toDisplay);
-const highlightedTextNodes = [...document.querySelectorAll("#chordCircle svg text")];
-const selected = highlightedTextNodes.filter(el =>
-  el.getAttribute("font-weight") === "bold" &&
-  (el.classList.contains("outer") || el.classList.contains("inner"))
-);
-const notesFromLabels = selected.map(el => el.textContent);
-document.getElementById("notesInput").value = notesFromLabels.join(" ");
-
-
+  // ✅ Aquí llenamos el input como debe ser
+  document.getElementById("notesInput").value = [I, IV, V, minorRoot].join(" ");
 
   if (typeof drawFretboard === 'function') drawFretboard();
 
@@ -165,3 +156,4 @@ document.getElementById("notesInput").value = notesFromLabels.join(" ");
     }
   });
 }
+
