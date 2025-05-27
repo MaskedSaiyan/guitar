@@ -1,4 +1,5 @@
-let selectedChordRoot = "C"; // valor inicial
+// Variable global para recordar la nota raíz seleccionada
+let selectedChordRoot = "C";
 
 function renderChordCircle() {
   const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
@@ -21,6 +22,7 @@ function renderChordCircle() {
   svg.style.border = "1px solid #ccc";
   container.appendChild(svg);
 
+  // 🎯 Dropdown dentro del SVG
   const foreign = document.createElementNS(svgNS, "foreignObject");
   foreign.setAttribute("x", center - 50);
   foreign.setAttribute("y", center - 25);
@@ -43,23 +45,22 @@ function renderChordCircle() {
     dropdown.appendChild(option);
   });
 
-  // Recuperar valor previo si existe
-  const prev = document.querySelector("#circleChordRoot")?.value;
-  if (prev) dropdown.value = prev;
+  // 🔧 Esto actualiza visualmente el dropdown
+  dropdown.value = selectedChordRoot;
 
+  // 🔁 Al cambiar la nota raíz
   dropdown.addEventListener("change", () => {
-    selectedChordRoot = dropdown.value;   // guarda nueva raíz
-    renderChordCircle(); // redibuja el círculo con la nueva raíz
+    selectedChordRoot = dropdown.value;
+    renderChordCircle(); // vuelve a dibujar el SVG con la nueva raíz
   });
 
   html.appendChild(dropdown);
   foreign.appendChild(html);
   svg.appendChild(foreign);
 
-  // Ya montado, ahora usar el valor seleccionado
   const root = selectedChordRoot;
 
-
+  // 🧹 Borrar display anterior si existe
   const existingDisplay = document.getElementById("selectedChordDisplay");
   if (existingDisplay) existingDisplay.remove();
 
@@ -72,6 +73,7 @@ function renderChordCircle() {
   chordDisplay.textContent = "Haz clic en un acorde para verlo en el diapasón";
   container.appendChild(chordDisplay);
 
+  // 🎵 Dibujar acordes alrededor
   suffixes.forEach((suffix, i) => {
     const angle = (i / suffixes.length) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
