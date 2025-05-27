@@ -130,13 +130,14 @@ function showCircleChords(noteClicked, mode) {
 
   // Solo convertimos las que se muestran como bemoles en el círculo
   const inputNotes = [I, IV, V, minorRoot].map(toDisplay);
-    const textNodes = [...document.querySelectorAll("#circleOfFifths text")];
-const selected = textNodes.filter(el =>
+const highlightedTextNodes = [...document.querySelectorAll("#chordCircle svg text")];
+const selected = highlightedTextNodes.filter(el =>
   el.getAttribute("font-weight") === "bold" &&
   (el.classList.contains("outer") || el.classList.contains("inner"))
 );
 const notesFromLabels = selected.map(el => el.textContent);
 document.getElementById("notesInput").value = notesFromLabels.join(" ");
+
 
 
   if (typeof drawFretboard === 'function') drawFretboard();
