@@ -85,21 +85,21 @@ function drawFretboard() {
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
 
-    const openFret = document.createElement("div");
-    openFret.className = "fret open";
-    const noteOpen = normalizeNote(openNote);
-
-    if (inputNotes.includes(noteOpen)) {
-      const marker = document.createElement("div");
-      marker.className = "note-marker";
-      marker.style.backgroundColor = noteColors[noteOpen] || "#999";
-      marker.textContent = noteOpen;
-      openFret.appendChild(marker);
-    }
-
-    string.appendChild(openFret);
-
     if (fretStart === 0) {
+      const openFret = document.createElement("div");
+      openFret.className = "fret open";
+      const noteOpen = normalizeNote(openNote);
+
+      if (inputNotes.includes(noteOpen)) {
+        const marker = document.createElement("div");
+        marker.className = "note-marker";
+        marker.style.backgroundColor = noteColors[noteOpen] || "#999";
+        marker.textContent = noteOpen;
+        openFret.appendChild(marker);
+      }
+
+      string.appendChild(openFret);
+
       const nut = document.createElement("div");
       nut.className = "fret nut";
       nut.textContent = "║";
@@ -113,7 +113,7 @@ function drawFretboard() {
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
 
-      if (fret === fretStart && fretStart !== 0) {
+      if (fret === fretStart) {
         fretDiv.style.borderLeft = "2px solid black";
       }
 
@@ -141,10 +141,13 @@ function drawFretboard() {
     container.appendChild(string);
   }
 
+  // Tablatura
   let tablatureLines = [];
+
   for (let i = stringCount - 1; i >= 0; i--) {
     const openNote = tuning[i];
     let line = openNote.toLowerCase() + "|";
+
     for (let fret = fretStart; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       if (inputNotes.includes(normalizeNote(note))) {
@@ -153,13 +156,16 @@ function drawFretboard() {
         line += "---";
       }
     }
+
     tablatureLines.push(line);
   }
+
   document.getElementById("tablature").textContent = tablatureLines.join("\n");
   document.getElementById("fretboard-wrapper").scrollLeft = 0;
   showSuggestedScalesFromInput?.();
   suggestChordsFromInput?.();
 }
+
 
 function updateFretWindow() {
   const start = parseInt(document.getElementById("fretStart").value);
