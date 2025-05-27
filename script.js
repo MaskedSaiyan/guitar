@@ -58,8 +58,7 @@ function updateTuningOptions() {
 function drawFretboard() {
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
-const instrument = document.getElementById("instrumentSelect").value;
-const tuning = tuningsByInstrument[instrument][tuningName];
+  const tuning = tuningsByInstrument[instrument][tuningName];
 
   const notes = document.getElementById("notesInput").value
     .trim()
