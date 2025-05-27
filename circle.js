@@ -129,7 +129,8 @@ function showCircleChords(noteClicked, mode) {
   `;
 
   const inputNotes = [I, IV, V, minorRoot];
-  document.getElementById("notesInput").value = inputNotes.map(toDisplay).join(" ");
+  document.getElementById("notesInput").value = inputNotes.join(" ");
+
   if (typeof drawFretboard === 'function') drawFretboard();
 
   const textNodes = document.querySelectorAll("#circleOfFifths text");
