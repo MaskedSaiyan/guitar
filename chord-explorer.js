@@ -1,5 +1,26 @@
-function renderChordExplorer() {
-  renderChordCircle();
+function renderChordExplorer(root) {
+  if (!root) {
+    root = document.querySelector("#circleChordRoot")?.value || "C";
+  }
+
+  const container = document.getElementById("chordExplorer");
+  container.innerHTML = "";
+
+  const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
+  suffixes.forEach(suffix => {
+    const chord = root + suffix;
+    const btn = document.createElement("button");
+    btn.textContent = chord;
+    btn.className = "chord-button";
+    btn.onclick = () => {
+      const chordNotes = chordToNotes(chord);
+      document.getElementById("notesInput").value = chordNotes.join(" ");
+      const noteOutput = document.getElementById("noteOutput");
+      if (noteOutput) noteOutput.textContent = chordNotes.join(" ");
+      if (typeof drawFretboard === "function") drawFretboard();
+    };
+    container.appendChild(btn);
+  });
 }
 
 function renderChordCircle() {
@@ -8,29 +29,21 @@ function renderChordCircle() {
   const center = 200;
 
   const chordColors = {
-    "": "#00bcd4",       // Mayor
-    "m": "#e91e63",      // Menor
-    "7": "#ff9800",      // Dominante
-    "maj7": "#3f51b5",   // Mayor 7
-    "dim": "#9c27b0",    // Disminuido
-    "aug": "#ff5722",    // Aumentado
-    "sus2": "#4caf50",   // Susp 2
-    "sus4": "#8bc34a",   // Susp 4
-    "add9": "#795548"    // Add9
+    "": "#00bcd4", "m": "#e91e63", "7": "#ff9800", "maj7": "#3f51b5",
+    "dim": "#9c27b0", "aug": "#ff5722", "sus2": "#4caf50",
+    "sus4": "#8bc34a", "add9": "#795548"
   };
 
   const svgNS = "http://www.w3.org/2000/svg";
   const container = document.getElementById("chordCircle");
   container.innerHTML = "";
 
-  // SVG principal
   const svg = document.createElementNS(svgNS, "svg");
   svg.setAttribute("width", 400);
-  svg.setAttribute("height", 450); // deja espacio extra abajo para texto
+  svg.setAttribute("height", 450);
   svg.style.border = "1px solid #ccc";
   container.appendChild(svg);
 
-  // Selector dentro del SVG
   const foreign = document.createElementNS(svgNS, "foreignObject");
   foreign.setAttribute("x", center - 50);
   foreign.setAttribute("y", center - 25);
@@ -53,23 +66,23 @@ function renderChordCircle() {
     dropdown.appendChild(option);
   });
 
-  // Restaurar selección anterior si existía
   const prev = document.querySelector("#circleChordRoot")?.value;
   if (prev) dropdown.value = prev;
 
-  dropdown.addEventListener("change", renderChordCircle);
+  dropdown.addEventListener("change", () => {
+    renderChordCircle();
+    renderChordExplorer();
+  });
+
   html.appendChild(dropdown);
   foreign.appendChild(html);
   svg.appendChild(foreign);
 
-  // ✅ Obtener raíz seleccionada
-  const root = document.querySelector("#circleChordRoot")?.value || "C";
+  const root = dropdown.value;
 
-  // Borrar texto anterior (si existía)
   const existingDisplay = document.getElementById("selectedChordDisplay");
   if (existingDisplay) existingDisplay.remove();
 
-  // Crear display de acorde clickeado
   const chordDisplay = document.createElement("div");
   chordDisplay.id = "selectedChordDisplay";
   chordDisplay.style.marginTop = "1em";
@@ -79,15 +92,12 @@ function renderChordCircle() {
   chordDisplay.textContent = "Haz clic en un acorde para verlo en el diapasón";
   container.appendChild(chordDisplay);
 
-  // Mostrar acordes alrededor del círculo
   suffixes.forEach((suffix, i) => {
     const angle = (i / suffixes.length) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
     const y = center + radius * Math.sin(angle);
     const chord = root + suffix;
-
     const chordNotes = chordToNotes?.(chord) || [];
-    const label = chordNotes.length ? chordNotes.join(" ") : chord;
 
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", x);
@@ -96,20 +106,22 @@ function renderChordCircle() {
     text.setAttribute("dominant-baseline", "middle");
     text.setAttribute("font-size", "13");
     text.setAttribute("fill", chordColors[suffix] || "#333");
-    text.textContent = label;
+    text.textContent = chord;
     text.style.cursor = "pointer";
-    text.setAttribute("title", chord); // tooltip con nombre real
+    text.setAttribute("title", chord);
 
     text.addEventListener("click", () => {
-      document.getElementById("notesInput").value = chordNotes.join(" ");
-      chordDisplay.textContent = `🎵 Acorde: ${chord} → ${label}`;
+      const notesText = chordNotes.join(" ");
+      document.getElementById("notesInput").value = notesText;
+      const noteOutput = document.getElementById("noteOutput");
+      if (noteOutput) noteOutput.textContent = notesText;
+      chordDisplay.textContent = `🎵 Acorde: ${chord}`;
       if (typeof drawFretboard === "function") drawFretboard();
     });
 
     svg.appendChild(text);
   });
 
-  // Texto base en SVG
   const centerText = document.createElementNS(svgNS, "text");
   centerText.setAttribute("x", center);
   centerText.setAttribute("y", center + 35);
@@ -118,4 +130,9 @@ function renderChordCircle() {
   centerText.setAttribute("fill", "#888");
   centerText.textContent = "Haz clic en un acorde";
   svg.appendChild(centerText);
+}
+
+function renderChordExplorerTab() {
+  renderChordCircle();
+  renderChordExplorer();
 }
