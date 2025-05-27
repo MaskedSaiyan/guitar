@@ -16,6 +16,12 @@ function getChordDescription(chord) {
   return descriptions[suffix] || "Acorde";
 }
 
+function getVisualLabel(noteSharp) {
+  const match = [...document.querySelectorAll("#circleOfFifths text")]
+    .find(el => normalizeToSharp(el.textContent) === noteSharp);
+  return match?.textContent || noteSharp;
+}
+
 function renderChordCircle() {
   const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
   const radius = 150;
