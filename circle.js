@@ -128,8 +128,8 @@ function showCircleChords(noteClicked, mode) {
     • Relativa menor: ${toDisplay(minorRoot)} menor
   `;
 
-  // ✅ Aquí llenamos el input como debe ser
-  document.getElementById("notesInput").value = [I, IV, V, minorRoot].join(" ");
+  // ✅ Mostrar en el input las mismas notas que en pantalla
+  document.getElementById("notesInput").value = [I, IV, V, minorRoot].map(toDisplay).join(" ");
 
   if (typeof drawFretboard === 'function') drawFretboard();
 
