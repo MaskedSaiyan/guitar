@@ -106,7 +106,8 @@ function drawFretboard() {
     }
 
     // Dibuja trastes exactos desde fretStart hasta fretEnd
-    for (let fret = fretStart; fret <= fretEnd; fret++) {
+    const firstFretToDraw = (fretStart === 0) ? 1 : fretStart;
+    for (let fret = firstFretToDraw; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
