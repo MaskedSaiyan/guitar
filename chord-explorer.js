@@ -71,7 +71,6 @@ function renderChordCircle() {
 
   dropdown.addEventListener("change", () => {
     renderChordCircle();
-    renderChordExplorer();
   });
 
   html.appendChild(dropdown);
