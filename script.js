@@ -55,6 +55,11 @@ function updateTuningOptions() {
   drawFretboard();
 }
 
+function getExpandedNotesFromInput() {
+  const input = document.getElementById("notesInput").value;
+  return input.trim().toUpperCase().split(/\s+/).map(normalizeNote);
+}
+
 function drawFretboard() {
   const container = document.getElementById("fretboard");
   container.innerHTML = "";
@@ -64,6 +69,9 @@ function drawFretboard() {
   const tuningName = document.getElementById("tuningSelect").value;
   const tuning = tuningsByInstrument[instrument][tuningName];
   const stringCount = tuning.length;
+
+  const fretStart = parseInt(document.getElementById("fretStart").value) || 0;
+  const fretEnd = parseInt(document.getElementById("fretEnd").value) || 24;
 
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
 
@@ -96,7 +104,7 @@ function drawFretboard() {
     nut.textContent = "║";
     string.appendChild(nut);
 
-    for (let fret = 1; fret <= 24; fret++) {
+    for (let fret = fretStart + 1; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
@@ -132,7 +140,7 @@ function drawFretboard() {
     const openNote = tuning[i];
     let line = openNote.toLowerCase() + "|";
 
-    for (let fret = 0; fret <= 24; fret++) {
+    for (let fret = fretStart; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       if (inputNotes.includes(normalizeNote(note))) {
         line += fret < 10 ? `-${fret}-` : `${fret}-`;
@@ -148,23 +156,4 @@ function drawFretboard() {
   document.getElementById("fretboard-wrapper").scrollLeft = 0;
   showSuggestedScalesFromInput?.();
   suggestChordsFromInput?.();
-}
-
-function highlightFretboard(scaleNotes, rootNote) {
-  const frets = document.querySelectorAll('.fret');
-  frets.forEach(fret => {
-    const noteEl = fret.querySelector('span');
-    const note = noteEl ? noteEl.textContent : null;
-    if (note && scaleNotes.includes(note)) {
-      fret.classList.add('active');
-      if (note === rootNote) {
-        fret.classList.add('root');
-      } else {
-        fret.classList.remove('root');
-      }
-    } else {
-      fret.classList.remove('active');
-      fret.classList.remove('root');
-    }
-  });
 }
