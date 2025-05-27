@@ -1,3 +1,5 @@
+let selectedChordRoot = "C"; // valor inicial
+
 function renderChordCircle() {
   const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
   const radius = 150;
@@ -46,6 +48,7 @@ function renderChordCircle() {
   if (prev) dropdown.value = prev;
 
   dropdown.addEventListener("change", () => {
+    selectedChordRoot = dropdown.value;   // guarda nueva raíz
     renderChordCircle(); // redibuja el círculo con la nueva raíz
   });
 
@@ -54,7 +57,8 @@ function renderChordCircle() {
   svg.appendChild(foreign);
 
   // Ya montado, ahora usar el valor seleccionado
-  const root = dropdown.value;
+  const root = selectedChordRoot;
+
 
   const existingDisplay = document.getElementById("selectedChordDisplay");
   if (existingDisplay) existingDisplay.remove();
