@@ -1,5 +1,20 @@
-// Variable global para recordar la nota raíz seleccionada
 let selectedChordRoot = "C";
+
+function getChordDescription(chord) {
+  const suffix = chord.replace(/^[A-G]#?/, "");
+  const descriptions = {
+    "":      "Mayor – estable, feliz",
+    "m":     "Menor – suave, introspectivo",
+    "7":     "7ma – dominante, con fuerza",
+    "maj7":  "Mayor 7ma – elegante, jazz",
+    "dim":   "Disminuido – tenso, inestable",
+    "aug":   "Aumentado – dramático, expansivo",
+    "sus2":  "Susp 2da – aireado, moderno",
+    "sus4":  "Susp 4ta – tensión sin resolver",
+    "add9":  "Add9 – decorativo, pop"
+  };
+  return descriptions[suffix] || "Acorde";
+}
 
 function renderChordCircle() {
   const suffixes = ["", "m", "7", "maj7", "dim", "aug", "sus2", "sus4", "add9"];
@@ -22,7 +37,6 @@ function renderChordCircle() {
   svg.style.border = "1px solid #ccc";
   container.appendChild(svg);
 
-  // 🎯 Dropdown dentro del SVG
   const foreign = document.createElementNS(svgNS, "foreignObject");
   foreign.setAttribute("x", center - 50);
   foreign.setAttribute("y", center - 25);
@@ -45,13 +59,11 @@ function renderChordCircle() {
     dropdown.appendChild(option);
   });
 
-  // 🔧 Esto actualiza visualmente el dropdown
   dropdown.value = selectedChordRoot;
 
-  // 🔁 Al cambiar la nota raíz
   dropdown.addEventListener("change", () => {
     selectedChordRoot = dropdown.value;
-    renderChordCircle(); // vuelve a dibujar el SVG con la nueva raíz
+    renderChordCircle();
   });
 
   html.appendChild(dropdown);
@@ -60,7 +72,6 @@ function renderChordCircle() {
 
   const root = selectedChordRoot;
 
-  // 🧹 Borrar display anterior si existe
   const existingDisplay = document.getElementById("selectedChordDisplay");
   if (existingDisplay) existingDisplay.remove();
 
@@ -73,13 +84,15 @@ function renderChordCircle() {
   chordDisplay.textContent = "Haz clic en un acorde para verlo en el diapasón";
   container.appendChild(chordDisplay);
 
-  // 🎵 Dibujar acordes alrededor
+  const tooltip = document.getElementById("tooltip");
+
   suffixes.forEach((suffix, i) => {
     const angle = (i / suffixes.length) * (2 * Math.PI) - Math.PI / 2;
     const x = center + radius * Math.cos(angle);
     const y = center + radius * Math.sin(angle);
     const chord = root + suffix;
     const chordNotes = chordToNotes?.(chord) || [];
+    const description = getChordDescription(chord);
 
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", x);
@@ -91,6 +104,21 @@ function renderChordCircle() {
     text.textContent = chord;
     text.style.cursor = "pointer";
     text.setAttribute("title", chord);
+
+    // 🎈 TOOLTIP INTERACTIVO
+    text.addEventListener("mouseover", e => {
+      tooltip.textContent = `${chord}: ${description}`;
+      tooltip.classList.add("visible");
+    });
+
+    text.addEventListener("mousemove", e => {
+      tooltip.style.left = `${e.pageX + 10}px`;
+      tooltip.style.top = `${e.pageY + 10}px`;
+    });
+
+    text.addEventListener("mouseout", () => {
+      tooltip.classList.remove("visible");
+    });
 
     text.addEventListener("click", () => {
       const notesText = chordNotes.join(" ");
