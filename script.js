@@ -71,7 +71,7 @@ function drawFretboard() {
   const stringCount = tuning.length;
 
   const fretStart = parseInt(document.getElementById("fretStart").value) || 0;
-  const fretEnd = parseInt(document.getElementById("fretEnd").value) || 24;
+  const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
 
@@ -106,18 +106,10 @@ function drawFretboard() {
       string.appendChild(nut);
     }
 
-    for (let fret = fretStart + 1; fret <= fretEnd; fret++) {
+    for (let fret = Math.max(1, fretStart + 1); fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
-
-      if (fret === fretStart + 1) {
-        fretDiv.style.borderLeft = "2px solid black";
-      }
-
-      if (fret === fretEnd) {
-        fretDiv.style.borderRight = "none";
-      }
 
       if (i === Math.floor(stringCount / 2)) {
         if (fret === 12) {
