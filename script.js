@@ -5,12 +5,6 @@ const enharmonics = {
   "GB": "F#", "AB": "G#", "BB": "A#"
 };
 
-function getNoteFromStringFret(openNote, fret) {
-  const openIndex = noteIndex(openNote);
-  return allNotes[(openIndex + fret) % 12];
-}
-
-
 const tuningsByInstrument = {
   guitar6: {
     "Standard (E A D G B E)": ["E", "A", "D", "G", "B", "E"],
@@ -28,8 +22,6 @@ const tuningsByInstrument = {
   }
 };
 
-const fretMarkers = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
-
 const noteColors = {
   "C": "#ff6b6b", "C#": "#ffa502", "D": "#feca57", "D#": "#1dd1a1",
   "E": "#54a0ff", "F": "#5f27cd", "F#": "#576574", "G": "#10ac84",
@@ -43,6 +35,11 @@ function normalizeNote(note) {
 
 function noteIndex(note) {
   return allNotes.indexOf(normalizeNote(note));
+}
+
+function getNoteFromStringFret(openNote, fret) {
+  const openIndex = noteIndex(openNote);
+  return allNotes[(openIndex + fret) % 12];
 }
 
 function updateTuningOptions() {
@@ -76,9 +73,6 @@ function drawFretboard() {
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
   const strings = tuning.length;
-  const frets = fretEnd - fretStart + 1;
-
-  const wrapper = document.getElementById("fretboard-wrapper");
   const fretboard = document.getElementById("fretboard");
   fretboard.innerHTML = "";
 
@@ -91,17 +85,16 @@ function drawFretboard() {
       const cell = document.createElement("td");
       const note = getNoteFromStringFret(tuning[i], f);
       cell.textContent = note;
+      cell.classList.add("fret");
 
       if (notes.includes(note)) {
         cell.classList.add("highlight");
+        cell.style.backgroundColor = noteColors[note] || "#ccc";
+        cell.style.color = "#fff";
       }
 
-      if (f === fretStart) {
-        cell.style.borderLeft = "2px solid black";
-      }
-      if (f === fretEnd) {
-        cell.style.borderRight = "2px solid black";
-      }
+      if (f === fretStart) cell.style.borderLeft = "2px solid black";
+      if (f === fretEnd) cell.style.borderRight = "2px solid black";
 
       row.appendChild(cell);
     }
@@ -110,25 +103,16 @@ function drawFretboard() {
   }
 
   fretboard.appendChild(table);
-}
 
-
-function highlightFretboard(scaleNotes, rootNote) {
-  const frets = document.querySelectorAll('.fret');
-  frets.forEach(fret => {
-    const noteEl = fret.querySelector('span');
-    const note = noteEl ? noteEl.textContent : null;
-    if (note && scaleNotes.includes(note)) {
-      fret.classList.add('active');
-      if (note === rootNote) {
-        fret.classList.add('root');
-      } else {
-        fret.classList.remove('root');
+  const tab = document.getElementById("tablature");
+  if (tab) {
+    tab.textContent = tuning.map((note, i) => {
+      let line = note + "|";
+      for (let f = fretStart; f <= fretEnd; f++) {
+        const val = getNoteFromStringFret(tuning[i], f);
+        line += notes.includes(val) ? "-●-" : "---";
       }
-    } else {
-      fret.classList.remove('active');
-      fret.classList.remove('root');
-    }
-  });
+      return line;
+    }).join("\n");
+  }
 }
-
