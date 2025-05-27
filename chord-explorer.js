@@ -77,7 +77,9 @@ function renderChordCircle() {
   html.appendChild(dropdown);
   foreign.appendChild(html);
   svg.appendChild(foreign);
-
+  html.appendChild(dropdown);
+  foreign.appendChild(html);
+  svg.appendChild(foreign);
   const root = dropdown.value;
 
   const existingDisplay = document.getElementById("selectedChordDisplay");
