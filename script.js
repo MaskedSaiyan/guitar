@@ -85,11 +85,11 @@ function drawFretboard() {
     stringLabel.textContent = `${openNote} (${stringCount - i})`;
     string.appendChild(stringLabel);
 
-    // Mostrar open string + ceja solo si empieza desde cero
     if (fretStart === 0) {
       const openFret = document.createElement("div");
       openFret.className = "fret open";
       const noteOpen = normalizeNote(openNote);
+
       if (inputNotes.includes(noteOpen)) {
         const marker = document.createElement("div");
         marker.className = "note-marker";
@@ -97,6 +97,7 @@ function drawFretboard() {
         marker.textContent = noteOpen;
         openFret.appendChild(marker);
       }
+
       string.appendChild(openFret);
 
       const nut = document.createElement("div");
@@ -105,9 +106,7 @@ function drawFretboard() {
       string.appendChild(nut);
     }
 
-    // Dibuja trastes exactos desde fretStart hasta fretEnd
-    const firstFretToDraw = (fretStart === 0) ? 1 : fretStart;
-    for (let fret = firstFretToDraw; fret <= fretEnd; fret++) {
+    for (let fret = fretStart === 0 ? 1 : fretStart; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       const fretDiv = document.createElement("div");
       fretDiv.className = "fret";
@@ -136,14 +135,14 @@ function drawFretboard() {
     container.appendChild(string);
   }
 
-  // Tablatura
+  // Tablatura corregida (solo rango visible)
   let tablatureLines = [];
 
   for (let i = stringCount - 1; i >= 0; i--) {
     const openNote = tuning[i];
     let line = openNote.toLowerCase() + "|";
 
-    for (let fret = 0; fret <= 24; fret++) {
+    for (let fret = fretStart; fret <= fretEnd; fret++) {
       const note = allNotes[(noteIndex(openNote) + fret) % 12];
       if (inputNotes.includes(normalizeNote(note))) {
         line += fret < 10 ? `-${fret}-` : `${fret}-`;
