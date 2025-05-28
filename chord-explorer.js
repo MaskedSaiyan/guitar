@@ -126,6 +126,7 @@ function renderChordCircle() {
       tooltip.classList.remove("visible");
     });
 
+    // ✅ FORZAR ACTUALIZACIÓN DEL DIAPASÓN AL CLICKEAR
     text.addEventListener("click", () => {
       const notesText = chordNotes.join(" ");
       document.getElementById("notesInput").value = notesText;
@@ -134,7 +135,9 @@ function renderChordCircle() {
       if (noteOutput) noteOutput.textContent = notesText;
 
       chordDisplay.textContent = `🎵 Acorde: ${chord}`;
-      if (typeof drawFretboard === "function") drawFretboard();
+      if (typeof drawFretboard === "function") {
+        setTimeout(drawFretboard, 10);
+      }
     });
 
     svg.appendChild(text);
