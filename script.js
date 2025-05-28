@@ -60,17 +60,6 @@ function getExpandedNotesFromInput() {
   return input.trim().toUpperCase().split(/\s+/).map(normalizeNote);
 }
 
-.fret-number {
-  width: 30px;
-  font-size: 12px;
-  color: #999;
-  text-align: right;
-  padding-right: 4px;
-  font-weight: bold;
-  background-color: transparent;
-  line-height: 40px;
-}
-
 
 function updateFretWindow() {
   const start = parseInt(document.getElementById("fretStart").value);
