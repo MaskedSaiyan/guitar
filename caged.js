@@ -1,6 +1,6 @@
 const cagedPositions = {
   C: [
-    // Forma C (C mayor) — traste 8 aprox.
+    // Forma C del acorde C mayor (posición típica alrededor del traste 8)
     { string: 0, fret: 8, note: "C" },
     { string: 1, fret: 8, note: "E" },
     { string: 2, fret: 9, note: "G" },
@@ -10,12 +10,15 @@ const cagedPositions = {
   ]
 };
 
-// Esta función limpia y pinta solo los trastes indicados
+// 🔦 Resalta solo los trastes especificados y conserva puntos de posición
 function highlightExactFrets(positions) {
   const frets = document.querySelectorAll("#fretboard .fret");
   frets.forEach(fret => {
     fret.classList.remove("highlight", "root");
-    fret.innerHTML = ""; // Limpia notas previas si hay
+    // Conserva los puntos de traste
+    const dots = [...fret.querySelectorAll(".dot, .double-dot")];
+    fret.innerHTML = "";
+    dots.forEach(dot => fret.appendChild(dot));
   });
 
   positions.forEach(pos => {
@@ -39,16 +42,16 @@ function highlightExactFrets(positions) {
   });
 }
 
-// Esta es la función que llamas desde tu botón en el tab CAGED
+// 🎸 Esta es la función que se llama al presionar el botón CAGED
 function showCagedChord() {
-  // 🔒 Forzamos afinación estándar
+  // Forzar afinación estándar
   document.getElementById("instrumentSelect").value = "guitar6";
   updateTuningOptions();
   document.getElementById("tuningSelect").value = "Standard (E A D G B E)";
 
-  // ⏳ Esperamos a que drawFretboard termine
+  // Esperar a que drawFretboard termine y luego aplicar resaltado exacto
   setTimeout(() => {
-    drawFretboard(); // Asegura que esté dibujado completo
-    highlightExactFrets(cagedPositions["C"]); // Solo pintamos C forma C
+    drawFretboard();
+    highlightExactFrets(cagedPositions["C"]);
   }, 50);
 }
