@@ -111,7 +111,6 @@ function renderChordCircle() {
     text.style.cursor = "pointer";
     text.setAttribute("title", chord);
 
-    // 🎈 TOOLTIP INTERACTIVO
     text.addEventListener("mouseover", e => {
       tooltip.textContent = `${chord}: ${description}`;
       tooltip.classList.add("visible");
@@ -126,7 +125,6 @@ function renderChordCircle() {
       tooltip.classList.remove("visible");
     });
 
-    // ✅ FORZAR ACTUALIZACIÓN DEL DIAPASÓN AL CLICKEAR
     text.addEventListener("click", () => {
       const notesText = chordNotes.join(" ");
       document.getElementById("notesInput").value = notesText;
@@ -135,9 +133,11 @@ function renderChordCircle() {
       if (noteOutput) noteOutput.textContent = notesText;
 
       chordDisplay.textContent = `🎵 Acorde: ${chord}`;
-      if (typeof drawFretboard === "function") {
-        setTimeout(drawFretboard, 10);
-      }
+
+      // ⏱️ Forzar actualización inmediata del diapasón
+      setTimeout(() => {
+        if (typeof drawFretboard === "function") drawFretboard();
+      }, 10);
     });
 
     svg.appendChild(text);
