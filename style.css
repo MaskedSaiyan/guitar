@@ -324,3 +324,9 @@ body {
   box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
 }
 
+.key .note-marker {
+  bottom: 6px;
+  top: auto;
+  transform: translateX(-50%);
+}
+
