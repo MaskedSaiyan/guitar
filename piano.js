@@ -22,11 +22,15 @@ function drawPiano() {
         playNote(fullNote);
       };
 
-      // Marcador redondo con la nota
       const marker = document.createElement("div");
       marker.className = "note-marker";
       marker.textContent = note;
       marker.style.display = "none";
+      marker.style.position = "absolute";
+      marker.style.left = "50%";
+      marker.style.transform = "translateX(-50%)";
+      marker.style.top = isSharp ? "55px" : "20px";
+      marker.style.backgroundColor = noteColors[baseNote] || "#555";
       key.appendChild(marker);
 
       piano.appendChild(key);
@@ -66,11 +70,8 @@ function highlightPianoKeys() {
   keys.forEach(key => {
     const note = key.dataset.note;
     const marker = key.querySelector(".note-marker");
-    const base = note.replace("#", "");
-
     if (activeNotes.includes(note)) {
       marker.style.display = "block";
-      marker.style.backgroundColor = noteColors[base] || "#555";
     } else {
       marker.style.display = "none";
     }
