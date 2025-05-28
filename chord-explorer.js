@@ -126,17 +126,21 @@ function renderChordCircle() {
     });
 
 text.addEventListener("click", () => {
-  const notesText = chordNotes.join(" ");
   const inputEl = document.getElementById("notesInput");
-  inputEl.value = notesText;
-
   const noteOutput = document.getElementById("noteOutput");
+
+  // 🔥 Evita race condition: asigna primero
+  const notesText = chordNotes.join(" ");
+  inputEl.value = notesText;
   if (noteOutput) noteOutput.textContent = notesText;
 
   chordDisplay.textContent = `🎵 Acorde: ${chord}`;
 
-  setTimeout(() => drawFretboard(), 0); // primer intento
-  setTimeout(() => drawFretboard(), 50); // fallback tardío
+  // 🔥 Forzamos a que drawFretboard trabaje con el nuevo valor
+  // usando requestAnimationFrame para esperar al repaint
+  requestAnimationFrame(() => {
+    drawFretboard();
+  });
 });
 
 
