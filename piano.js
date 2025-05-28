@@ -8,25 +8,45 @@ function drawPiano() {
   piano.innerHTML = "";
 
   for (let o = 0; o < pianoOctaves; o++) {
-    pianoNotes.forEach(note => {
+    pianoNotes.forEach((note, i) => {
       const fullNote = `${note}${pianoStartOctave + o}`;
-      const baseNote = note.replace("#", "");
       const isSharp = note.includes("#");
-      const div = document.createElement("div");
+      const baseNote = note.replace("#", "");
+      const key = document.createElement("div");
 
-      div.className = "key" + (isSharp ? " black" : "");
-      div.dataset.note = note;
-      div.title = fullNote;
+      key.className = "key" + (isSharp ? " black" : " white");
+      key.dataset.note = note;
+      key.title = fullNote;
 
-      div.style.backgroundColor = isSharp ? "#222" : (noteColors[baseNote] || "#eee");
+      if (!isSharp && noteColors[baseNote]) {
+        key.style.backgroundColor = noteColors[baseNote];
+      }
 
-      div.onclick = () => {
+      key.onclick = () => {
         playNote(fullNote);
-        togglePianoNote(note);
-        highlightPianoKeys();
       };
 
-      piano.appendChild(div);
+      // Marker: solo visible si la nota está activa en input
+      const marker = document.createElement("div");
+      marker.className = "note-marker";
+      marker.style.position = "absolute";
+      marker.style.top = "10px";
+      marker.style.left = "50%";
+      marker.style.transform = "translateX(-50%)";
+      marker.style.borderRadius = "50%";
+      marker.style.width = "24px";
+      marker.style.height = "24px";
+      marker.style.fontSize = "12px";
+      marker.style.fontWeight = "bold";
+      marker.style.lineHeight = "24px";
+      marker.style.color = "white";
+      marker.style.display = "none";
+
+      marker.textContent = note;
+      marker.style.backgroundColor = noteColors[baseNote] || "#333";
+      key.appendChild(marker);
+
+      piano.appendChild(key);
     });
   }
 
@@ -36,43 +56,38 @@ function drawPiano() {
 
 function positionBlackKeys() {
   const keys = document.querySelectorAll("#piano .key");
-  keys.forEach((key, i) => {
-    if (key.classList.contains("black")) {
-      key.style.left = `${i * 40 - 12}px`;
+  let whiteIndex = 0;
+
+  keys.forEach(key => {
+    const note = key.dataset.note;
+    const isSharp = note.includes("#");
+
+    if (isSharp) {
       key.style.position = "absolute";
-      key.style.zIndex = 2;
+      key.style.left = `${whiteIndex * 40 - 12}px`;
+      key.style.zIndex = "2";
     } else {
+      key.style.position = "relative";
       key.style.display = "inline-block";
       key.style.width = "40px";
       key.style.height = "150px";
-      key.style.border = "1px solid #333";
+      whiteIndex++;
     }
   });
 }
 
-function togglePianoNote(note) {
-  const input = document.getElementById("notesInput");
-  let notes = input.value.trim().split(/\s+/).filter(n => n);
-  const exists = notes.includes(note);
-
-  if (exists) {
-    notes = notes.filter(n => n !== note);
-  } else {
-    notes.push(note);
-  }
-
-  input.value = notes.join(" ");
-  drawFretboard?.();
-}
-
 function highlightPianoKeys() {
   const keys = document.querySelectorAll("#piano .key");
-  const inputNotes = getExpandedNotesFromInput();
+  const activeNotes = getExpandedNotesFromInput();
 
   keys.forEach(key => {
-    const base = key.dataset.note;
-    const isOn = inputNotes.includes(base);
-    key.style.outline = isOn ? "3px solid red" : "none";
+    const note = key.dataset.note;
+    const marker = key.querySelector(".note-marker");
+    if (activeNotes.includes(note)) {
+      marker.style.display = "block";
+    } else {
+      marker.style.display = "none";
+    }
   });
 }
 
@@ -80,4 +95,7 @@ function playNote(fullNote) {
   synth.triggerAttackRelease(fullNote, "8n");
 }
 
-window.addEventListener("DOMContentLoaded", drawPiano);
+window.addEventListener("DOMContentLoaded", () => {
+  drawPiano();
+  document.getElementById("notesInput")?.addEventListener("input", highlightPianoKeys);
+});
