@@ -30,9 +30,7 @@ function drawPiano() {
       marker.className = "note-marker";
       marker.textContent = note;
       marker.style.display = "none";
-      marker.style.bottom = "4px";
       marker.style.left = "50%";
-      marker.style.transform = "translateX(-50%)";
       marker.style.position = "absolute";
       marker.style.top = "50%";
       marker.style.transform = "translate(-50%, -50%)";
