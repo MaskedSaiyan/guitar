@@ -7,74 +7,40 @@ function drawPiano() {
   const piano = document.getElementById("piano");
   piano.innerHTML = "";
 
-  const whiteNotes = ["C", "D", "E", "F", "G", "A", "B"];
-  const blackMap = {
-    "C": "C#",
-    "D": "D#",
-    "F": "F#",
-    "G": "G#",
-    "A": "A#"
-  };
-
   for (let o = 0; o < pianoOctaves; o++) {
-    whiteNotes.forEach((note, i) => {
+    pianoNotes.forEach((note) => {
       const fullNote = `${note}${pianoStartOctave + o}`;
-      const whiteKey = document.createElement("div");
-      whiteKey.className = "key white";
-      whiteKey.dataset.note = note;
-      whiteKey.title = fullNote;
+      const isSharp = note.includes("#");
+      const baseNote = note.replace("#", "");
+      const key = document.createElement("div");
 
-      whiteKey.onclick = () => playNote(fullNote);
-      
+      key.className = "key" + (isSharp ? " black" : " white");
+      key.dataset.note = note;
+      key.title = fullNote;
+
+      key.onclick = () => {
+        playNote(fullNote);
+      };
+
       const marker = document.createElement("div");
-        marker.className = "note-marker";
-        marker.textContent = note;
-        marker.style.display = "none";
-        marker.style.position = "absolute";
-        marker.style.top = "50%";
-        marker.style.left = "50%";
-        marker.style.transform = "translate(-50%, -50%)"; // Centrado completo
-        marker.style.backgroundColor = noteColors[note] || "#555";
-        key.appendChild(marker);
+      marker.className = "note-marker";
+      marker.textContent = note;
+      marker.style.display = "none";
+      marker.style.position = "absolute";
+      marker.style.left = "50%";
+      marker.style.bottom = "8px"; // 👈 más abajo para que no se superponga
+      marker.style.transform = "translateX(-50%)";
+      marker.style.backgroundColor = noteColors[baseNote] || "#555";
 
-
-      const keyGroup = document.createElement("div");
-      keyGroup.className = "key-group";
-      keyGroup.appendChild(whiteKey);
-
-      // Black key if applicable
-      const blackNote = blackMap[note];
-      if (blackNote) {
-        const fullBlack = `${blackNote}${pianoStartOctave + o}`;
-        const blackKey = document.createElement("div");
-        blackKey.className = "key black";
-        blackKey.dataset.note = blackNote;
-        blackKey.title = fullBlack;
-
-        blackKey.onclick = () => playNote(fullBlack);
-
-        const blackMarker = document.createElement("div");
-        blackMarker.className = "note-marker";
-        blackMarker.textContent = blackNote;
-        blackMarker.style.display = "none";
-        blackMarker.style.bottom = "4px";
-        blackMarker.style.left = "50%";
-        blackMarker.style.transform = "translateX(-50%)";
-        blackMarker.style.position = "absolute";
-        blackMarker.style.backgroundColor = noteColors[blackNote.replace("#", "")] || "#555";
-        blackKey.appendChild(blackMarker);
-
-        keyGroup.appendChild(blackKey);
-      }
-
-      piano.appendChild(keyGroup);
+      key.appendChild(marker);
+      piano.appendChild(key);
     });
   }
 
+  positionBlackKeys();
   highlightPianoKeys();
 }
 
- 
 function positionBlackKeys() {
   const keys = document.querySelectorAll("#piano .key");
   let whiteIndex = 0;
@@ -87,6 +53,8 @@ function positionBlackKeys() {
       key.style.position = "absolute";
       key.style.left = `${whiteIndex * 40 - 12}px`;
       key.style.zIndex = "2";
+      key.style.width = "28px";
+      key.style.height = "100px";
     } else {
       key.style.position = "relative";
       key.style.display = "inline-block";
