@@ -48,6 +48,8 @@
       <button onclick="switchTab('scalesTab')" id="btnscalesTab" class="active">🎼 Escalas</button>
       <button onclick="switchTab('circleTab')" id="btncircleTab">🔄 Círculo de Quintas</button>
       <button onclick="switchTab('chordExplorerTab')" id="btnchordExplorerTab">🧭 Explorador de Acordes</button>
+      <button onclick="switchTab('cagedTab')" id="btncagedTab">🧱 Sistema CAGED</button>
+
 
     </div>
 
@@ -85,6 +87,13 @@
  <div id="chordExplorerTab" class="tab-content">
   <div id="chordCircle" style="margin: 2em auto; max-width: 400px;"></div>
 </div>
+
+<div id="cagedTab" class="tab-content">
+  <h2>Visualización del sistema CAGED</h2>
+  <p>Haz clic para mostrar la forma “C” del acorde de Do en el diapasón (afinación estándar):</p>
+  <button onclick="showCagedChord()">🎸 Mostrar forma C (CAGED)</button>
+</div>
+
 
 </div>
 
@@ -191,6 +200,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("fretEndLabel").textContent = end;
   }
 </script>
+<script src="caged.js" defer></script>
 
 </body>
 </html>
