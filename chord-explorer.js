@@ -139,6 +139,10 @@ text.addEventListener("click", () => {
   // 🔥 Forzamos a que drawFretboard trabaje con el nuevo valor
   // usando requestAnimationFrame para esperar al repaint
   requestAnimationFrame(() => {
+      console.log("Aplicando acorde:", chord);
+console.log("Notas que se van a usar:", chordNotes);
+console.log("Input ahora dice:", inputEl.value);
+
     drawFretboard();
   });
 });
