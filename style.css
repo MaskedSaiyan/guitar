@@ -272,44 +272,31 @@ body {
   }
 }
 
+#piano {
+  position: relative;
+  height: 150px;
+  white-space: nowrap;
+  overflow-x: auto;
+  margin-top: 2em;
+  border: 1px solid #ccc;
+  background: #eee;
+  padding: 4px;
+}
+
 .key {
   display: inline-block;
   position: relative;
-  height: 150px;
-  border: 1px solid #444;
   cursor: pointer;
   margin-right: -1px;
   z-index: 1;
-}
-
-.note-marker {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 22px;
-  text-align: center;
-  color: white;
-}
-
-.key-group {
-  display: inline-block;
-  position: relative;
-  width: 40px;
-  height: 150px;
+  vertical-align: bottom;
 }
 
 .key.white {
   background: white;
   border: 1px solid #ccc;
-  width: 100%;
-  height: 100%;
-  position: relative;
+  width: 40px;
+  height: 150px;
   z-index: 1;
 }
 
@@ -325,8 +312,19 @@ body {
 }
 
 .key .note-marker {
+  position: absolute;
   bottom: 6px;
-  top: auto;
+  left: 50%;
   transform: translateX(-50%);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 22px;
+  text-align: center;
+  color: white;
+  background-color: #555;
+  display: none;
 }
 
