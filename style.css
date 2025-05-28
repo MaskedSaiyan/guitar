@@ -272,3 +272,21 @@ body {
   }
 }
 
+.key {
+  display: inline-block;
+  position: relative;
+  height: 150px;
+  border: 1px solid #444;
+  cursor: pointer;
+  margin-right: -1px;
+  z-index: 1;
+}
+
+.key.black {
+  width: 30px;
+  height: 100px;
+  background-color: black !important;
+  position: absolute;
+  margin-left: -15px;
+  z-index: 2;
+}
