@@ -39,6 +39,11 @@ function noteIndex(note) {
   return allNotes.indexOf(normalizeNote(note));
 }
 
+function getExpandedNotesFromInput() {
+  const input = document.getElementById("notesInput").value;
+  return input.trim().toUpperCase().split(/\s+/).map(normalizeNote);
+}
+
 function updateTuningOptions() {
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningSelect = document.getElementById("tuningSelect");
@@ -52,14 +57,8 @@ function updateTuningOptions() {
     tuningSelect.appendChild(opt);
   }
 
-  drawFretboard();
+  if (typeof drawFretboard === "function") drawFretboard();
 }
-
-function getExpandedNotesFromInput() {
-  const input = document.getElementById("notesInput").value;
-  return input.trim().toUpperCase().split(/\s+/).map(normalizeNote);
-}
-
 
 function updateFretWindow() {
   const start = parseInt(document.getElementById("fretStart").value);
