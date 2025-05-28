@@ -131,6 +131,7 @@ function drawFretboard() {
 
       string.appendChild(fretDiv);
     }
+    string.style.gridTemplateColumns = `60px 40px ${fretStart === 0 ? '40px ' : ''}${'40px '.repeat(fretEnd - fretStart + 1)}`;
 
     container.appendChild(string);
   }
