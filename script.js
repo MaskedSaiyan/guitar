@@ -1,8 +1,8 @@
 const allNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 const enharmonics = {
-  "CB": "B", "DB": "C#", "EB": "D#", "FB": "E",
-  "GB": "F#", "AB": "G#", "BB": "A#"
+  "Cb": "B", "Db": "C#", "Eb": "D#", "Fb": "E",
+  "Gb": "F#", "Ab": "G#", "Bb": "A#"
 };
 
 const tuningsByInstrument = {
@@ -31,8 +31,8 @@ const noteColors = {
 };
 
 function normalizeNote(note) {
-  const upper = note.toUpperCase();
-  return enharmonics[upper] || upper;
+  note = note.toUpperCase();
+  return enharmonics[note] || note;
 }
 
 function noteIndex(note) {
@@ -57,7 +57,7 @@ function updateTuningOptions() {
     tuningSelect.appendChild(opt);
   }
 
-  if (typeof drawFretboard === "function") drawFretboard();
+  drawFretboard();
 }
 
 function updateFretWindow() {
@@ -66,3 +66,107 @@ function updateFretWindow() {
   document.getElementById("fretStartLabel").textContent = start;
   document.getElementById("fretEndLabel").textContent = end;
 }
+
+function drawFretboard() {
+  const container = document.getElementById("fretboard");
+  container.innerHTML = "";
+
+  const rawInput = document.getElementById("notesInput").value.trim().toUpperCase().split(/\s+/);
+  const inputNotes = rawInput.map(normalizeNote);
+
+  const instrument = document.getElementById("instrumentSelect").value;
+  const tuningName = document.getElementById("tuningSelect").value;
+  const tuning = tuningsByInstrument[instrument][tuningName];
+  const stringCount = tuning.length;
+
+  const fretStart = parseInt(document.getElementById("fretStart").value) || 0;
+  const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
+
+  container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
+
+  for (let i = 0; i < stringCount; i++) {
+    const openNote = tuning[i];
+    const string = document.createElement("div");
+    string.className = "string";
+
+    const stringLabel = document.createElement("div");
+    stringLabel.className = "fret-label";
+    stringLabel.textContent = `${openNote} (${stringCount - i})`;
+    string.appendChild(stringLabel);
+
+    if (fretStart === 0) {
+      const openFret = document.createElement("div");
+      openFret.className = "fret open";
+      const noteOpen = normalizeNote(openNote);
+
+      if (inputNotes.includes(noteOpen)) {
+        const marker = document.createElement("div");
+        marker.className = "note-marker";
+        marker.style.backgroundColor = noteColors[noteOpen] || "#999";
+        marker.textContent = noteOpen;
+        openFret.appendChild(marker);
+      }
+
+      string.appendChild(openFret);
+
+      const nut = document.createElement("div");
+      nut.className = "fret nut";
+      nut.textContent = "║";
+      string.appendChild(nut);
+    }
+
+    for (let fret = fretStart === 0 ? 1 : fretStart; fret <= fretEnd; fret++) {
+      const note = allNotes[(noteIndex(openNote) + fret) % 12];
+      const fretDiv = document.createElement("div");
+      fretDiv.className = "fret";
+
+      if (i === Math.floor(stringCount / 2)) {
+        if (fret === 12) {
+          fretDiv.classList.add("double-dot");
+        } else if (fretMarkers.includes(fret)) {
+          const dot = document.createElement("div");
+          dot.className = "dot";
+          fretDiv.appendChild(dot);
+        }
+      }
+
+      if (inputNotes.includes(note)) {
+        const marker = document.createElement("div");
+        marker.className = "note-marker";
+        marker.style.backgroundColor = noteColors[note] || "#999";
+        marker.textContent = note;
+        fretDiv.appendChild(marker);
+      }
+
+      string.appendChild(fretDiv);
+    }
+
+    container.appendChild(string);
+  }
+
+  // Tablatura corregida
+  let tablatureLines = [];
+
+  for (let i = stringCount - 1; i >= 0; i--) {
+    const openNote = tuning[i];
+    let line = openNote.toLowerCase() + "|";
+
+    for (let fret = fretStart; fret <= fretEnd; fret++) {
+      const note = allNotes[(noteIndex(openNote) + fret) % 12];
+      if (inputNotes.includes(note)) {
+        line += fret < 10 ? `-${fret}-` : `${fret}-`;
+      } else {
+        line += "---";
+      }
+    }
+
+    tablatureLines.push(line);
+  }
+
+  document.getElementById("tablature").textContent = tablatureLines.join("\n");
+}
+
+window.onload = () => {
+  updateTuningOptions();
+  updateFretWindow();
+};
