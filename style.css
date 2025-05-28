@@ -219,3 +219,56 @@ body {
   font-size: 16px;
 }
 
+.fret-number {
+  width: 30px;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+  padding-right: 4px;
+  font-weight: bold;
+  background-color: transparent;
+  line-height: 40px;
+}
+
+@media (max-width: 600px) {
+  .string {
+    gap: 0;
+  }
+
+  .fret {
+    min-width: 28px;
+    width: 28px;
+    height: 32px;
+  }
+
+  .note-marker {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    line-height: 18px;
+  }
+
+  .fret-label {
+    font-size: 12px;
+    min-width: 40px;
+  }
+
+  .fret.nut {
+    font-size: 12px;
+    line-height: 32px;
+    min-width: 28px;
+  }
+
+  #fretboard {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .string {
+    display: grid;
+    grid-auto-columns: 28px;
+    grid-auto-flow: column;
+    overflow-x: auto;
+  }
+}
+
