@@ -125,7 +125,7 @@ function renderChordCircle() {
       tooltip.classList.remove("visible");
     });
 
-    text.addEventListener("click", () => {
+text.addEventListener("click", () => {
   const notesText = chordNotes.join(" ");
   const inputEl = document.getElementById("notesInput");
   inputEl.value = notesText;
@@ -135,13 +135,8 @@ function renderChordCircle() {
 
   chordDisplay.textContent = `🎵 Acorde: ${chord}`;
 
-  // ⚠️ Simula un "input" real para que cualquier listener lo detecte
-  inputEl.dispatchEvent(new Event('input'));
-
-  // ✅ Espera un microtask completo antes de redibujar
-  requestAnimationFrame(() => {
-    if (typeof drawFretboard === "function") drawFretboard();
-  });
+  setTimeout(() => drawFretboard(), 0); // primer intento
+  setTimeout(() => drawFretboard(), 50); // fallback tardío
 });
 
 
