@@ -131,9 +131,11 @@ function drawFretboard() {
 
       string.appendChild(fretDiv);
     }
-      const totalFrets = fretEnd - fretStart + 1;
+
+      const totalFrets = fretEnd - (fretStart === 0 ? 1 : fretStart) + 1;
 const openNutCols = fretStart === 0 ? '40px 40px ' : ''; // open + nut
 string.style.gridTemplateColumns = `60px ${openNutCols}${'40px '.repeat(totalFrets)}`;
+
 
 
     container.appendChild(string);
