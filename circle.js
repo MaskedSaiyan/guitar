@@ -135,6 +135,8 @@ setTimeout(() => {
     .map(el => el.textContent);
 
   document.getElementById("notesInput").value = boldNotes.join(" ");
+
+  if (typeof drawFretboard === 'function') drawFretboard();
 }, 10);
 
 
