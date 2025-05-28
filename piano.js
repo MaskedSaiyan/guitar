@@ -25,17 +25,18 @@ function drawPiano() {
       whiteKey.title = fullNote;
 
       whiteKey.onclick = () => playNote(fullNote);
-
+      
       const marker = document.createElement("div");
-      marker.className = "note-marker";
-      marker.textContent = note;
-      marker.style.display = "none";
-      marker.style.left = "50%";
-      marker.style.position = "absolute";
-      marker.style.top = "50%";
-      marker.style.transform = "translate(-50%, -50%)";
-      marker.style.backgroundColor = noteColors[note] || "#555";
-      whiteKey.appendChild(marker);
+        marker.className = "note-marker";
+        marker.textContent = note;
+        marker.style.display = "none";
+        marker.style.position = "absolute";
+        marker.style.top = "50%";
+        marker.style.left = "50%";
+        marker.style.transform = "translate(-50%, -50%)"; // Centrado completo
+        marker.style.backgroundColor = noteColors[note] || "#555";
+        key.appendChild(marker);
+
 
       const keyGroup = document.createElement("div");
       keyGroup.className = "key-group";
