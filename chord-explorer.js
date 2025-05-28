@@ -126,19 +126,24 @@ function renderChordCircle() {
     });
 
     text.addEventListener("click", () => {
-      const notesText = chordNotes.join(" ");
-      document.getElementById("notesInput").value = notesText;
+  const notesText = chordNotes.join(" ");
+  const inputEl = document.getElementById("notesInput");
+  inputEl.value = notesText;
 
-      const noteOutput = document.getElementById("noteOutput");
-      if (noteOutput) noteOutput.textContent = notesText;
+  const noteOutput = document.getElementById("noteOutput");
+  if (noteOutput) noteOutput.textContent = notesText;
 
-      chordDisplay.textContent = `🎵 Acorde: ${chord}`;
+  chordDisplay.textContent = `🎵 Acorde: ${chord}`;
 
-      // ⏱️ Forzar actualización inmediata del diapasón
-      setTimeout(() => {
-        if (typeof drawFretboard === "function") drawFretboard();
-      }, 10);
-    });
+  // ⚠️ Simula un "input" real para que cualquier listener lo detecte
+  inputEl.dispatchEvent(new Event('input'));
+
+  // ✅ Espera un microtask completo antes de redibujar
+  requestAnimationFrame(() => {
+    if (typeof drawFretboard === "function") drawFretboard();
+  });
+});
+
 
     svg.appendChild(text);
   });
