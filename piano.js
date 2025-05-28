@@ -34,6 +34,8 @@ function drawPiano() {
       marker.style.left = "50%";
       marker.style.transform = "translateX(-50%)";
       marker.style.position = "absolute";
+      marker.style.top = "50%";
+      marker.style.transform = "translate(-50%, -50%)";
       marker.style.backgroundColor = noteColors[note] || "#555";
       whiteKey.appendChild(marker);
 
