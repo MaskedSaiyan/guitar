@@ -61,15 +61,20 @@ function getExpandedNotesFromInput() {
 
   rawInput.forEach(token => {
     const match = token.match(/^([A-G]#?|[A-G]b)(.*)$/);
-    if (match) {
-      const root = normalizeNote(match[1]);
-      const type = match[2];
-      const notes = chordToNotes(root + type);
-      if (notes.length > 0) {
-        result.push(...notes);
-        return;
-      }
+      if (match) {
+  const root = normalizeNote(match[1]);
+  const type = match[2];
+
+  // ⚠️ Solo expandir si tiene un tipo como "m", "7", etc.
+  if (type) {
+    const notes = chordToNotes(root + type);
+    if (notes.length > 0) {
+      result.push(...notes);
+      return;
     }
+  }
+}
+
     result.push(normalizeNote(token));
   });
 
