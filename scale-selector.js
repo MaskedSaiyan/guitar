@@ -42,6 +42,10 @@ function updateNotesDisplay() {
   if (typeof drawFretboard === 'function') {
     drawFretboard();
   }
+
+  if (typeof highlightPianoNotes === 'function') {
+  highlightPianoNotes();
+}
 }
 
 function showSuggestedScalesFromInput() {

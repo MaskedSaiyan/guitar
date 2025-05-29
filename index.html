@@ -100,7 +100,8 @@
 
 
   <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
-  <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" />
+  <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" oninput="drawFretboard()" />
+
 
   <label for="fretStart">Desde traste:</label>
 <input type="range" id="fretStart" min="0" max="24" value="0" oninput="updateFretWindow()" />

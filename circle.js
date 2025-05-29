@@ -137,11 +137,13 @@ setTimeout(() => {
   document.getElementById("notesInput").value = boldNotes.join(" ");
 
   if (typeof drawFretboard === 'function') drawFretboard();
+    if (typeof highlightPianoNotes === "function") highlightPianoNotes();
 }, 10);
 
 
 
   if (typeof drawFretboard === 'function') drawFretboard();
+    if (typeof highlightPianoNotes === "function") highlightPianoNotes();
 
   const textNodes = document.querySelectorAll("#circleOfFifths text");
   textNodes.forEach(el => {

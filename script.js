@@ -48,6 +48,7 @@ function updateTuningOptions() {
   }
 
   drawFretboard();
+    highlightPianoNotes()
 }
 
 function getExpandedNotesFromInput() {

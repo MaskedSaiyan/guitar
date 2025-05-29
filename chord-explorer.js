@@ -144,6 +144,7 @@ console.log("Notas que se van a usar:", chordNotes);
 console.log("Input ahora dice:", inputEl.value);
 
     drawFretboard();
+      highlightPianoNotes();
   });
 });
 
