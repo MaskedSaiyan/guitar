@@ -30,11 +30,6 @@ const noteColors = {
   "G#": "#00d2d3", "A": "#ff9ff3", "A#": "#c56cf0", "B": "#00cec9"
 };
 
-function normalizeNote(note) {
-  const upper = note.toUpperCase();
-  return enharmonics[upper] || upper;
-}
-
 function noteIndex(note) {
   return allNotes.indexOf(normalizeNote(note));
 }
@@ -56,9 +51,30 @@ function updateTuningOptions() {
 }
 
 function getExpandedNotesFromInput() {
-  const input = document.getElementById("notesInput").value;
-  return input.trim().toUpperCase().split(/\s+/).map(normalizeNote);
+  const rawInput = document.getElementById("notesInput").value
+    .trim()
+    .split(/\s+/)
+    .filter(n => n);
+
+  let result = [];
+
+  rawInput.forEach(token => {
+    const match = token.match(/^([A-G]#?|[A-G]b)(.*)$/);
+    if (match) {
+      const root = normalizeNote(match[1]);
+      const type = match[2];
+      const notes = chordToNotes(root + type);
+      if (notes.length > 0) {
+        result.push(...notes);
+        return;
+      }
+    }
+    result.push(normalizeNote(token));
+  });
+
+  return result;
 }
+
 
 function drawFretboard() {
   const container = document.getElementById("fretboard");
@@ -164,6 +180,8 @@ string.style.gridTemplateColumns = `60px ${openNutCols}${'40px '.repeat(totalFre
   document.getElementById("fretboard-wrapper").scrollLeft = 0;
   showSuggestedScalesFromInput?.();
   suggestChordsFromInput?.();
+  if (typeof highlightPianoNotes === "function") highlightPianoNotes();
+
 }
 
 

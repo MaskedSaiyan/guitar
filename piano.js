@@ -115,7 +115,27 @@ function playNote(fullNote) {
   synth.triggerAttackRelease(fullNote, "8n");
 }
 
+function highlightPianoNotes() {
+  const inputNotes = getExpandedNotesFromInput();
+  const keys = document.querySelectorAll(".key");
+
+  keys.forEach(key => {
+    const marker = key.querySelector(".note-marker");
+    const note = key.dataset.note;
+
+    if (inputNotes.includes(note)) {
+      marker.style.display = "block";
+      marker.textContent = note;
+    } else {
+      marker.style.display = "none";
+    }
+  });
+}
+
+
 window.addEventListener("DOMContentLoaded", () => {
   drawPiano();
   document.getElementById("notesInput")?.addEventListener("input", highlightPianoKeys);
 });
+
+
