@@ -273,31 +273,27 @@ body {
 }
 
 #piano {
+  margin: 2em auto;
+  width: fit-content;
   position: relative;
-  height: 150px;
-  white-space: nowrap;
-  overflow-x: auto;
-  margin-top: 2em;
-  border: 1px solid #ccc;
-  background: #eee;
-  padding: 4px;
 }
 
-.key {
+.piano-octave {
   display: inline-block;
   position: relative;
-  cursor: pointer;
-  margin-right: -1px;
-  z-index: 1;
-  vertical-align: bottom;
+  width: 280px;
+  height: 150px;
+  margin-right: 2px;
 }
 
 .key.white {
   background: white;
   border: 1px solid #ccc;
   width: 40px;
-  height: 150px;
+  height: 100%;
+  position: relative;
   z-index: 1;
+  display: inline-block;
 }
 
 .key.black {
@@ -305,26 +301,27 @@ body {
   width: 26px;
   height: 90px;
   position: absolute;
-  top: 0;
-  left: 26px;
   z-index: 2;
+  top: 0;
   box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
 }
 
+.piano-octave .key[data-note="C#"] { left: 28px; }
+.piano-octave .key[data-note="D#"] { left: 68px; }
+.piano-octave .key[data-note="F#"] { left: 148px; }
+.piano-octave .key[data-note="G#"] { left: 188px; }
+.piano-octave .key[data-note="A#"] { left: 228px; }
+
 .key .note-marker {
+  bottom: 4px !important;
   position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   font-size: 12px;
   font-weight: bold;
-  line-height: 22px;
-  text-align: center;
+  line-height: 24px;
   color: white;
-  background-color: #555;
-  display: none;
+  text-align: center;
 }
 
