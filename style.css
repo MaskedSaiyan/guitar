@@ -312,16 +312,18 @@ body {
 .piano-octave .key[data-note="G#"] { left: 188px; }
 .piano-octave .key[data-note="A#"] { left: 228px; }
 
-.key .note-marker {
-  bottom: 4px !important;
+.note-marker {
   position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 50%;
   width: 24px;
   height: 24px;
   font-size: 12px;
   font-weight: bold;
   line-height: 24px;
-  color: white;
   text-align: center;
+  color: white;
 }
 
