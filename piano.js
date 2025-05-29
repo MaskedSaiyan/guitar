@@ -7,8 +7,10 @@ function drawPiano() {
   const piano = document.getElementById("piano");
   piano.innerHTML = "";
 
+  let whiteIndex = 0;
+
   for (let o = 0; o < pianoOctaves; o++) {
-    pianoNotes.forEach((note) => {
+    pianoNotes.forEach((note, i) => {
       const fullNote = `${note}${pianoStartOctave + o}`;
       const isSharp = note.includes("#");
       const baseNote = note.replace("#", "");
@@ -25,45 +27,30 @@ function drawPiano() {
       const marker = document.createElement("div");
       marker.className = "note-marker";
       marker.textContent = note;
-      marker.style.display = "none";
-      marker.style.position = "absolute";
-      marker.style.left = "50%";
-      marker.style.bottom = "8px"; // 👈 más abajo para que no se superponga
-      marker.style.transform = "translateX(-50%)";
       marker.style.backgroundColor = noteColors[baseNote] || "#555";
-
       key.appendChild(marker);
+
+      if (isSharp) {
+        // Posicionamiento calculado relativo al índice blanco
+        key.style.position = "absolute";
+        key.style.left = `${whiteIndex * 40 - 13}px`;
+        key.style.zIndex = "2";
+      } else {
+        // Tecla blanca normal
+        key.style.position = "relative";
+        key.style.display = "inline-block";
+        key.style.width = "40px";
+        key.style.height = "150px";
+        whiteIndex++;
+      }
+
       piano.appendChild(key);
     });
   }
 
-  positionBlackKeys();
   highlightPianoKeys();
 }
 
-function positionBlackKeys() {
-  const keys = document.querySelectorAll("#piano .key");
-  let whiteIndex = 0;
-
-  keys.forEach(key => {
-    const note = key.dataset.note;
-    const isSharp = note.includes("#");
-
-    if (isSharp) {
-      key.style.position = "absolute";
-      key.style.left = `${whiteIndex * 40 - 12}px`;
-      key.style.zIndex = "2";
-      key.style.width = "28px";
-      key.style.height = "100px";
-    } else {
-      key.style.position = "relative";
-      key.style.display = "inline-block";
-      key.style.width = "40px";
-      key.style.height = "150px";
-      whiteIndex++;
-    }
-  });
-}
 
 function highlightPianoKeys() {
   const keys = document.querySelectorAll("#piano .key");
