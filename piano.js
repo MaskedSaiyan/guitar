@@ -1,11 +1,9 @@
-let audioCtx;
-
-document.addEventListener('click', () => {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let synth;
+document.addEventListener("click", () => {
+  if (!synth) {
+    synth = new Tone.Synth().toDestination();
   }
 }, { once: true });
-
 
 const pianoNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const pianoStartOctave = 3;
@@ -136,18 +134,8 @@ function highlightPianoKeys() {
 }
 
 function playNote(note) {
-  if (!audioCtx) return;
-
-  const oscillator = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-
-  oscillator.type = 'sine';
-  oscillator.frequency.value = noteToFrequency(note);
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime + 1);
+    if (!synth) return;
+  synth.triggerAttackRelease(note, "8n");
 }
 
 
