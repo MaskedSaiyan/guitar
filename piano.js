@@ -10,7 +10,22 @@ document.addEventListener('click', () => {
 const pianoNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const pianoStartOctave = 3;
 const pianoOctaves = 2;
-const synth = new Tone.Synth().toDestination();
+let synth;
+document.addEventListener("click", () => {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (!synth) {
+    synth = new Tone.Synth().toDestination();
+  }
+}, { once: true });
+
+function noteToFrequency(note) {
+  const midi = noteToMidi(note);
+  return midi ? 440 * Math.pow(2, (midi - 69) / 12) : 0;
+}
+
+
 
 function drawPiano() {
   const piano = document.getElementById("piano");
