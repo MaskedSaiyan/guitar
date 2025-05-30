@@ -153,8 +153,11 @@
 
   <!-- Scripts con defer -->
 <!-- ✅ Todos con defer y en orden correcto -->
+<script src="https://unpkg.com/tone/build/Tone.js"></script>
+<script src="caged.js"></script>
 <script src="utils.js" defer></script>
 <script src="chords.js" defer></script>
+<script src="piano.js" defer></script>
 <script src="script.js" defer></script> <!-- define drawFretboard -->
 <script src="scale-selector.js" defer></script>
 <script src="circle.js" defer></script> <!-- usa drawFretboard -->
@@ -203,8 +206,5 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("fretEndLabel").textContent = end;
   }
 </script>
-<script src="caged.js" defer></script>
-<script src="https://unpkg.com/tone/build/Tone.js"></script>
-<script src="piano.js" defer></script>
 </body>
 </html>
