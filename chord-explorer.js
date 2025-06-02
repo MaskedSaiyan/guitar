@@ -130,9 +130,9 @@ text.addEventListener("click", () => {
   const noteOutput = document.getElementById("noteOutput");
 
   // 🔥 Evita race condition: asigna primero
-  const notesText = chordNotes.join(" ");
-  inputEl.value = notesText;
-  if (noteOutput) noteOutput.textContent = notesText;
+  inputEl.value = chord;
+  if (noteOutput) noteOutput.textContent = chord;
+
 
   chordDisplay.textContent = `🎵 Acorde: ${chord}`;
 
