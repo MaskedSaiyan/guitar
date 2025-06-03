@@ -21,15 +21,15 @@ function parseNoteGroups(input) {
         if (match) {
           const [, from, effect, to] = match;
           if (effect && to) {
-            result.push({ note: normalizeNote(from), string: stringNum });
-            result.push({ note: normalizeNote(to), string: stringNum, effect });
+            result.push({ note: normalizeNote(from), string: stringNum, high });
+            result.push({ note: normalizeNote(to), string: stringNum, effect, high });
           } else if (effect) {
-            result.push({ note: normalizeNote(from), string: stringNum, effect });
+            result.push({ note: normalizeNote(from), string: stringNum, effect, high });
           } else {
-            result.push({ note: normalizeNote(from), string: stringNum });
+            result.push({ note: normalizeNote(from), string: stringNum, high });
           }
         } else {
-          result.push({ note: normalizeNote(note), string: stringNum });
+          result.push({ note: normalizeNote(note), string: stringNum, high });
         }
       });
     } else if (/^\d[A-G#b]$/.test(tokenClean)) {
@@ -92,18 +92,6 @@ function drawTabEditor() {
     const grid = Array(tuning.length).fill(0).map(() => Array(stepCount).fill("----"));
 
     parsed.forEach((entry, time) => {
-      if (entry.effect === "raw" && entry.raw) {
-        // efecto tipo 5h7 o 7p5
-        grid.forEach((line, i) => {
-          if (i === 0) {
-            line[time] = entry.raw.padEnd(4, "-");
-          } else {
-            line[time] = "----";
-          }
-        });
-        return;
-      }
-
       const { note, string, high } = entry;
       let placed = false;
 
@@ -121,23 +109,24 @@ function drawTabEditor() {
         for (const fret of fretRange) {
           const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
           if (normalizeNote(noteAtFret) === note) {
-              grid.forEach((line, i) => {
-  if (i === s) {
-    let base = formatFret(fret);
-    if (entry.effect) {
-      if (entry.effect === "h") base = base.replace(/-/, "h");
-      if (entry.effect === "p") base = base.replace(/-/, "p");
-      if (entry.effect === "t") base = base.replace(/-/, "t");
-      if (entry.effect === "v" || entry.effect === "~") base = base.replace(/-/, "~");
-      if (entry.effect === "/") base = base.replace(/-/, "/");
-      if (entry.effect === "\\") base = base.replace(/-/, "\\");
-    }
-    line[time] = base;
-  } else {
-    line[time] = "----";
-  }
-});
+            grid.forEach((line, i) => {
+              if (i === s) {
+                let sFret = fret.toString();
 
+                if (entry.effect) {
+                  if (entry.effect === "h") sFret = `${sFret}h`;
+                  else if (entry.effect === "p") sFret = `${sFret}p`;
+                  else if (entry.effect === "t") sFret = `${sFret}t`;
+                  else if (entry.effect === "v" || entry.effect === "~") sFret = `${sFret}~`;
+                  else if (entry.effect === "/") sFret = `${sFret}/`;
+                  else if (entry.effect === "\\") sFret = `${sFret}\\`;
+                }
+
+                line[time] = sFret.length === 2 ? `-${sFret}-` : sFret.padEnd(4, "-");
+              } else {
+                line[time] = "----";
+              }
+            });
             placed = true;
             break;
           }
@@ -196,10 +185,10 @@ function copyTabAndCode() {
 function loadExampleTab() {
   const example = `
 [Intro]
-6(E E) 5(A AhE EpF) 4(C\\D D/C) 3(Gv) 2(GtA)
+6(E E) 5(B BhE EpF) 5(C\\D D/C) 3(Dv) 2(Gt A)
 
 [Riff1]
-3H( C D)
+3H(C D) 2(A A A)
 
 [Song]
 Intro
