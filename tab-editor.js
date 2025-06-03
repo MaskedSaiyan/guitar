@@ -144,3 +144,29 @@ function copyTabAndCode() {
     .catch(err => alert("❌ Error al copiar: " + err));
 }
 
+
+function loadExampleTab() {
+  const example = `
+[Intro]
+3(A A A A A C C C C C G G G G G G A A A A A)
+
+[Riff1]
+6(A A A A A C C C C C G G G G G G A A A A A)
+
+[Chorus]
+6A 4A 6A 4A 6A 4C 6C 4C 6C 4C 6G 4G 6G 4G 6G 4G 6A 4A 6A 4A 6A
+
+[Riff2]
+6(A A A A A C C C C C G G G G G G A A A A A)
+
+[Song]
+Intro
+Riff1 x2
+Chorus
+Riff2
+Riff1 x2
+`.trim();
+
+  document.getElementById("tabEditorInput").value = example;
+}
+
