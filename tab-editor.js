@@ -28,9 +28,43 @@ function parseNoteGroups(input) {
   return result;
 }
 
+function expandSections(rawInput) {
+  const lines = rawInput.split("\n");
+  const sections = {};
+  let current = null;
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (/^\[.+\]$/.test(trimmed)) {
+      current = trimmed.slice(1, -1).toUpperCase();
+      sections[current] = [];
+    } else if (current) {
+      sections[current].push(trimmed);
+    }
+  });
+
+  const main = sections["SONG"];
+  if (!main) return rawInput;
+
+  const expanded = [];
+
+  main.forEach(entry => {
+    const ref = entry.trim().toUpperCase();
+    if (sections[ref]) {
+      expanded.push(...sections[ref]);
+    } else {
+      expanded.push(entry);
+    }
+  });
+
+  return expanded.join(" ");
+}
+
 function drawTabEditor() {
-  const input = document.getElementById("tabEditorInput").value;
-  const parsed = parseNoteGroups(input);
+  const rawInput = document.getElementById("tabEditorInput").value;
+  const expandedInput = expandSections(rawInput);
+  const parsed = parseNoteGroups(expandedInput);
+
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
   const tuning = tuningsByInstrument[instrument][tuningName];
@@ -44,15 +78,14 @@ function drawTabEditor() {
     let placed = false;
 
     const stringIndexes = (string >= 1 && string <= tuning.length)
-      ? [tuning.length - string] // solo esa cuerda
-      : [...Array(tuning.length).keys()].reverse(); // buscar en todas
+      ? [tuning.length - string]
+      : [...Array(tuning.length).keys()].reverse();
 
     for (const s of stringIndexes) {
       const openNote = tuning[s];
       for (let fret = 0; fret <= fretEnd; fret++) {
         const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
         if (normalizeNote(noteAtFret) === note) {
-          // Pintamos solo donde corresponde
           grid.forEach((line, i) => {
             line[time] = (i === s) ? formatFret(fret) : "----";
           });
@@ -70,11 +103,11 @@ function drawTabEditor() {
     }
   });
 
-const tabLines = grid
-  .map((line, i) =>
-    tuning[i].toLowerCase() + "|" + line.map(x => x || "----").join("")
-  )
-  .reverse();  // 👈 esta línea invierte de aguda a grave
+  const tabLines = grid
+    .map((line, i) =>
+      tuning[i].toLowerCase() + "|" + line.map(x => x || "----").join("")
+    )
+    .reverse();
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
 }
