@@ -98,7 +98,7 @@
   <div id="fretboard-wrapper"><div id="fretboard"></div></div>
   <div id="tab-wrapper"><pre id="tablature"></pre></div>
 
-  <h2 style="margin-top: 2em;">🎹 Piano</h2>
+  <h2 id="pianoTitle" style="margin-top: 2em;">🎹 Piano</h2>
   <div id="piano" style="position: relative; height: 160px; margin-bottom: 2em;"></div>
 
   <div id="scaleSuggestions"><strong>Escalas sugeridas:</strong><ul id="suggestionList"></ul></div>
@@ -132,7 +132,7 @@
       document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
 
       const idsToToggle = [
-        'fretboard-wrapper', 'tab-wrapper', 'piano',
+        'fretboard-wrapper', 'tab-wrapper', 'piano', 'pianoTitle',
         'notesInput', 'noteOutput', 'fretStart', 'fretEnd',
         'fretStartLabel', 'fretEndLabel', 'invertFretboard'
       ];
