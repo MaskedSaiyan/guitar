@@ -127,3 +127,20 @@ function saveRiff() {
   li.textContent = `${name}: ${content}`;
   document.getElementById("savedRiffs").appendChild(li);
 }
+
+function copyTabAndCode() {
+  const code = document.getElementById("tabEditorInput").value.trim();
+  const rendered = document.getElementById("tabEditorOutput").textContent.trim();
+
+  if (!code && !rendered) {
+    alert("❌ No hay nada para copiar.");
+    return;
+  }
+
+  const combined = `🎼 TAB AS CODE 🎼\n\n===== CÓDIGO =====\n${code}\n\n===== TABLATURA =====\n${rendered}`;
+
+  navigator.clipboard.writeText(combined)
+    .then(() => alert("✅ Código y tablatura copiados al portapapeles"))
+    .catch(err => alert("❌ Error al copiar: " + err));
+}
+
