@@ -10,7 +10,7 @@
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
 
-  <!-- ✅ Selector visible en todos los tabs -->
+  <!-- 🎸 Selectores de instrumento y afinación -->
   <div id="instrument-controls" style="margin: 1em 0;">
     <label for="instrumentSelect">Instrumento:</label>
     <select id="instrumentSelect" onchange="updateTuningOptions()">
@@ -21,6 +21,17 @@
 
     <label for="tuningSelect">Afinación:</label>
     <select id="tuningSelect"></select>
+  </div>
+
+  <!-- 🎚️ Sliders de trastes -->
+  <div style="margin-top: 1em;">
+    <label for="fretStart">Desde traste:</label>
+    <input type="range" id="fretStart" min="0" max="24" value="0" oninput="updateFretWindow()" />
+    <span id="fretStartLabel">0</span>
+
+    <label for="fretEnd" style="margin-left: 2em;">hasta:</label>
+    <input type="range" id="fretEnd" min="0" max="24" value="12" oninput="updateFretWindow()" />
+    <span id="fretEndLabel">12</span>
   </div>
 
   <h2>Modo de Visualización</h2>
@@ -48,16 +59,6 @@
 
       <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" oninput="drawFretboard()" />
 
-      <div style="margin-top: 1em;">
-        <label for="fretStart">Desde traste:</label>
-        <input type="range" id="fretStart" min="0" max="24" value="0" oninput="updateFretWindow()" />
-        <span id="fretStartLabel">0</span>
-
-        <label for="fretEnd">hasta:</label>
-        <input type="range" id="fretEnd" min="0" max="24" value="12" oninput="updateFretWindow()" />
-        <span id="fretEndLabel">12</span>
-      </div>
-
       <label>
         <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
         Mostrar mástil como tablatura (de aguda a grave)
@@ -84,7 +85,7 @@
       <h2>Editor de Riffs</h2>
       <label>Nombre de la canción:</label>
       <input type="text" id="riffName" placeholder="Ej. Verso principal" style="width: 50%;" />
-      <p>Escribe las notas con sintaxis tipo: <code>4(C D G) 2(A A A AA) 1D 2C</code></p>
+      <p>Escribe las notas con sintaxis tipo: <code>4(C D G) 2H(A A A) 1D 2C</code> – usa <code>H</code> para trastes altos</p>
       <button onclick="loadExampleTab()">🎓 Cargar ejemplo</button>
 
       <label>Editor de Canción:</label><br>
@@ -92,6 +93,8 @@
       <button onclick="drawTabEditor()">🎸 Mostrar tablatura</button>
       <button onclick="copyTabAndCode()">📋 Copiar código + tablatura</button>
       <pre id="tabEditorOutput" style="margin-top: 1em; text-align: left; white-space: pre; font-family: monospace;"></pre>
+      <h3>Riffs guardados</h3>
+      <ul id="savedRiffs"></ul>
     </div>
   </div>
 
@@ -133,8 +136,7 @@
 
       const idsToToggle = [
         'fretboard-wrapper', 'tab-wrapper', 'piano', 'pianoTitle',
-        'notesInput', 'noteOutput', 'fretStart', 'fretEnd',
-        'fretStartLabel', 'fretEndLabel', 'invertFretboard'
+        'notesInput', 'noteOutput', 'invertFretboard'
       ];
 
       idsToToggle.forEach(id => {
@@ -142,7 +144,7 @@
         if (el) el.style.display = isEditor ? 'none' : '';
       });
 
-      document.querySelectorAll('label[for="fretStart"], label[for="fretEnd"], button[onclick="drawFretboard()"]').forEach(el => {
+      document.querySelectorAll('button[onclick="drawFretboard()"]').forEach(el => {
         el.style.display = isEditor ? 'none' : '';
       });
 
@@ -172,4 +174,4 @@
   <div id="tooltip" class="tooltip-bubble"></div>
 </body>
 </html>
-<!-- ⬆️ Aquí termina el archivo -->
+<!-- ⬆️ Fin del archivo -->
