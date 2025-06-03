@@ -208,10 +208,26 @@ const isEditor = (tabId === 'tabEditor');
 document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
 document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
 
-document.getElementById('fretboard-wrapper').style.display = isEditor ? 'none' : '';
-document.getElementById('tab-wrapper').style.display = isEditor ? 'none' : '';
-document.getElementById('piano').style.display = isEditor ? 'none' : '';
-document.getElementById('notesInput').style.display = isEditor ? 'none' : '';
+        const editorOnly = ['tabEditor'];
+const hideWhenEditor = [
+  'scaleSuggestions',
+  'chordSuggestions',
+  'fretboard-wrapper',
+  'tab-wrapper',
+  'piano',
+  'notesInput',
+  'noteOutput',
+  'fretStart', 'fretEnd',
+  'fretStartLabel', 'fretEndLabel',
+  'instrumentSelect', 'tuningSelect',
+  'invertFretboard'
+];
+
+hideWhenEditor.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.style.display = isEditor ? 'none' : '';
+});
+
 document.querySelectorAll('label[for="fretStart"], #fretStart, #fretStartLabel, label[for="fretEnd"], #fretEnd, #fretEndLabel, #instrumentSelect, #tuningSelect, button[onclick="drawFretboard()"]').forEach(el => {
   el.style.display = isEditor ? 'none' : '';
 });
