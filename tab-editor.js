@@ -104,7 +104,7 @@ function drawTabEditor() {
     const grid = Array(tuning.length).fill(0).map(() => Array(stepCount).fill("----"));
 
     parsed.forEach((entry, time) => {
-      const { note, string, high } = entry;
+      const { note, string, high, effect } = entry;
       let placed = false;
 
       const stringIndexes = (string >= 1 && string <= tuning.length)
@@ -125,16 +125,17 @@ function drawTabEditor() {
               if (i === s) {
                 let sFret = fret.toString();
 
-                if (entry.effect) {
-                  if (entry.effect === "h") sFret = `${sFret}h`;
-                  else if (entry.effect === "p") sFret = `${sFret}p`;
-                  else if (entry.effect === "t") sFret = `${sFret}t`;
-                  else if (entry.effect === "v" || entry.effect === "~") sFret = `${sFret}~`;
-                  else if (entry.effect === "/") sFret = `${sFret}/`;
-                  else if (entry.effect === "\\") sFret = `${sFret}\\`;
+                if (effect) {
+                  if (effect === "h") sFret += "h";
+                  else if (effect === "p") sFret += "p";
+                  else if (effect === "t") sFret += "t";
+                  else if (effect === "v" || effect === "~") sFret += "~";
+                  else if (effect === "/") sFret += "/";
+                  else if (effect === "\\") sFret += "\\";
                 }
 
-                line[time] = sFret.length === 2 ? `-${sFret}-` : sFret.padEnd(4, "-");
+                // 🔧 Forzamos 4 caracteres exactos
+                line[time] = sFret.padEnd(4, "-").slice(0, 4);
               } else {
                 line[time] = "----";
               }
@@ -167,6 +168,7 @@ function drawTabEditor() {
 
   document.getElementById("tabEditorOutput").textContent = outputBlocks.join("\n");
 }
+
 
 function saveRiff() {
   const name = document.getElementById("riffName").value.trim();
