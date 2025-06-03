@@ -121,9 +121,23 @@ function drawTabEditor() {
         for (const fret of fretRange) {
           const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
           if (normalizeNote(noteAtFret) === note) {
-            grid.forEach((line, i) => {
-              line[time] = (i === s) ? formatFret(fret) : "----";
-            });
+              grid.forEach((line, i) => {
+  if (i === s) {
+    let base = formatFret(fret);
+    if (entry.effect) {
+      if (entry.effect === "h") base = base.replace(/-/, "h");
+      if (entry.effect === "p") base = base.replace(/-/, "p");
+      if (entry.effect === "t") base = base.replace(/-/, "t");
+      if (entry.effect === "v" || entry.effect === "~") base = base.replace(/-/, "~");
+      if (entry.effect === "/") base = base.replace(/-/, "/");
+      if (entry.effect === "\\") base = base.replace(/-/, "\\");
+    }
+    line[time] = base;
+  } else {
+    line[time] = "----";
+  }
+});
+
             placed = true;
             break;
           }
