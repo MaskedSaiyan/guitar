@@ -188,6 +188,8 @@
 <script src="circle.js" defer></script> <!-- usa drawFretboard -->
 <script src="shape-generator.js" defer></script>
 <script src="chord-explorer.js" defer></script>
+<script src="tab-editor.js" defer></script>
+
 
 
 <!-- ✅ Este SIN defer y va al final -->
@@ -200,9 +202,20 @@
   document.getElementById(tabId).classList.add('active');
   document.getElementById('btn' + tabId).classList.add('active');
 
-  const showSuggestions = (tabId === 'scalesTab');
-  document.getElementById('scaleSuggestions').style.display = showSuggestions ? '' : 'none';
-  document.getElementById('chordSuggestions').style.display = showSuggestions ? '' : 'none';
+        const isScale = (tabId === 'scalesTab');
+const isEditor = (tabId === 'tabEditor');
+
+document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
+document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
+
+document.getElementById('fretboard-wrapper').style.display = isEditor ? 'none' : '';
+document.getElementById('tab-wrapper').style.display = isEditor ? 'none' : '';
+document.getElementById('piano').style.display = isEditor ? 'none' : '';
+document.getElementById('notesInput').style.display = isEditor ? 'none' : '';
+document.querySelectorAll('label[for="fretStart"], #fretStart, #fretStartLabel, label[for="fretEnd"], #fretEnd, #fretEndLabel, #instrumentSelect, #tuningSelect, button[onclick="drawFretboard()"]').forEach(el => {
+  el.style.display = isEditor ? 'none' : '';
+});
+
 
   if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
     initCircleOfFifths();
