@@ -49,7 +49,7 @@
       <button onclick="switchTab('circleTab')" id="btncircleTab">🔄 Círculo de Quintas</button>
       <button onclick="switchTab('chordExplorerTab')" id="btnchordExplorerTab">🧭 Explorador de Acordes</button>
       <button onclick="switchTab('cagedTab')" id="btncagedTab">🧱 Sistema CAGED</button>
-
+      <button onclick="switchTab('tabEditor')" id="btntabEditor">✏️ Editor de Tablaturas</button>
 
     </div>
 
@@ -94,6 +94,24 @@
   <button onclick="showCagedChord()">🎸 Mostrar forma C (CAGED)</button>
 </div>
 
+<div id="tabEditor" class="tab-content">
+  <h2>Editor de Riffs</h2>
+
+  <label>Nombre del riff:</label>
+  <input type="text" id="riffName" placeholder="Ej. Verso principal" style="width: 50%;" />
+
+  <p>Escribe las notas con sintaxis tipo: <code>4(C D G) 2(A A A AA) 1D 2C</code></p>
+  <textarea id="tabEditorInput" rows="4" style="width: 100%;" oninput="drawTabEditor()"></textarea>
+
+  <button onclick="saveRiff()">💾 Guardar riff</button>
+
+  <pre id="tabEditorOutput" style="margin-top: 1em; text-align: left; white-space: pre; font-family: monospace;"></pre>
+
+  <h3>Riffs guardados</h3>
+  <ul id="savedRiffs"></ul>
+</div>
+
+
 
 </div>
 
@@ -123,11 +141,11 @@
     <label>Afinación:</label>
     <select id="tuningSelect"></select>
 
-    <div style="margin-top: 1em;">
   <label>
     <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
     Mostrar mástil como tablatura (de aguda a grave)
   </label>
+    <div style="margin-top: 1em;">
 </div>
 
     <button onclick="drawFretboard()">Mostrar</button>
