@@ -1,18 +1,3 @@
-function findFretForNote(openNote, targetNote, high = false, fretStart = 0, fretEnd = 24) {
-  const start = high ? fretEnd : fretStart;
-  const end = high ? fretStart : fretEnd;
-  const step = high ? -1 : 1;
-
-  for (let fret = start; high ? fret >= end : fret <= end; fret += step) {
-    const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
-    if (normalizeNote(noteAtFret) === normalizeNote(targetNote)) {
-      return fret;
-    }
-  }
-  return null;
-}
-
-
 function formatFret(fret) {
   if (fret === null) return "----";
   if (typeof fret === "string" && fret === "?") return " ?  ";
@@ -32,21 +17,21 @@ function parseNoteGroups(input) {
       const stringNum = parseInt(tokenClean[0]);
       const inner = tokenClean.slice(2, -1).trim().split(/\s+/);
       inner.forEach(note => {
-        // 🎸 Slide tipo A/G o A\G
-        const slideMatch = note.match(/^([A-G]#?)\/([A-G]#?)$|^([A-G]#?)\\([A-G]#?)$/);
+        // 1. Deslizamientos tipo A/G o A\G
+        const slideMatch = note.match(/^([A-G]#?)[\\/]{1}([A-G]#?)$/);
         if (slideMatch) {
-          const from = normalizeNote(slideMatch[1] || slideMatch[3]);
-          const to = normalizeNote(slideMatch[2] || slideMatch[4]);
-          const openNote = tuningsByInstrument["Guitar"]["Standard"][stringNum - 1]; // afinación estándar
-          const fretFrom = findFretForNote(openNote, from, high);
-          const fretTo = findFretForNote(openNote, to, high);
-          const slideEffect = fretTo < fretFrom ? "\\" : "/";
+          const from = normalizeNote(slideMatch[1]);
+          const to = normalizeNote(slideMatch[2]);
+          const idxFrom = noteIndex(from);
+          const idxTo = noteIndex(to);
+          const slideEffect = idxTo > idxFrom ? "/" : "\\";
+
           result.push({ note: from, string: stringNum, high, effect: slideEffect });
           result.push({ note: to, string: stringNum, high });
           return;
         }
 
-        // 🎵 Efectos tipo AhE o EpF
+        // 2. Efectos tipo 7h9
         const match = note.match(/^([A-G]#?)([hptv~])([A-G]#?)?$/);
         if (match) {
           const [, base, effect, second] = match;
@@ -55,7 +40,7 @@ function parseNoteGroups(input) {
           return;
         }
 
-        // 🎶 Nota simple
+        // 3. Nota normal
         result.push({ note: normalizeNote(note), string: stringNum, high });
       });
     } else if (/^\d[A-G#b]$/.test(tokenClean)) {
@@ -230,5 +215,3 @@ Bridge
 
   document.getElementById("tabEditorInput").value = example;
 }
-
-
