@@ -1,5 +1,3 @@
-// tab-editor.js
-
 function formatFret(fret) {
   if (fret === null) return "----";
   if (typeof fret === "string" && fret === "?") return " ?  ";
@@ -28,7 +26,13 @@ function parseNoteGroups(input) {
   return result;
 }
 
-function expandSections(rawInput) {
+function drawTabEditor() {
+  const rawInput = document.getElementById("tabEditorInput").value;
+  const instrument = document.getElementById("instrumentSelect").value;
+  const tuningName = document.getElementById("tuningSelect").value;
+  const tuning = tuningsByInstrument[instrument][tuningName];
+  const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
+
   const lines = rawInput.split("\n");
   const sections = {};
   let current = null;
@@ -43,73 +47,69 @@ function expandSections(rawInput) {
     }
   });
 
-  const main = sections["SONG"];
-  if (!main) return rawInput;
+  const sequence = sections["SONG"];
+  if (!sequence) {
+    document.getElementById("tabEditorOutput").textContent = "❌ Falta sección [Song]";
+    return;
+  }
 
-  const expanded = [];
+  const outputBlocks = [];
 
-  main.forEach(entry => {
-    const ref = entry.trim().toUpperCase();
-    if (sections[ref]) {
-      expanded.push(...sections[ref]);
-    } else {
-      expanded.push(entry);
-    }
-  });
+  sequence.forEach(line => {
+    const match = line.trim().match(/^([A-Za-z0-9_]+)(?:\s*x(\d+))?$/i);
+    if (!match) return;
 
-  return expanded.join(" ");
-}
+    const ref = match[1].toUpperCase();
+    const times = parseInt(match[2] || "1");
+    const block = sections[ref];
+    if (!block) return;
 
-function drawTabEditor() {
-  const rawInput = document.getElementById("tabEditorInput").value;
-  const expandedInput = expandSections(rawInput);
-  const parsed = parseNoteGroups(expandedInput);
+    const parsed = parseNoteGroups(block.join(" "));
+    const stepCount = parsed.length;
+    const grid = Array(tuning.length).fill(0).map(() => Array(stepCount).fill("----"));
 
-  const instrument = document.getElementById("instrumentSelect").value;
-  const tuningName = document.getElementById("tuningSelect").value;
-  const tuning = tuningsByInstrument[instrument][tuningName];
-  const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
+    parsed.forEach(({ note, string }, time) => {
+      let placed = false;
 
-  const stringCount = tuning.length;
-  const stepCount = parsed.length;
-  const grid = Array(stringCount).fill(0).map(() => Array(stepCount).fill("----"));
+      const stringIndexes = (string >= 1 && string <= tuning.length)
+        ? [tuning.length - string]
+        : [...Array(tuning.length).keys()].reverse();
 
-  parsed.forEach(({ note, string }, time) => {
-    let placed = false;
-
-    const stringIndexes = (string >= 1 && string <= tuning.length)
-      ? [tuning.length - string]
-      : [...Array(tuning.length).keys()].reverse();
-
-    for (const s of stringIndexes) {
-      const openNote = tuning[s];
-      for (let fret = 0; fret <= fretEnd; fret++) {
-        const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
-        if (normalizeNote(noteAtFret) === note) {
-          grid.forEach((line, i) => {
-            line[time] = (i === s) ? formatFret(fret) : "----";
-          });
-          placed = true;
-          break;
+      for (const s of stringIndexes) {
+        const openNote = tuning[s];
+        for (let fret = 0; fret <= fretEnd; fret++) {
+          const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
+          if (normalizeNote(noteAtFret) === note) {
+            grid.forEach((line, i) => {
+              line[time] = (i === s) ? formatFret(fret) : "----";
+            });
+            placed = true;
+            break;
+          }
         }
+        if (placed) break;
       }
-      if (placed) break;
-    }
 
-    if (!placed) {
-      grid.forEach((line, i) => {
-        line[time] = (string == null || i === tuning.length - string) ? " ?  " : "----";
-      });
-    }
+      if (!placed) {
+        grid.forEach((line, i) => {
+          line[time] = (string == null || i === tuning.length - string) ? " ?  " : "----";
+        });
+      }
+    });
+
+    const tabLines = grid
+      .map((line, i) =>
+        tuning[i].toLowerCase() + "|" + line.map(x => x || "----").join("")
+      )
+      .reverse();
+
+    outputBlocks.push(
+      `[${ref}${times > 1 ? ` x${times}` : ""}]\n` +
+      tabLines.join("\n") + "\n"
+    );
   });
 
-  const tabLines = grid
-    .map((line, i) =>
-      tuning[i].toLowerCase() + "|" + line.map(x => x || "----").join("")
-    )
-    .reverse();
-
-  document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
+  document.getElementById("tabEditorOutput").textContent = outputBlocks.join("\n");
 }
 
 function saveRiff() {
