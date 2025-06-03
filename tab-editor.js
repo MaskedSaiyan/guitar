@@ -1,5 +1,12 @@
 // tab-editor.js
 
+function formatFret(fret) {
+  if (fret === null) return "----";
+  if (typeof fret === "string" && fret === "?") return " ?  ";
+  const s = fret.toString();
+  return s.length === 1 ? `-${s}--` : `${s}--`;
+}
+
 function parseNoteGroups(input) {
   const result = [];
   const tokens = input.match(/\d\([^\)]+\)|\d[A-G#b]|[A-G#b]/g) || [];
@@ -21,7 +28,6 @@ function parseNoteGroups(input) {
   return result;
 }
 
-
 function drawTabEditor() {
   const input = document.getElementById("tabEditorInput").value;
   const parsed = parseNoteGroups(input);
@@ -32,13 +38,13 @@ function drawTabEditor() {
 
   const stringCount = tuning.length;
   const stepCount = parsed.length;
-  const grid = Array(stringCount).fill(0).map(() => Array(stepCount).fill("--- "));
+  const grid = Array(stringCount).fill(0).map(() => Array(stepCount).fill("----"));
 
   parsed.forEach(({ note, string }, time) => {
     let placed = false;
 
     const stringIndexes = (string >= 1 && string <= tuning.length)
-      ? [tuning.length - string] // pintar solo en esa cuerda
+      ? [tuning.length - string] // solo esa cuerda
       : [...Array(tuning.length).keys()].reverse(); // buscar en todas
 
     for (const s of stringIndexes) {
@@ -46,16 +52,10 @@ function drawTabEditor() {
       for (let fret = 0; fret <= fretEnd; fret++) {
         const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
         if (normalizeNote(noteAtFret) === note) {
-          // Solo pintamos en la cuerda válida
-          grid[s][time] = (fret < 10 ? `-${fret}-` : `${fret} `);
-
-          // Si no se especificó cuerda, rellenamos el resto con "--- "
-          if (string == null) {
-            for (let i = 0; i < stringCount; i++) {
-              if (i !== s) grid[i][time] = "--- ";
-            }
-          }
-
+          // Pintamos solo donde corresponde
+          grid.forEach((line, i) => {
+            line[time] = (i === s) ? formatFret(fret) : "----";
+          });
           placed = true;
           break;
         }
@@ -64,27 +64,18 @@ function drawTabEditor() {
     }
 
     if (!placed) {
-      if (string == null) {
-        // Si no hay cuerda específica y no se pudo colocar, mostrar ? en todas
-        for (let i = 0; i < stringCount; i++) {
-          grid[i][time] = " ?  ";
-        }
-      } else {
-        // Si sí se especificó cuerda pero no se pudo poner, solo ahí va ?
-        for (let i = 0; i < stringCount; i++) {
-          grid[i][time] = (i === tuning.length - string) ? " ?  " : "--- ";
-        }
-      }
+      grid.forEach((line, i) => {
+        line[time] = (string == null || i === tuning.length - string) ? " ?  " : "----";
+      });
     }
   });
 
   const tabLines = grid.map((line, i) =>
-    tuning[i].toLowerCase() + "|" + line.map(x => x || "--- ").join("")
+    tuning[i].toLowerCase() + "|" + line.map(x => x || "----").join("")
   );
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
 }
-
 
 function saveRiff() {
   const name = document.getElementById("riffName").value.trim();
