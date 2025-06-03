@@ -7,22 +7,33 @@ function formatFret(fret) {
 
 function parseNoteGroups(input) {
   const result = [];
-  const tokens = input.match(/\dH?\([^\)]+\)|\dH?[A-G#b]|[A-G#b]|[\d]+[hp\\/vt~][\dA-G#b]?/gi) || [];
+  const tokens = input.match(/\dH?\([^\)]+\)|\dH?[A-G#b]|[A-G#b]/g) || [];
 
   tokens.forEach(token => {
     const high = token.includes('H');
     const tokenClean = token.replace('H', '');
 
-    if (/^\d\([A-G#b\s]+\)$/.test(tokenClean)) {
+    if (/^\d\([^\)]+\)$/.test(tokenClean)) {
       const stringNum = parseInt(tokenClean[0]);
-      const innerNotes = tokenClean.slice(2, -1).trim().split(/\s+/);
-      innerNotes.forEach(note => {
-        if (note) result.push({ note: normalizeNote(note), string: stringNum, high });
+      const inner = tokenClean.slice(2, -1).trim().split(/\s+/);
+      inner.forEach(note => {
+        const match = note.match(/^([A-G]#?)([hptv~\\/])?([A-G]#?)?$/);
+        if (match) {
+          const [, from, effect, to] = match;
+          if (effect && to) {
+            result.push({ note: normalizeNote(from), string: stringNum });
+            result.push({ note: normalizeNote(to), string: stringNum, effect });
+          } else if (effect) {
+            result.push({ note: normalizeNote(from), string: stringNum, effect });
+          } else {
+            result.push({ note: normalizeNote(from), string: stringNum });
+          }
+        } else {
+          result.push({ note: normalizeNote(note), string: stringNum });
+        }
       });
     } else if (/^\d[A-G#b]$/.test(tokenClean)) {
       result.push({ note: normalizeNote(tokenClean.slice(1)), string: parseInt(tokenClean[0]), high });
-    } else if (/^[\d]+[hp\\/vt~][\dA-G#b]?$/i.test(token)) {
-      result.push({ raw: token, effect: "raw" });
     } else {
       result.push({ note: normalizeNote(token), string: null, high: false });
     }
@@ -171,10 +182,14 @@ function copyTabAndCode() {
 function loadExampleTab() {
   const example = `
 [Intro]
-6(0 0) 5(5h7) 5(7p5) 4(5/7) 4(7\\5) 3(7v) 2(t12)
+6(E E) 5(A AhE EpF) 4(C\\D D/C) 3(Gv) 2(GtA)
+
+[Riff1]
+3H( C D)
 
 [Song]
 Intro
+Riff1
 `.trim();
 
   document.getElementById("tabEditorInput").value = example;
