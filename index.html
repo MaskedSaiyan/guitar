@@ -120,56 +120,57 @@
   <script src="tab-editor.js" defer></script>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
-      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      document.getElementById('btn' + tabId).classList.add('active');
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+    document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.getElementById('btn' + tabId).classList.add('active');
 
-      const isScale = (tabId === 'scalesTab');
-      const isEditor = (tabId === 'tabEditor');
+    const isScale = (tabId === 'scalesTab');
+    const isEditor = (tabId === 'tabEditor');
 
-      document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
-      document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
+    document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
+    document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
 
-      const idsToToggle = [
-        'fretboard-wrapper', 'tab-wrapper', 'piano',
-        'notesInput', 'noteOutput', 'fretStart', 'fretEnd',
-        'fretStartLabel', 'fretEndLabel', 'invertFretboard',
-        'instrumentSelect', 'tuningSelect'
-      ];
+    const idsToToggle = [
+      'fretboard-wrapper', 'tab-wrapper', 'piano',
+      'notesInput', 'noteOutput', 'fretStart', 'fretEnd',
+      'fretStartLabel', 'fretEndLabel', 'invertFretboard'
+      // 👇 quitamos instrumentSelect y tuningSelect
+    ];
 
-      idsToToggle.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = isEditor ? 'none' : '';
-      });
-
-      document.querySelectorAll('label[for="fretStart"], label[for="fretEnd"], button[onclick="drawFretboard()"]').forEach(el => {
-        el.style.display = isEditor ? 'none' : '';
-      });
-
-      if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
-        initCircleOfFifths();
-      }
-
-      if (tabId === 'chordExplorerTab') {
-        if (typeof renderChordCircle === "function") renderChordCircle();
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      if (typeof updateTuningOptions === "function") updateTuningOptions();
-      if (typeof populateScaleSelector === "function") populateScaleSelector();
-      if (typeof updateNotesDisplay === "function") updateNotesDisplay();
+    idsToToggle.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = isEditor ? 'none' : '';
     });
 
-    function updateFretWindow() {
-      const start = parseInt(document.getElementById("fretStart").value);
-      const end = parseInt(document.getElementById("fretEnd").value);
-      document.getElementById("fretStartLabel").textContent = start;
-      document.getElementById("fretEndLabel").textContent = end;
+    document.querySelectorAll('label[for="fretStart"], label[for="fretEnd"], button[onclick="drawFretboard()"]').forEach(el => {
+      el.style.display = isEditor ? 'none' : '';
+    });
+
+    if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
+      initCircleOfFifths();
     }
-  </script>
+
+    if (tabId === 'chordExplorerTab') {
+      if (typeof renderChordCircle === "function") renderChordCircle();
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    if (typeof updateTuningOptions === "function") updateTuningOptions();
+    if (typeof populateScaleSelector === "function") populateScaleSelector();
+    if (typeof updateNotesDisplay === "function") updateNotesDisplay();
+  });
+
+  function updateFretWindow() {
+    const start = parseInt(document.getElementById("fretStart").value);
+    const end = parseInt(document.getElementById("fretEnd").value);
+    document.getElementById("fretStartLabel").textContent = start;
+    document.getElementById("fretEndLabel").textContent = end;
+  }
+</script>
+
 
   <div id="tooltip" class="tooltip-bubble"></div>
 </body>
