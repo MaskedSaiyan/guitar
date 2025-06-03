@@ -7,7 +7,7 @@ function formatFret(fret) {
 
 function parseNoteGroups(input) {
   const result = [];
-  const tokens = input.match(/\dH?\([^\)]+\)|\dH?[A-G#b]|[A-G#b]/g) || [];
+  const tokens = input.match(/\dH?\([^\)]+\)|\dH?[A-G#b]|[A-G#b]|[\d]+[hp\\/vt~][\dA-G#b]?/gi) || [];
 
   tokens.forEach(token => {
     const high = token.includes('H');
@@ -21,6 +21,8 @@ function parseNoteGroups(input) {
       });
     } else if (/^\d[A-G#b]$/.test(tokenClean)) {
       result.push({ note: normalizeNote(tokenClean.slice(1)), string: parseInt(tokenClean[0]), high });
+    } else if (/^[\d]+[hp\\/vt~][\dA-G#b]?$/i.test(token)) {
+      result.push({ raw: token, effect: "raw" });
     } else {
       result.push({ note: normalizeNote(token), string: null, high: false });
     }
@@ -78,7 +80,20 @@ function drawTabEditor() {
     const stepCount = parsed.length;
     const grid = Array(tuning.length).fill(0).map(() => Array(stepCount).fill("----"));
 
-    parsed.forEach(({ note, string, high }, time) => {
+    parsed.forEach((entry, time) => {
+      if (entry.effect === "raw" && entry.raw) {
+        // efecto tipo 5h7 o 7p5
+        grid.forEach((line, i) => {
+          if (i === 0) {
+            line[time] = entry.raw.padEnd(4, "-");
+          } else {
+            line[time] = "----";
+          }
+        });
+        return;
+      }
+
+      const { note, string, high } = entry;
       let placed = false;
 
       const stringIndexes = (string >= 1 && string <= tuning.length)
@@ -89,8 +104,8 @@ function drawTabEditor() {
         const openNote = tuning[s];
 
         const fretRange = high
-          ? [...Array(fretEnd - fretStart + 1).keys()].map(i => fretEnd - i)  // descendente
-          : [...Array(fretEnd - fretStart + 1).keys()].map(i => fretStart + i);  // ascendente
+          ? [...Array(fretEnd - fretStart + 1).keys()].map(i => fretEnd - i)
+          : [...Array(fretEnd - fretStart + 1).keys()].map(i => fretStart + i);
 
         for (const fret of fretRange) {
           const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
@@ -156,23 +171,10 @@ function copyTabAndCode() {
 function loadExampleTab() {
   const example = `
 [Intro]
-3H(A A A A A C C C C C G G G G G G A A A A A)
-
-[Riff1]
-6(A A A A A C C C C C G G G G G G A A A A A)
-
-[Chorus]
-6A 4A 6A 4A 6A 4C 6C 4C 6C 4C 6G 4G 6G 4G 6G 4G 6A 4A 6A 4A 6A
-
-[Riff2]
-6(A A A A A C C C C C G G G G G G A A A A A)
+6(0 0) 5(5h7) 5(7p5) 4(5/7) 4(7\\5) 3(7v) 2(t12)
 
 [Song]
 Intro
-Riff1 x2
-Chorus
-Riff2
-Riff1 x2
 `.trim();
 
   document.getElementById("tabEditorInput").value = example;
