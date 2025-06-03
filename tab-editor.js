@@ -1,19 +1,23 @@
 // tab-editor.js
 
 function parseNoteGroups(input) {
-  const tokens = input.trim().split(/\s+/);
   const result = [];
+  const tokens = input.match(/\d\([^\)]+\)|\d[A-G#b]|[A-G#b]/g) || [];
+
   tokens.forEach(token => {
     if (/^\d\([A-G#b\s]+\)$/.test(token)) {
       const stringNum = parseInt(token[0]);
-      const innerNotes = token.slice(2, -1).split(/\s+/);
-      innerNotes.forEach(note => result.push({ note: normalizeNote(note), string: stringNum }));
+      const innerNotes = token.slice(2, -1).trim().split(/\s+/);
+      innerNotes.forEach(note => {
+        if (note) result.push({ note: normalizeNote(note), string: stringNum });
+      });
     } else if (/^\d[A-G#b]$/.test(token)) {
       result.push({ note: normalizeNote(token.slice(1)), string: parseInt(token[0]) });
     } else {
       result.push({ note: normalizeNote(token), string: null });
     }
   });
+
   return result;
 }
 
