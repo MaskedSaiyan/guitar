@@ -17,10 +17,16 @@ function parseNoteGroups(input) {
       const stringNum = parseInt(tokenClean[0]);
       const inner = tokenClean.slice(2, -1).trim().split(/\s+/);
       inner.forEach(note => {
-        const match = note.match(/^([A-G]#?)([hptv~\\/])?([A-G]#?)?$/);
+        const match = note.match(/^([A-G]#?)([hptv~])?([A-G]#?)?$|^([A-G]#?)[\\/]{1}([A-G]#?)$/);
         if (match) {
-          const [, from, effect, to] = match;
-          if (effect && to) {
+          const [, from, effect, to, fromSlide, toSlide] = match;
+          if (fromSlide && toSlide) {
+            const idxFrom = noteIndex(fromSlide);
+            const idxTo = noteIndex(toSlide);
+            const slideEffect = idxTo > idxFrom ? "/" : "\\";
+            result.push({ note: normalizeNote(fromSlide), string: stringNum, high });
+            result.push({ note: normalizeNote(toSlide), string: stringNum, high, effect: slideEffect });
+          } else if (effect && to) {
             result.push({ note: normalizeNote(from), string: stringNum, high });
             result.push({ note: normalizeNote(to), string: stringNum, effect, high });
           } else if (effect) {
@@ -190,9 +196,13 @@ function loadExampleTab() {
 [Riff1]
 3H(C D) 2(A A A)
 
+[Bridge]
+3(E D) 4(C B A G E F A/G B C G/A)
+
 [Song]
 Intro
 Riff1
+Bridge
 `.trim();
 
   document.getElementById("tabEditorInput").value = example;
