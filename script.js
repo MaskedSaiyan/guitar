@@ -96,8 +96,12 @@ function drawFretboard() {
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
+  const invert = document.getElementById("invertFretboard")?.checked;
+const stringIndices = invert
+  ? [...Array(stringCount).keys()].reverse()  // de grave a aguda
+  : [...Array(stringCount).keys()];           // de aguda a grave
 
-  for (let i = 0; i < stringCount; i++) {
+for (const i of stringIndices) {
     const openNote = tuning[i];
     const string = document.createElement("div");
     string.className = "string";
