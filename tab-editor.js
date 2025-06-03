@@ -17,26 +17,31 @@ function parseNoteGroups(input) {
       const stringNum = parseInt(tokenClean[0]);
       const inner = tokenClean.slice(2, -1).trim().split(/\s+/);
       inner.forEach(note => {
-        const match = note.match(/^([A-G]#?)([hptv~])?([A-G]#?)?$|^([A-G]#?)[\\/]{1}([A-G]#?)$/);
-        if (match) {
-          const [, from, effect, to, fromSlide, toSlide] = match;
-          if (fromSlide && toSlide) {
-            const idxFrom = noteIndex(fromSlide);
-            const idxTo = noteIndex(toSlide);
-            const slideEffect = idxTo > idxFrom ? "/" : "\\";
-            result.push({ note: normalizeNote(fromSlide), string: stringNum, high });
-            result.push({ note: normalizeNote(toSlide), string: stringNum, high, effect: slideEffect });
-          } else if (effect && to) {
-            result.push({ note: normalizeNote(from), string: stringNum, high });
-            result.push({ note: normalizeNote(to), string: stringNum, effect, high });
-          } else if (effect) {
-            result.push({ note: normalizeNote(from), string: stringNum, effect, high });
-          } else {
-            result.push({ note: normalizeNote(from), string: stringNum, high });
-          }
-        } else {
-          result.push({ note: normalizeNote(note), string: stringNum, high });
+        // 1. Deslizamientos tipo A/G o A\G
+        const slideMatch = note.match(/^([A-G]#?)[\\/]{1}([A-G]#?)$/);
+        if (slideMatch) {
+          const from = normalizeNote(slideMatch[1]);
+          const to = normalizeNote(slideMatch[2]);
+          const idxFrom = noteIndex(from);
+          const idxTo = noteIndex(to);
+          const slideEffect = idxTo > idxFrom ? "/" : "\\";
+
+          result.push({ note: from, string: stringNum, high, effect: slideEffect });
+          result.push({ note: to, string: stringNum, high });
+          return;
         }
+
+        // 2. Efectos tipo 7h9
+        const match = note.match(/^([A-G]#?)([hptv~])([A-G]#?)?$/);
+        if (match) {
+          const [, base, effect, second] = match;
+          result.push({ note: normalizeNote(base), string: stringNum, high, effect });
+          if (second) result.push({ note: normalizeNote(second), string: stringNum, high });
+          return;
+        }
+
+        // 3. Nota normal
+        result.push({ note: normalizeNote(note), string: stringNum, high });
       });
     } else if (/^\d[A-G#b]$/.test(tokenClean)) {
       result.push({ note: normalizeNote(tokenClean.slice(1)), string: parseInt(tokenClean[0]), high });
@@ -47,6 +52,7 @@ function parseNoteGroups(input) {
 
   return result;
 }
+
 
 function drawTabEditor() {
   const rawInput = document.getElementById("tabEditorInput").value;
@@ -197,7 +203,7 @@ function loadExampleTab() {
 3H(C D) 2(A A A)
 
 [Bridge]
-3(E D) 4(C B A G E F A/G B C G/A)
+4(A/G B G/A)
 
 [Song]
 Intro
@@ -207,3 +213,4 @@ Bridge
 
   document.getElementById("tabEditorInput").value = example;
 }
+
