@@ -7,19 +7,22 @@ function formatFret(fret) {
 
 function parseNoteGroups(input) {
   const result = [];
-  const tokens = input.match(/\d\([^\)]+\)|\d[A-G#b]|[A-G#b]/g) || [];
+  const tokens = input.match(/\dH?\([^\)]+\)|\dH?[A-G#b]|[A-G#b]/g) || [];
 
   tokens.forEach(token => {
-    if (/^\d\([A-G#b\s]+\)$/.test(token)) {
-      const stringNum = parseInt(token[0]);
-      const innerNotes = token.slice(2, -1).trim().split(/\s+/);
+    const high = token.includes('H');
+    const tokenClean = token.replace('H', '');
+
+    if (/^\d\([A-G#b\s]+\)$/.test(tokenClean)) {
+      const stringNum = parseInt(tokenClean[0]);
+      const innerNotes = tokenClean.slice(2, -1).trim().split(/\s+/);
       innerNotes.forEach(note => {
-        if (note) result.push({ note: normalizeNote(note), string: stringNum });
+        if (note) result.push({ note: normalizeNote(note), string: stringNum, high });
       });
-    } else if (/^\d[A-G#b]$/.test(token)) {
-      result.push({ note: normalizeNote(token.slice(1)), string: parseInt(token[0]) });
+    } else if (/^\d[A-G#b]$/.test(tokenClean)) {
+      result.push({ note: normalizeNote(tokenClean.slice(1)), string: parseInt(tokenClean[0]), high });
     } else {
-      result.push({ note: normalizeNote(token), string: null });
+      result.push({ note: normalizeNote(token), string: null, high: false });
     }
   });
 
@@ -32,6 +35,7 @@ function drawTabEditor() {
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
   const tuning = tuningsByInstrument[instrument][tuningName];
+  const fretStart = parseInt(document.getElementById("fretStart").value) || 0;
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
   const lines = rawInput.split("\n");
@@ -74,7 +78,7 @@ function drawTabEditor() {
     const stepCount = parsed.length;
     const grid = Array(tuning.length).fill(0).map(() => Array(stepCount).fill("----"));
 
-    parsed.forEach(({ note, string }, time) => {
+    parsed.forEach(({ note, string, high }, time) => {
       let placed = false;
 
       const stringIndexes = (string >= 1 && string <= tuning.length)
@@ -83,7 +87,12 @@ function drawTabEditor() {
 
       for (const s of stringIndexes) {
         const openNote = tuning[s];
-        for (let fret = 0; fret <= fretEnd; fret++) {
+
+        const fretRange = high
+          ? [...Array(fretEnd - fretStart + 1).keys()].map(i => fretEnd - i)  // descendente
+          : [...Array(fretEnd - fretStart + 1).keys()].map(i => fretStart + i);  // ascendente
+
+        for (const fret of fretRange) {
           const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
           if (normalizeNote(noteAtFret) === note) {
             grid.forEach((line, i) => {
@@ -144,11 +153,10 @@ function copyTabAndCode() {
     .catch(err => alert("❌ Error al copiar: " + err));
 }
 
-
 function loadExampleTab() {
   const example = `
 [Intro]
-3(A A A A A C C C C C G G G G G G A A A A A)
+3H(A A A A A C C C C C G G G G G G A A A A A)
 
 [Riff1]
 6(A A A A A C C C C C G G G G G G A A A A A)
@@ -169,4 +177,3 @@ Riff1 x2
 
   document.getElementById("tabEditorInput").value = example;
 }
-
