@@ -28,6 +28,7 @@ function parseNoteGroups(input) {
 
 function drawTabEditor() {
   const rawInput = document.getElementById("tabEditorInput").value;
+  const songTitle = document.getElementById("riffName").value.trim() || "Sin título";
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
   const tuning = tuningsByInstrument[instrument][tuningName];
@@ -54,6 +55,11 @@ function drawTabEditor() {
   }
 
   const outputBlocks = [];
+
+  outputBlocks.push(
+    `🎵 Canción: ${songTitle}\n` +
+    `🎸 Afinación: ${tuningName} – ${tuning.join(" ")}\n`
+  );
 
   sequence.forEach(line => {
     const match = line.trim().match(/^([A-Za-z0-9_]+)(?:\s*x(\d+))?$/i);
@@ -115,7 +121,7 @@ function drawTabEditor() {
 function saveRiff() {
   const name = document.getElementById("riffName").value.trim();
   const content = document.getElementById("tabEditorInput").value.trim();
-  if (!name || !content) return alert("Falta nombre o contenido del riff");
+  if (!name || !content) return alert("Falta nombre o contenido");
 
   const li = document.createElement("li");
   li.textContent = `${name}: ${content}`;
