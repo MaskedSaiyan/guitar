@@ -35,7 +35,7 @@ function drawTabEditor() {
   parsed.forEach(({ note, string }, time) => {
     let done = false;
     const stringIndexes = string
-      ? [stringCount - string]
+      ? [tuning.length - string]
       : [...Array(stringCount).keys()].reverse();
 
     for (const s of stringIndexes) {
