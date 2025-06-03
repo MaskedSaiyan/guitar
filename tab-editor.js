@@ -25,59 +25,48 @@ function drawTabEditor() {
   const tuning = tuningsByInstrument[instrument][tuningName];
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
-  // Inicializa líneas vacías para cada cuerda
-  const tabLines = Array(tuning.length).fill("").map((_, i) => tuning[i].toLowerCase() + "|");
+  const stringCount = tuning.length;
+  const tabLines = Array(stringCount).fill("").map((_, i) => tuning[i].toLowerCase() + "|");
 
-  let timeCursor = 0; // posición horizontal de tiempo
+  // Posición de tiempo (bloque horizontal)
+  let time = 0;
 
   parsed.forEach(({ note, string }) => {
-    let targetStrings;
+    let used = false;
+    const targetStrings = string
+      ? [stringCount - string]
+      : [...Array(stringCount).keys()].reverse();
 
-    if (string && string >= 1 && string <= tuning.length) {
-      const idx = tuning.length - string;
-      targetStrings = [idx];
-    } else {
-      targetStrings = [...Array(tuning.length).keys()].reverse(); // de aguda a grave
-    }
-
-    let placed = false;
     for (const stringIndex of targetStrings) {
       const openNote = tuning[stringIndex];
       for (let fret = 0; fret <= fretEnd; fret++) {
         const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
         if (normalizeNote(noteAtFret) === note) {
-          // Rellena todas las cuerdas hasta alcanzar el cursor de tiempo actual
-          for (let i = 0; i < tuning.length; i++) {
-            while (tabLines[i].length < tabLines[0].length + 1) {
+          for (let i = 0; i < stringCount; i++) {
+            while (tabLines[i].length < tabLines[0].length + 3) {
               tabLines[i] += "---";
             }
           }
-
-          // Escribe la nota
-          for (let i = 0; i < tuning.length; i++) {
+          const marker = fret < 10 ? `-${fret}-` : `${fret}-`;
+          for (let i = 0; i < stringCount; i++) {
             if (i === stringIndex) {
-              const fretStr = fret < 10 ? `-${fret}-` : `${fret}-`;
-              tabLines[i] += fretStr;
-            } else {
-              tabLines[i] += "---";
+              tabLines[i] = tabLines[i].slice(0, time * 3 + 2) + marker + tabLines[i].slice((time + 1) * 3 + 2);
             }
           }
-
-          timeCursor++;
-          placed = true;
+          used = true;
           break;
         }
       }
-      if (placed) break;
+      if (used) break;
     }
 
-    if (!placed) {
-      // Nota no encontrada, escribe " ? " en todas las cuerdas
-      for (let i = 0; i < tuning.length; i++) {
+    if (!used) {
+      for (let i = 0; i < stringCount; i++) {
         tabLines[i] += " ? ";
       }
-      timeCursor++;
     }
+
+    time++;
   });
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
