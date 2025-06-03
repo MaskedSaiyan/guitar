@@ -1,3 +1,4 @@
+<!-- ⬇️ Aquí comienza index.html corregido -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,39 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visualizador de Notas – v0.6</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .tabs {
-      margin-top: 2em;
-    }
-
-    .tab-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-      margin-bottom: 1em;
-    }
-
-    .tab-buttons button {
-      padding: 0.5em 1em;
-      font-weight: bold;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      background-color: #eee;
-    }
-
-    .tab-buttons button.active {
-      background-color: #ddd;
-      border-bottom: 2px solid #000;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-  </style>
 </head>
 <body>
   <h1>Visualizador de Notas en el Diapasón</h1>
@@ -50,222 +18,160 @@
       <button onclick="switchTab('chordExplorerTab')" id="btnchordExplorerTab">🧭 Explorador de Acordes</button>
       <button onclick="switchTab('cagedTab')" id="btncagedTab">🧱 Sistema CAGED</button>
       <button onclick="switchTab('tabEditor')" id="btntabEditor">✏️ Editor de Tablaturas</button>
-
     </div>
 
     <div id="scalesTab" class="tab-content active">
       <label for="rootSelect">Nota raíz:</label>
       <select id="rootSelect" onchange="updateNotesDisplay()">
-        <option>C</option>
-        <option>C#</option>
-        <option>D</option>
-        <option>D#</option>
-        <option>E</option>
-        <option>F</option>
-        <option>F#</option>
-        <option>G</option>
-        <option>G#</option>
-        <option>A</option>
-        <option>A#</option>
-        <option>B</option>
+        <option>C</option><option>C#</option><option>D</option><option>D#</option>
+        <option>E</option><option>F</option><option>F#</option><option>G</option>
+        <option>G#</option><option>A</option><option>A#</option><option>B</option>
       </select>
 
       <label for="scaleSelect">Escala:</label>
-      <select id="scaleSelect" onchange="updateNotesDisplay()">
-
-        <!-- opciones generadas por JS -->
-      </select>
+      <select id="scaleSelect" onchange="updateNotesDisplay()"></select>
 
       <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
+
+      <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" oninput="drawFretboard()" />
+
+      <div style="margin-top: 1em;">
+        <label for="fretStart">Desde traste:</label>
+        <input type="range" id="fretStart" min="0" max="24" value="0" oninput="updateFretWindow()" />
+        <span id="fretStartLabel">0</span>
+
+        <label for="fretEnd">hasta:</label>
+        <input type="range" id="fretEnd" min="0" max="24" value="12" oninput="updateFretWindow()" />
+        <span id="fretEndLabel">12</span>
+      </div>
+
+      <div style="margin-top: 1em;">
+        <label>Instrumento:</label>
+        <select id="instrumentSelect" onchange="updateTuningOptions()">
+          <option value="guitar6">Guitarra 6 cuerdas</option>
+          <option value="bass4">Bajo 4 cuerdas</option>
+          <option value="guitar7">Guitarra 7 cuerdas</option>
+        </select>
+
+        <label>Afinación:</label>
+        <select id="tuningSelect"></select>
+      </div>
+
+      <label>
+        <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
+        Mostrar mástil como tablatura (de aguda a grave)
+      </label>
+
+      <button onclick="drawFretboard()" style="display: block; margin-top: 1em;">Mostrar</button>
     </div>
 
     <div id="circleTab" class="tab-content">
       <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
     </div>
+
+    <div id="chordExplorerTab" class="tab-content">
+      <div id="chordCircle" style="margin: 2em auto; max-width: 400px;"></div>
+    </div>
+
+    <div id="cagedTab" class="tab-content">
+      <h2>Visualización del sistema CAGED</h2>
+      <p>Haz clic para mostrar la forma “C” del acorde de Do en el diapasón (afinación estándar):</p>
+      <button onclick="showCagedChord()">🎸 Mostrar forma C (CAGED)</button>
+    </div>
+
+    <div id="tabEditor" class="tab-content">
+      <h2>Editor de Riffs</h2>
+      <label>Nombre de la canción:</label>
+      <input type="text" id="riffName" placeholder="Ej. Verso principal" style="width: 50%;" />
+      <p>Escribe las notas con sintaxis tipo: <code>4(C D G) 2(A A A AA) 1D 2C</code></p>
+      <button onclick="loadExampleTab()">🎓 Cargar ejemplo</button>
+
+      <label>Editor de Canción:</label><br>
+      <textarea id="tabEditorInput" rows="20" cols="80" style="width: 100%; font-family: monospace;"></textarea>
+      <button onclick="drawTabEditor()">🎸 Mostrar tablatura</button>
+      <button onclick="copyTabAndCode()">📋 Copiar código + tablatura</button>
+      <pre id="tabEditorOutput" style="margin-top: 1em; text-align: left; white-space: pre; font-family: monospace;"></pre>
+      <h3>Riffs guardados</h3>
+      <ul id="savedRiffs"></ul>
+    </div>
   </div>
 
- <div id="chordExplorerTab" class="tab-content">
-  <div id="chordCircle" style="margin: 2em auto; max-width: 400px;"></div>
-</div>
+  <div id="fretboard-wrapper"><div id="fretboard"></div></div>
+  <div id="tab-wrapper"><pre id="tablature"></pre></div>
 
-<div id="cagedTab" class="tab-content">
-  <h2>Visualización del sistema CAGED</h2>
-  <p>Haz clic para mostrar la forma “C” del acorde de Do en el diapasón (afinación estándar):</p>
-  <button onclick="showCagedChord()">🎸 Mostrar forma C (CAGED)</button>
-</div>
+  <h2 style="margin-top: 2em;">🎹 Piano</h2>
+  <div id="piano" style="position: relative; height: 160px; margin-bottom: 2em;"></div>
 
-<div id="tabEditor" class="tab-content">
-  <h2>Editor de Riffs</h2>
+  <div id="scaleSuggestions"><strong>Escalas sugeridas:</strong><ul id="suggestionList"></ul></div>
+  <div id="chordSuggestions"><strong>Acordes sugeridos:</strong><ul id="chordList"></ul></div>
 
-  <label>Nombre de la canción:</label>
-<input type="text" id="riffName" placeholder="Ej. Verso principal" style="width: 50%;" />
+  <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">v0.6</footer>
 
+  <script src="https://unpkg.com/tone/build/Tone.js"></script>
+  <script src="caged.js"></script>
+  <script src="utils.js" defer></script>
+  <script src="chords.js" defer></script>
+  <script src="piano.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="scale-selector.js" defer></script>
+  <script src="circle.js" defer></script>
+  <script src="shape-generator.js" defer></script>
+  <script src="chord-explorer.js" defer></script>
+  <script src="tab-editor.js" defer></script>
 
-  <p>Escribe las notas con sintaxis tipo: <code>4(C D G) 2(A A A AA) 1D 2C</code></p>
-  <button onclick="loadExampleTab()">🎓 Cargar ejemplo</button>
-
-    <label>Editor de Canción:</label><br>
-<textarea id="tabEditorInput" rows="20" cols="80" style="width: 100%; font-family: monospace;"></textarea>
-
-
-  <button onclick="drawTabEditor()">🎸 Mostrar tablatura</button>
-
-  <button onclick="copyTabAndCode()">📋 Copiar código + tablatura</button>
-
-
-  <pre id="tabEditorOutput" style="margin-top: 1em; text-align: left; white-space: pre; font-family: monospace;"></pre>
-
-  <h3>Riffs guardados</h3>
-  <ul id="savedRiffs"></ul>
-</div>
-
-
-
-</div>
-
-
-
-  <p><strong>Notas:</strong> <span id="noteOutput">Introduce las notas a localizar</span></p>
-  <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" oninput="drawFretboard()" />
-
-
-  <label for="fretStart">Desde traste:</label>
-<input type="range" id="fretStart" min="0" max="24" value="0" oninput="updateFretWindow()" />
-<span id="fretStartLabel">0</span>
-
-<label for="fretEnd">hasta:</label>
-<input type="range" id="fretEnd" min="0" max="24" value="12" oninput="updateFretWindow()" />
-<span id="fretEndLabel">12</span>
-
-
-  <div>
-    <label>Instrumento:</label>
-    <select id="instrumentSelect" onchange="updateTuningOptions()">
-      <option value="guitar6">Guitarra 6 cuerdas</option>
-      <option value="bass4">Bajo 4 cuerdas</option>
-      <option value="guitar7">Guitarra 7 cuerdas</option>
-    </select>
-
-    <label>Afinación:</label>
-    <select id="tuningSelect"></select>
-
-  <label>
-    <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
-    Mostrar mástil como tablatura (de aguda a grave)
-  </label>
-    <div style="margin-top: 1em;">
-</div>
-
-    <button onclick="drawFretboard()">Mostrar</button>
-  </div>
-
-  <div id="fretboard-wrapper">
-    <div id="fretboard"></div>
-  </div>
-
-  <div id="tab-wrapper" style="overflow-x: auto; max-width: 100vw; padding: 1em; text-align: center;">
-  <pre id="tablature" style="display: inline-block; text-align: left; white-space: pre; font-family: 'Courier New', monospace; font-size: 16px;"></pre>
-</div>
-
-<h2 style="margin-top: 2em;">🎹 Piano</h2>
-<div id="piano" style="position: relative; height: 160px; margin-bottom: 2em;"></div>
-
-  <div id="scaleSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
-    <strong>Escalas sugeridas:</strong>
-    <ul id="suggestionList"></ul>
-  </div>
-
-  <div id="chordSuggestions" style="margin-top: 1em; font-size: 0.9em; color: #333;">
-    <strong>Acordes sugeridos:</strong>
-    <ul id="chordList"></ul>
-  </div>
-
-  <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">
-    v0.6
-  </footer>
-
-  <!-- Scripts con defer -->
-<!-- ✅ Todos con defer y en orden correcto -->
-<script src="https://unpkg.com/tone/build/Tone.js"></script>
-<script src="caged.js"></script>
-<script src="utils.js" defer></script>
-<script src="chords.js" defer></script>
-<script src="piano.js" defer></script>
-<script src="script.js" defer></script> <!-- define drawFretboard -->
-<script src="scale-selector.js" defer></script>
-<script src="circle.js" defer></script> <!-- usa drawFretboard -->
-<script src="shape-generator.js" defer></script>
-<script src="chord-explorer.js" defer></script>
-<script src="tab-editor.js" defer></script>
-
-
-
-<!-- ✅ Este SIN defer y va al final -->
-
-<script>
+  <script>
     function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
-  document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.getElementById('btn' + tabId).classList.add('active');
 
-  document.getElementById(tabId).classList.add('active');
-  document.getElementById('btn' + tabId).classList.add('active');
+      const isScale = (tabId === 'scalesTab');
+      const isEditor = (tabId === 'tabEditor');
 
-        const isScale = (tabId === 'scalesTab');
-const isEditor = (tabId === 'tabEditor');
+      document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
+      document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
 
-document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
-document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
+      const idsToToggle = [
+        'fretboard-wrapper', 'tab-wrapper', 'piano',
+        'notesInput', 'noteOutput', 'fretStart', 'fretEnd',
+        'fretStartLabel', 'fretEndLabel', 'invertFretboard',
+        'instrumentSelect', 'tuningSelect'
+      ];
 
-        const editorOnly = ['tabEditor'];
-const hideWhenEditor = [
-  'scaleSuggestions',
-  'chordSuggestions',
-  'fretboard-wrapper',
-  'tab-wrapper',
-  'piano',
-  'notesInput',
-  'noteOutput',
-  'fretStart', 'fretEnd',
-  'fretStartLabel', 'fretEndLabel',
-  'invertFretboard'
-];
+      idsToToggle.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = isEditor ? 'none' : '';
+      });
 
-hideWhenEditor.forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.style.display = isEditor ? 'none' : '';
-});
+      document.querySelectorAll('label[for="fretStart"], label[for="fretEnd"], button[onclick="drawFretboard()"]').forEach(el => {
+        el.style.display = isEditor ? 'none' : '';
+      });
 
-document.querySelectorAll('label[for="fretStart"], #fretStart, #fretStartLabel, label[for="fretEnd"], #fretEnd, #fretEndLabel, #instrumentSelect, #tuningSelect, button[onclick="drawFretboard()"]').forEach(el => {
-  el.style.display = isEditor ? 'none' : '';
-});
+      if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
+        initCircleOfFifths();
+      }
 
+      if (tabId === 'chordExplorerTab') {
+        if (typeof renderChordCircle === "function") renderChordCircle();
+      }
+    }
 
-  if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
-    initCircleOfFifths();
-  }
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof updateTuningOptions === "function") updateTuningOptions();
+      if (typeof populateScaleSelector === "function") populateScaleSelector();
+      if (typeof updateNotesDisplay === "function") updateNotesDisplay();
+    });
 
-  if (tabId === 'chordExplorerTab') {
-    if (typeof renderChordCircle === "function") renderChordCircle();
-  }
-}
+    function updateFretWindow() {
+      const start = parseInt(document.getElementById("fretStart").value);
+      const end = parseInt(document.getElementById("fretEnd").value);
+      document.getElementById("fretStartLabel").textContent = start;
+      document.getElementById("fretEndLabel").textContent = end;
+    }
+  </script>
 
-window.addEventListener("DOMContentLoaded", () => {
-  if (typeof updateTuningOptions === "function") updateTuningOptions();
-  if (typeof populateScaleSelector === "function") populateScaleSelector();
-  if (typeof updateNotesDisplay === "function") updateNotesDisplay();
-});
-
-</script>
-
-<div id="tooltip" class="tooltip-bubble"></div>
-
-<script>
-  function updateFretWindow() {
-    const start = parseInt(document.getElementById("fretStart").value);
-    const end = parseInt(document.getElementById("fretEnd").value);
-    document.getElementById("fretStartLabel").textContent = start;
-    document.getElementById("fretEndLabel").textContent = end;
-  }
-</script>
+  <div id="tooltip" class="tooltip-bubble"></div>
 </body>
 </html>
+<!-- ⬆️ Aquí termina el archivo -->
