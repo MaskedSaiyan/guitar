@@ -27,42 +27,41 @@ function drawTabEditor() {
 
   const stringCount = tuning.length;
   const stepCount = parsed.length;
-  const cellWidth = 4;
-
-  // Inicializar matriz cuerda × tiempo
   const grid = Array(stringCount).fill(0).map(() => Array(stepCount).fill("--- "));
 
   parsed.forEach(({ note, string }, time) => {
-    let done = false;
-    const stringIndexes = string
-      ? [tuning.length - string]
-      : [...Array(stringCount).keys()].reverse();
+    let placed = false;
+
+    const stringIndexes = (string >= 1 && string <= tuning.length)
+      ? [tuning.length - string] // universal: 1 = última cuerda (aguda)
+      : [...Array(tuning.length).keys()].reverse(); // si no se especifica, busca en todas
 
     for (const s of stringIndexes) {
-      const open = tuning[s];
+      const openNote = tuning[s];
       for (let fret = 0; fret <= fretEnd; fret++) {
-        const test = allNotes[(noteIndex(open) + fret) % 12];
-        if (normalizeNote(test) === note) {
-          grid.forEach((line, i) => {
-            line[time] = (i === s)
+        const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
+        if (normalizeNote(noteAtFret) === note) {
+          for (let i = 0; i < tuning.length; i++) {
+            grid[i][time] = (i === s)
               ? (fret < 10 ? `-${fret}-` : `${fret} `)
               : "--- ";
-          });
-          done = true;
+          }
+          placed = true;
           break;
         }
       }
-      if (done) break;
+      if (placed) break;
     }
 
-    if (!done) {
-      grid.forEach(line => line[time] = " ?  ");
+    if (!placed) {
+      for (let i = 0; i < tuning.length; i++) {
+        grid[i][time] = " ?  ";
+      }
     }
   });
 
-  // Convertir a texto
   const tabLines = grid.map((line, i) =>
-    tuning[i].toLowerCase() + "|" + line.join("")
+    tuning[i].toLowerCase() + "|" + line.map(x => x || "--- ").join("")
   );
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
