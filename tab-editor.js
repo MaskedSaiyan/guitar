@@ -25,28 +25,45 @@ function drawTabEditor() {
   const tuning = tuningsByInstrument[instrument][tuningName];
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
+  // Inicializa líneas vacías para cada cuerda
   const tabLines = Array(tuning.length).fill("").map((_, i) => tuning[i].toLowerCase() + "|");
 
+  let timeCursor = 0; // posición horizontal de tiempo
+
   parsed.forEach(({ note, string }) => {
-    let stringsToTry;
+    let targetStrings;
+
     if (string && string >= 1 && string <= tuning.length) {
       const idx = tuning.length - string;
-      stringsToTry = [idx];
+      targetStrings = [idx];
     } else {
-      stringsToTry = [...Array(tuning.length).keys()].reverse();
+      targetStrings = [...Array(tuning.length).keys()].reverse(); // de aguda a grave
     }
 
     let placed = false;
-    for (const stringIndex of stringsToTry) {
+    for (const stringIndex of targetStrings) {
       const openNote = tuning[stringIndex];
       for (let fret = 0; fret <= fretEnd; fret++) {
         const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
         if (normalizeNote(noteAtFret) === note) {
+          // Rellena todas las cuerdas hasta alcanzar el cursor de tiempo actual
           for (let i = 0; i < tuning.length; i++) {
-            tabLines[i] += i === stringIndex
-              ? (fret < 10 ? `-${fret}-` : `${fret}-`)
-              : "---";
+            while (tabLines[i].length < tabLines[0].length + 1) {
+              tabLines[i] += "---";
+            }
           }
+
+          // Escribe la nota
+          for (let i = 0; i < tuning.length; i++) {
+            if (i === stringIndex) {
+              const fretStr = fret < 10 ? `-${fret}-` : `${fret}-`;
+              tabLines[i] += fretStr;
+            } else {
+              tabLines[i] += "---";
+            }
+          }
+
+          timeCursor++;
           placed = true;
           break;
         }
@@ -55,12 +72,17 @@ function drawTabEditor() {
     }
 
     if (!placed) {
-      for (let i = 0; i < tuning.length; i++) tabLines[i] += " ? ";
+      // Nota no encontrada, escribe " ? " en todas las cuerdas
+      for (let i = 0; i < tuning.length; i++) {
+        tabLines[i] += " ? ";
+      }
+      timeCursor++;
     }
   });
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
 }
+
 
 function saveRiff() {
   const name = document.getElementById("riffName").value.trim();
