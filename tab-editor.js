@@ -17,6 +17,7 @@ function parseNoteGroups(input) {
   return result;
 }
 
+
 function drawTabEditor() {
   const input = document.getElementById("tabEditorInput").value;
   const parsed = parseNoteGroups(input);
@@ -33,19 +34,24 @@ function drawTabEditor() {
     let placed = false;
 
     const stringIndexes = (string >= 1 && string <= tuning.length)
-      ? [tuning.length - string] // universal: 1 = última cuerda (aguda)
-      : [...Array(tuning.length).keys()].reverse(); // si no se especifica, busca en todas
+      ? [tuning.length - string] // pintar solo en esa cuerda
+      : [...Array(tuning.length).keys()].reverse(); // buscar en todas
 
     for (const s of stringIndexes) {
       const openNote = tuning[s];
       for (let fret = 0; fret <= fretEnd; fret++) {
         const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
         if (normalizeNote(noteAtFret) === note) {
-          for (let i = 0; i < tuning.length; i++) {
-            grid[i][time] = (i === s)
-              ? (fret < 10 ? `-${fret}-` : `${fret} `)
-              : "--- ";
+          // Solo pintamos en la cuerda válida
+          grid[s][time] = (fret < 10 ? `-${fret}-` : `${fret} `);
+
+          // Si no se especificó cuerda, rellenamos el resto con "--- "
+          if (string == null) {
+            for (let i = 0; i < stringCount; i++) {
+              if (i !== s) grid[i][time] = "--- ";
+            }
           }
+
           placed = true;
           break;
         }
@@ -54,8 +60,16 @@ function drawTabEditor() {
     }
 
     if (!placed) {
-      for (let i = 0; i < tuning.length; i++) {
-        grid[i][time] = " ?  ";
+      if (string == null) {
+        // Si no hay cuerda específica y no se pudo colocar, mostrar ? en todas
+        for (let i = 0; i < stringCount; i++) {
+          grid[i][time] = " ?  ";
+        }
+      } else {
+        // Si sí se especificó cuerda pero no se pudo poner, solo ahí va ?
+        for (let i = 0; i < stringCount; i++) {
+          grid[i][time] = (i === tuning.length - string) ? " ?  " : "--- ";
+        }
       }
     }
   });
