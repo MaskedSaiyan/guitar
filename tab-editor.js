@@ -70,9 +70,11 @@ function drawTabEditor() {
     }
   });
 
-  const tabLines = grid.map((line, i) =>
+const tabLines = grid
+  .map((line, i) =>
     tuning[i].toLowerCase() + "|" + line.map(x => x || "----").join("")
-  );
+  )
+  .reverse();  // 👈 esta línea invierte de aguda a grave
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
 }
