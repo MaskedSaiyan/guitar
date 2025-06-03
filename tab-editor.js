@@ -26,48 +26,44 @@ function drawTabEditor() {
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
 
   const stringCount = tuning.length;
-  const tabLines = Array(stringCount).fill("").map((_, i) => tuning[i].toLowerCase() + "|");
+  const stepCount = parsed.length;
+  const cellWidth = 4;
 
-  // Posición de tiempo (bloque horizontal)
-  let time = 0;
+  // Inicializar matriz cuerda × tiempo
+  const grid = Array(stringCount).fill(0).map(() => Array(stepCount).fill("--- "));
 
-  parsed.forEach(({ note, string }) => {
-    let used = false;
-    const targetStrings = string
+  parsed.forEach(({ note, string }, time) => {
+    let done = false;
+    const stringIndexes = string
       ? [stringCount - string]
       : [...Array(stringCount).keys()].reverse();
 
-    for (const stringIndex of targetStrings) {
-      const openNote = tuning[stringIndex];
+    for (const s of stringIndexes) {
+      const open = tuning[s];
       for (let fret = 0; fret <= fretEnd; fret++) {
-        const noteAtFret = allNotes[(noteIndex(openNote) + fret) % 12];
-        if (normalizeNote(noteAtFret) === note) {
-          for (let i = 0; i < stringCount; i++) {
-            while (tabLines[i].length < tabLines[0].length + 3) {
-              tabLines[i] += "---";
-            }
-          }
-          const marker = fret < 10 ? `-${fret}-` : `${fret}-`;
-          for (let i = 0; i < stringCount; i++) {
-            if (i === stringIndex) {
-              tabLines[i] = tabLines[i].slice(0, time * 3 + 2) + marker + tabLines[i].slice((time + 1) * 3 + 2);
-            }
-          }
-          used = true;
+        const test = allNotes[(noteIndex(open) + fret) % 12];
+        if (normalizeNote(test) === note) {
+          grid.forEach((line, i) => {
+            line[time] = (i === s)
+              ? (fret < 10 ? `-${fret}-` : `${fret} `)
+              : "--- ";
+          });
+          done = true;
           break;
         }
       }
-      if (used) break;
+      if (done) break;
     }
 
-    if (!used) {
-      for (let i = 0; i < stringCount; i++) {
-        tabLines[i] += " ? ";
-      }
+    if (!done) {
+      grid.forEach(line => line[time] = " ?  ");
     }
-
-    time++;
   });
+
+  // Convertir a texto
+  const tabLines = grid.map((line, i) =>
+    tuning[i].toLowerCase() + "|" + line.join("")
+  );
 
   document.getElementById("tabEditorOutput").textContent = tabLines.join("\n");
 }
