@@ -12,6 +12,7 @@
 
   <!-- 🎸 Selectores de instrumento y afinación -->
   <div id="instrument-controls" style="margin: 1em 0;">
+    <!-- Inicio: instrumento y afinación -->
     <label for="instrumentSelect">Instrumento:</label>
     <select id="instrumentSelect" onchange="updateTuningOptions()">
       <option value="guitar6">Guitarra 6 cuerdas</option>
@@ -21,10 +22,11 @@
 
     <label for="tuningSelect">Afinación:</label>
     <select id="tuningSelect"></select>
-  </div>
+  </div> <!-- Fin instrumento y afinación -->
 
   <!-- 🎚️ Sliders de trastes -->
   <div style="margin-top: 1em;">
+    <!-- Inicio: sliders de trastes -->
     <label for="fretStart">Desde traste:</label>
     <input type="range" id="fretStart" min="0" max="24" value="0" oninput="updateFretWindow()" />
     <span id="fretStartLabel">0</span>
@@ -32,18 +34,20 @@
     <label for="fretEnd" style="margin-left: 2em;">hasta:</label>
     <input type="range" id="fretEnd" min="0" max="24" value="12" oninput="updateFretWindow()" />
     <span id="fretEndLabel">12</span>
-  </div>
+  </div> <!-- Fin sliders de trastes -->
 
   <h2>Modo de Visualización</h2>
   <div class="tabs">
+    <!-- Inicio: botones de tabs -->
     <div class="tab-buttons">
       <button onclick="switchTab('scalesTab')" id="btnscalesTab" class="active">🎼 Escalas</button>
       <button onclick="switchTab('circleTab')" id="btncircleTab">🔄 Círculo de Quintas</button>
       <button onclick="switchTab('chordExplorerTab')" id="btnchordExplorerTab">🧭 Explorador de Acordes</button>
       <button onclick="switchTab('cagedTab')" id="btncagedTab">🧱 Sistema CAGED</button>
       <button onclick="switchTab('tabEditor')" id="btntabEditor">✏️ Editor de Tablaturas</button>
-    </div>
+    </div> <!-- Fin botones de tabs -->
 
+    <!-- Inicio: TAB Escalas -->
     <div id="scalesTab" class="tab-content active">
       <label for="rootSelect">Nota raíz:</label>
       <select id="rootSelect" onchange="updateNotesDisplay()">
@@ -59,28 +63,26 @@
 
       <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" oninput="drawFretboard()" />
 
-      <label>
-        <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
-        Mostrar mástil como tablatura (de aguda a grave)
-      </label>
+    </div> <!-- Fin TAB Escalas -->
 
-      <button onclick="drawFretboard()" style="display: block; margin-top: 1em;">Mostrar</button>
-    </div>
-
+    <!-- Inicio: TAB Círculo de Quintas -->
     <div id="circleTab" class="tab-content">
       <div id="circleOfFifths" style="margin: 2em auto; max-width: 400px;"></div>
-    </div>
+    </div> <!-- Fin TAB Círculo -->
 
+    <!-- Inicio: TAB Explorador de Acordes -->
     <div id="chordExplorerTab" class="tab-content">
       <div id="chordCircle" style="margin: 2em auto; max-width: 400px;"></div>
-    </div>
+    </div> <!-- Fin TAB Explorador -->
 
+    <!-- Inicio: TAB CAGED -->
     <div id="cagedTab" class="tab-content">
       <h2>Visualización del sistema CAGED</h2>
       <p>Haz clic para mostrar la forma “C” del acorde de Do en el diapasón (afinación estándar):</p>
       <button onclick="showCagedChord()">🎸 Mostrar forma C (CAGED)</button>
-    </div>
+    </div> <!-- Fin TAB CAGED -->
 
+    <!-- Inicio: TAB Editor de Tablaturas -->
     <div id="tabEditor" class="tab-content">
       <h2>Editor de Riffs</h2>
       <label>Nombre de la canción:</label>
@@ -95,20 +97,37 @@
       <pre id="tabEditorOutput" style="margin-top: 1em; text-align: left; white-space: pre; font-family: monospace;"></pre>
       <h3>Riffs guardados</h3>
       <ul id="savedRiffs"></ul>
-    </div>
-  </div>
+    </div> <!-- Fin TAB Editor -->
+  </div> <!-- Fin .tabs -->
 
+  <!-- ✅ Checkboxes para visualización activa (solo si no es el editor) -->
+  <div id="displayOptions" style="margin-top: 1em;">
+    <label style="margin-right: 1em;">
+      <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
+      Mostrar mástil como tablatura (de aguda a grave)
+    </label>
+
+    <label>
+      <input type="checkbox" id="shapeMode" onchange="drawFretboard()" />
+      🎯 Mostrar forma exacta (modo shape-generator)
+    </label>
+  </div> <!-- Fin displayOptions -->
+
+  <!-- Diapasón y Tablatura -->
   <div id="fretboard-wrapper"><div id="fretboard"></div></div>
   <div id="tab-wrapper"><pre id="tablature"></pre></div>
 
+  <!-- Piano -->
   <h2 id="pianoTitle" style="margin-top: 2em;">🎹 Piano</h2>
   <div id="piano" style="position: relative; height: 160px; margin-bottom: 2em;"></div>
 
+  <!-- Sugerencias -->
   <div id="scaleSuggestions"><strong>Escalas sugeridas:</strong><ul id="suggestionList"></ul></div>
   <div id="chordSuggestions"><strong>Acordes sugeridos:</strong><ul id="chordList"></ul></div>
 
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">v0.6</footer>
 
+  <!-- Scripts -->
   <script src="https://unpkg.com/tone/build/Tone.js"></script>
   <script src="caged.js"></script>
   <script src="utils.js" defer></script>
@@ -136,7 +155,7 @@
 
       const idsToToggle = [
         'fretboard-wrapper', 'tab-wrapper', 'piano', 'pianoTitle',
-        'notesInput', 'noteOutput', 'invertFretboard'
+        'notesInput', 'noteOutput', 'displayOptions'
       ];
 
       idsToToggle.forEach(id => {

@@ -1,4 +1,3 @@
-# Hola
 const cagedPositions = {
   C: [
     // Forma C del acorde C mayor (posición típica alrededor del traste 8)
