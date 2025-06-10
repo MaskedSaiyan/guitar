@@ -1,3 +1,4 @@
+# Comment
 let circleInitialized = false;
 
 // ✅ Versión local solo para circle.js
