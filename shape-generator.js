@@ -58,13 +58,39 @@ const chordShapes = {
     { string: 3, fret: 4, note: "B" },
     { string: 4, fret: 4, note: "D#" },
     { string: 5, fret: 2, note: "B" }
-  ]
+  ],
+
+     "Am": [
+  { string: 0, fret: -1, note: null },
+  { string: 1, fret: 0, note: "A" },
+  { string: 2, fret: 2, note: "E" },
+  { string: 3, fret: 2, note: "A" },
+  { string: 4, fret: 1, note: "C" },
+  { string: 5, fret: 0, note: "A" }
+],
+"Em": [
+  { string: 0, fret: 0, note: "E" },
+  { string: 1, fret: 2, note: "B" },
+  { string: 2, fret: 2, note: "E" },
+  { string: 3, fret: 0, note: "G" },
+  { string: 4, fret: 0, note: "B" },
+  { string: 5, fret: 0, note: "E" }
+],
+"Dm": [
+  { string: 0, fret: -1, note: null },
+  { string: 1, fret: -1, note: null },
+  { string: 2, fret: 0, note: "D" },
+  { string: 3, fret: 2, note: "A" },
+  { string: 4, fret: 3, note: "D" },
+  { string: 5, fret: 1, note: "F" }
+],
+
 };
 
 
 // 🎯 Busca forma exacta si está definida
 function getChordShape(chordName) {
-  const cleanName = chordName.trim().toUpperCase();
+  const cleanName = chordName.trim();
   return chordShapes[cleanName] || null;
 }
 

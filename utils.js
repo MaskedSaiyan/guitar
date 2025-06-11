@@ -1,4 +1,5 @@
 function drawFretboardOnly(positions, options = {}) {
+  console.log("🖌 drawFretboardOnly(): posiciones recibidas =", positions);
   const {
     stringCount = 6,
     fretStart = 0,
@@ -69,17 +70,15 @@ function drawFretboardOnly(positions, options = {}) {
         fretDiv.appendChild(marker);
       }
 
-        // 🟡 Marcas de traste solo en la cuerda central
-if (i === Math.floor(stringCount / 2)) {
-  if (fret === 12) {
-    fretDiv.classList.add("double-dot");
-  } else if (fretMarkers.includes(fret)) {
-    const dot = document.createElement("div");
-    dot.className = "dot";
-    fretDiv.appendChild(dot);
-  }
-}
-
+      if (i === Math.floor(stringCount / 2)) {
+        if (fret === 12) {
+          fretDiv.classList.add("double-dot");
+        } else if (fretMarkers.includes(fret)) {
+          const dot = document.createElement("div");
+          dot.className = "dot";
+          fretDiv.appendChild(dot);
+        }
+      }
 
       string.appendChild(fretDiv);
     }
@@ -94,6 +93,34 @@ if (i === Math.floor(stringCount / 2)) {
   if (tuning.length === stringCount) {
     drawTab(positions, tuning, fretStart, fretEnd);
   }
+}
+
+function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
+  console.log("🎼 drawTab(): posiciones =", positions);
+  console.log("🪕 drawTab(): tuning =", tuning);
+  console.log("📏 drawTab(): rango de trastes =", fretStart, "-", fretEnd);
+
+  const stringCount = tuning.length;
+  const tabLines = [];
+
+  for (let i = stringCount - 1; i >= 0; i--) {
+    const openNote = tuning[i];
+    const line = Array(fretEnd - fretStart + 1).fill("---");
+
+    positions.forEach(pos => {
+      if (pos.string === i && pos.fret >= fretStart && pos.fret <= fretEnd) {
+        const idx = pos.fret - fretStart;
+        let fretTxt = pos.fret.toString();
+        if (fretTxt.length === 1) fretTxt = `-${fretTxt}-`;
+        else if (fretTxt.length === 2) fretTxt = `${fretTxt}-`;
+        line[idx] = fretTxt;
+      }
+    });
+
+    tabLines.push(openNote.toLowerCase() + "|" + line.join(""));
+  }
+
+  document.getElementById("tablature").textContent = tabLines.join("\n");
 }
 
 function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
@@ -133,6 +160,8 @@ function refreshFretboard() {
     drawFretboard(); // modo normal
   }
 }
+
+
 function runShapeMode() {
   const rawInputText = document.getElementById("notesInput")?.value?.trim();
   const instrument = document.getElementById("instrumentSelect").value;
@@ -150,14 +179,19 @@ function runShapeMode() {
   const invert = document.getElementById("invertFretboard")?.checked;
   const stringCount = tuning.length;
 
-  // 🎯 1. Buscar si hay una forma exacta definida
-  const shapeData = getChordShape(rawInputText);
-  if (shapeData) {
+const firstToken = rawInputText.split(/\s+/)[0];
+const chordName = firstToken.trim(); // 👈 conserva mayúsculas/minúsculas
+
+  const rootMatch = chordName.match(/^([A-G]#?|[A-G]b)/);
+  const root = rootMatch ? normalizeNote(rootMatch[1]) : null;
+
+  const shapeData = getChordShape(chordName);
+  if (shapeData && root) {
     const positions = shapeData.map(pos => ({
       string: pos.string,
       fret: pos.fret,
       note: pos.note,
-      isRoot: pos.note === rawInputText[0] // opcional
+      isRoot: pos.note === root
     }));
 
     drawFretboardOnly(positions, {
@@ -170,14 +204,15 @@ function runShapeMode() {
       tuning
     });
 
+    console.log("🎯 Forma exacta encontrada:", chordName);
     console.log("🔍 Positions:", positions);
 
     return;
   }
 
-  // 🎯 2. Si es un power chord (ej. C5), mostrar todas las posiciones posibles
-  if (/^[A-G]#?5$/.test(rawInputText)) {
-    const root = rawInputText.slice(0, -1); // ej. "C5" → "C"
+  // Power chords tipo C5
+  if (/^[A-G]#?5$/.test(chordName)) {
+    const root = chordName.slice(0, -1);
     const shapes = findAllPowerChordShapes(root, tuning, fretEnd);
 
     const positions = shapes.flat().map(pos => ({
@@ -197,12 +232,11 @@ function runShapeMode() {
       tuning
     });
 
-    console.log("🔍 Power chord positions:", positions);
-
+    console.log("🎯 Power chord:", root);
     return;
   }
 
-  // 🎯 3. Si no hay forma definida, usar input como notas individuales
+  // Si no hay forma definida: usar notas sueltas
   const inputNotes = getExpandedNotesFromInput();
   if (inputNotes.length === 0) return;
 
@@ -228,7 +262,8 @@ function runShapeMode() {
     fretEnd,
     invert,
     showLabels: true,
-    stringLabels: tuning
+    stringLabels: tuning,
+    tuning
   });
 }
 
