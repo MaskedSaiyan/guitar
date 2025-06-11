@@ -2,42 +2,65 @@
 
 // 🎯 POWER CHORDS DEFINIDOS
 const chordShapes = {
-  "E5": [
+  "C": [
+    { string: 0, fret: -1, note: null },
+    { string: 1, fret: 3, note: "C" },
+    { string: 2, fret: 2, note: "E" },
+    { string: 3, fret: 0, note: "G" },
+    { string: 4, fret: 1, note: "C" },
+    { string: 5, fret: 0, note: "E" }
+  ],
+
+"D": [
+  { string: 0, fret: -1, note: null },  // E (6) apagada
+  { string: 1, fret: -1, note: null },  // A (5) apagada
+  { string: 2, fret: 0, note: "D" },    // D (4)
+  { string: 3, fret: 2, note: "A" },    // G (3)
+  { string: 4, fret: 3, note: "D" },    // B (2)
+  { string: 5, fret: 2, note: "F#" }    // E (1)
+  ],
+  "E": [
     { string: 0, fret: 0, note: "E" },
     { string: 1, fret: 2, note: "B" },
-    { string: 2, fret: 2, note: "E" }
+    { string: 2, fret: 2, note: "E" },
+    { string: 3, fret: 1, note: "G#" },
+    { string: 4, fret: 0, note: "B" },
+    { string: 5, fret: 0, note: "E" }
   ],
-  "A5": [
+  "G": [
+    { string: 0, fret: 3, note: "G" },
+    { string: 1, fret: 2, note: "B" },
+    { string: 2, fret: 0, note: "D" },
+    { string: 3, fret: 0, note: "G" },
+    { string: 4, fret: 0, note: "B" },
+    { string: 5, fret: 3, note: "G" }
+  ],
+  "A": [
+    { string: 0, fret: -1, note: null },
     { string: 1, fret: 0, note: "A" },
     { string: 2, fret: 2, note: "E" },
-    { string: 3, fret: 2, note: "A" }
-  ],
-  "D5": [
-    { string: 2, fret: 0, note: "D" },
     { string: 3, fret: 2, note: "A" },
-    { string: 4, fret: 3, note: "D" }
+    { string: 4, fret: 2, note: "C#" },
+    { string: 5, fret: 0, note: "A" }
   ],
-  "C5": [
+  "F": [
+    { string: 0, fret: 1, note: "F" },
     { string: 1, fret: 3, note: "C" },
-    { string: 2, fret: 5, note: "G" },
-    { string: 3, fret: 5, note: "C" }
+    { string: 2, fret: 3, note: "F" },
+    { string: 3, fret: 2, note: "A" },
+    { string: 4, fret: 1, note: "C" },
+    { string: 5, fret: 1, note: "F" }
   ],
-  "G5": [
-    { string: 0, fret: 3, note: "G" },
-    { string: 1, fret: 5, note: "D" },
-    { string: 2, fret: 5, note: "G" }
-  ],
-  "B5": [
-    { string: 0, fret: 7, note: "B" },
-    { string: 1, fret: 9, note: "F#" },
-    { string: 2, fret: 9, note: "B" }
-  ],
-  "F5": [
-      { string: 0, fret: 1, note: "F" },
-      { string: 1, fret: 3, note: "C" },
-      { string: 2, fret: 3, note: "F" }
+  "B": [
+    { string: 0, fret: -1, note: null },
+    { string: 1, fret: 2, note: "B" },
+    { string: 2, fret: 4, note: "F#" },
+    { string: 3, fret: 4, note: "B" },
+    { string: 4, fret: 4, note: "D#" },
+    { string: 5, fret: 2, note: "B" }
   ]
 };
+
 
 // 🎯 Busca forma exacta si está definida
 function getChordShape(chordName) {
@@ -75,3 +98,39 @@ if (typeof window !== "undefined") {
   window.shapeFromNotes = shapeFromNotes;
   window.getChordShape = getChordShape;
 }
+
+
+
+
+function findAllPowerChordShapes(rootNote, tuning, maxFret = 12) {
+  const shapes = [];
+  const chromatic = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const rootIndex = chromatic.indexOf(rootNote);
+
+  if (rootIndex === -1) return [];
+
+  const fifthNote = chromatic[(rootIndex + 7) % 12];
+
+  for (let string = 0; string < tuning.length - 1; string++) {
+    const openRoot = tuning[string];
+    const openFifth = tuning[string + 1];
+
+    const isGBpair = openRoot === "G" && openFifth === "B";
+    const fretOffset = isGBpair ? 3 : 2;
+
+    for (let fret = 0; fret <= maxFret - fretOffset; fret++) {
+      const root = chromatic[(noteIndex(openRoot) + fret) % 12];
+      const fifth = chromatic[(noteIndex(openFifth) + fret + fretOffset) % 12];
+
+      if (root === rootNote && fifth === fifthNote) {
+        shapes.push([
+          { string, fret, note: root },
+          { string: string + 1, fret: fret + fretOffset, note: fifth }
+        ]);
+      }
+    }
+  }
+
+  return shapes;
+}
+

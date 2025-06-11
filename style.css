@@ -116,8 +116,7 @@ body {
 @media (max-width: 600px) {
   .fret {
     height: 32px;
-    min-width: 28px;
-    width: 28px;
+    width: 40px;
   }
 
   .note-marker {
@@ -238,8 +237,8 @@ body {
   }
 
   .fret {
-    min-width: 28px;
-    width: 28px;
+    min-width: 40px;
+    width: 40px;
     height: 32px;
   }
 
@@ -335,4 +334,11 @@ body {
   left: 26px;
   z-index: 2;
   box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+}
+
+.highlight.root .note-marker {
+  border: 2px solid red;
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
 }
