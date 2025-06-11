@@ -27,6 +27,11 @@ const chordShapes = {
     { string: 1, fret: 5, note: "D" },
     { string: 2, fret: 5, note: "G" }
   ],
+  "B5": [
+    { string: 0, fret: 7, note: "B" },
+    { string: 1, fret: 9, note: "F#" },
+    { string: 2, fret: 9, note: "B" }
+  ],
   "F5": [
       { string: 0, fret: 1, note: "F" },
       { string: 1, fret: 3, note: "C" },
