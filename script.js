@@ -37,19 +37,38 @@ function noteIndex(note) {
 function updateTuningOptions() {
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningSelect = document.getElementById("tuningSelect");
+
+  // Obtener afinaciones para el instrumento actual
+  const options = tuningsByInstrument[instrument];
+  if (!options) {
+    console.warn("⚠️ No hay afinaciones definidas para", instrument);
+    return;
+  }
+
+  // Limpiar el dropdown
   tuningSelect.innerHTML = "";
 
-  const options = tuningsByInstrument[instrument];
-  for (const name in options) {
+  // Rellenar con nuevas opciones
+  const optionNames = Object.keys(options);
+  optionNames.forEach(name => {
     const opt = document.createElement("option");
     opt.value = name;
     opt.textContent = name;
     tuningSelect.appendChild(opt);
+  });
+
+  // ✅ Forzar a seleccionar la primera opción válida
+  if (optionNames.length > 0) {
+    tuningSelect.value = optionNames[0];
   }
 
-  drawFretboard();
-  highlightPianoNotes();
+  // ✅ Asegurarse de que el onchange esté conectado
+  tuningSelect.onchange = refreshFretboard;
+
+  // ✅ Redibujar el mástil con datos consistentes
+  refreshFretboard();
 }
+
 
 function getExpandedNotesFromInput() {
   const rawInput = document.getElementById("notesInput").value
@@ -87,7 +106,14 @@ function drawFretboard() {
   const inputNotes = getExpandedNotesFromInput();
   const instrument = document.getElementById("instrumentSelect").value;
   const tuningName = document.getElementById("tuningSelect").value;
-  const tuning = tuningsByInstrument[instrument][tuningName];
+    const tuningMap = tuningsByInstrument[instrument];
+const tuning = tuningMap ? tuningMap[tuningName] : null;
+
+if (!tuning) {
+  console.warn("⚠️ No se encontró la afinación:", tuningName, "para", instrument);
+  return;
+}
+
   const stringCount = tuning.length;
 
   const fretStart = parseInt(document.getElementById("fretStart").value) || 0;
@@ -98,40 +124,6 @@ function drawFretboard() {
     : [...Array(stringCount).keys()];
 
   const useShapeMode = document.getElementById("shapeMode")?.checked;
-
-  // 🎯 Modo forma exacta
-  if (useShapeMode && inputNotes.length > 0) {
-    const rawInputText = document.getElementById("notesInput")?.value?.trim();
-    const shapeData = typeof getChordShape === "function" ? getChordShape(rawInputText) : null;
-
-    if (shapeData) {
-      const shapeArray = new Array(tuning.length).fill(null);
-      const notesArray = new Array(tuning.length).fill(null);
-
-      shapeData.forEach(pos => {
-        if (pos.string < tuning.length) {
-          shapeArray[pos.string] = pos.fret;
-          notesArray[pos.string] = pos.note || "";
-        }
-      });
-
-      highlightShapeOnFretboard(shapeArray, notesArray, tuning.map(t => t + "2"));
-      return;
-    }
-
-    // Si no hay forma exacta, usar cálculo
-    const baseOctave = 2;
-    const tuningWithOctave = tuning.map((note, i) => note + (2 + i));
-    const targetNotes = tuning.map((_, i) => {
-      const base = inputNotes[i % inputNotes.length];
-      const octave = baseOctave + Math.floor(i / inputNotes.length);
-      return base + octave;
-    });
-
-    const shape = shapeFromNotes(targetNotes, tuningWithOctave);
-    highlightShapeOnFretboard(shape, targetNotes, tuningWithOctave);
-    return;
-  }
 
   // 🔁 Modo normal: marcar todas las coincidencias
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;

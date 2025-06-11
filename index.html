@@ -95,8 +95,6 @@
       <button onclick="drawTabEditor()">🎸 Mostrar tablatura</button>
       <button onclick="copyTabAndCode()">📋 Copiar código + tablatura</button>
       <pre id="tabEditorOutput" style="margin-top: 1em; text-align: left; white-space: pre; font-family: monospace;"></pre>
-      <h3>Riffs guardados</h3>
-      <ul id="savedRiffs"></ul>
     </div> <!-- Fin TAB Editor -->
   </div> <!-- Fin .tabs -->
 
@@ -108,7 +106,7 @@
     </label>
 
     <label>
-      <input type="checkbox" id="shapeMode" onchange="drawFretboard()" />
+      <input type="checkbox" id="shapeMode" onchange="refreshFretboard()" />
       🎯 Mostrar forma exacta (modo shape-generator)
     </label>
   </div> <!-- Fin displayOptions -->
