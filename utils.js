@@ -224,31 +224,68 @@ const chordName = firstToken.trim(); // 👈 conserva mayúsculas/minúsculas
     return;
   }
 
-  // Power chords tipo C5
-  if (/^[A-G]#?5$/.test(chordName)) {
-    const root = chordName.slice(0, -1);
-    const shapes = findAllPowerChordShapes(root, tuning, fretEnd);
+    // Power chords tipo C5
+if (/^[A-G]#?5$/.test(chordName)) {
+  const root = chordName.slice(0, -1);
+  const shapes = findAllPowerChordShapes(root, tuning, fretEnd);
 
-    const positions = shapes.flat().map(pos => ({
-      string: pos.string,
-      fret: pos.fret,
-      note: pos.note,
-      isRoot: pos.note === root
-    }));
+  // 🎯 Solo usar los que caen dentro del rango definido por los sliders
+  const filteredShapes = shapes.filter(shape =>
+    shape.every(pos => pos.fret >= fretStart && pos.fret <= fretEnd)
+  );
 
-    drawFretboardOnly(positions, {
-      stringCount,
-      fretStart,
-      fretEnd,
-      invert,
-      showLabels: true,
-      stringLabels: tuning,
-      tuning
-    });
-
-    console.log("🎯 Power chord:", root);
+  if (filteredShapes.length === 0) {
+    console.warn("⚠️ No hay power chords en el rango seleccionado");
     return;
   }
+
+  // ✅ Elegimos el más grave (cuerda más baja)
+const selectedShape = filteredShapes
+  .sort((a, b) => {
+    const aMinFret = Math.min(...a.map(p => p.fret));
+    const bMinFret = Math.min(...b.map(p => p.fret));
+
+    const aLowestString = Math.min(...a.map(p => p.string));
+    const bLowestString = Math.min(...b.map(p => p.string));
+
+    // 🎸 Preferir primero la cuerda más grave (string más bajo)
+    if (aLowestString !== bLowestString) {
+      return aLowestString - bLowestString; // menor = más grave
+    }
+
+    // 🎯 Si empatan en cuerda, entonces el más cercano al fretStart
+    return Math.abs(aMinFret - fretStart) - Math.abs(bMinFret - fretStart);
+  })[0];
+
+
+  const positions = selectedShape.map(pos => ({
+    string: pos.string,
+    fret: pos.fret,
+    note: pos.note,
+    isRoot: pos.note === root
+  }));
+
+  drawFretboardOnly(positions, {
+    stringCount,
+    fretStart,
+    fretEnd,
+    invert,
+    showLabels: true,
+    stringLabels: tuning,
+    tuning,
+    paintAsChord: true
+  });
+
+  console.log("🎯 Power chord:", root); // 🟡 log existente, se respeta
+
+  debugGroup(`🎸 Shape seleccionado para ${chordName}`, () => {
+    debug("→ Rango permitido:", fretStart, "a", fretEnd);
+    debug("→ Shape elegido:", selectedShape);
+  });
+
+  return;
+}
+
 
   // Si no hay forma definida: usar notas sueltas
   const inputNotes = getExpandedNotesFromInput();
