@@ -96,55 +96,44 @@ function drawFretboardOnly(positions, options = {}) {
 }
 
 function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
-  console.log("🎼 drawTab(): posiciones =", positions);
-  console.log("🪕 drawTab(): tuning =", tuning);
-  console.log("📏 drawTab(): rango de trastes =", fretStart, "-", fretEnd);
+  console.log("🎼 drawTab() called");
+  console.log("→ Posiciones recibidas:", positions);
+  console.log("→ Tuning:", tuning);
+  console.log("→ Fret range:", fretStart, "to", fretEnd);
 
   const stringCount = tuning.length;
   const tabLines = [];
 
+  // Debug adicional por cuerda
+  const cuerdas = new Map();
+  positions.forEach(p => {
+    const key = `Cuerda ${p.string}`;
+    if (!cuerdas.has(key)) cuerdas.set(key, []);
+    cuerdas.get(key).push(p.fret);
+  });
+  console.log("→ Frets por cuerda:", Object.fromEntries(cuerdas));
+
+  // Lógica original (modo secuencia, línea por línea)
+  const lineMap = Array(stringCount).fill(null).map(() => Array(fretEnd - fretStart + 1).fill("---"));
+
+  positions.forEach(pos => {
+    if (!pos || pos.string == null || pos.fret == null) return;
+    const string = pos.string;
+    const idx = pos.fret - fretStart;
+    if (idx < 0 || idx >= (fretEnd - fretStart + 1)) return;
+
+    const sFret = pos.fret < 10 ? `-${pos.fret}-` :
+                  pos.fret < 100 ? `${pos.fret}-` :
+                  `${pos.fret}`.slice(0, 4);
+
+    lineMap[string][idx] = sFret;
+  });
+
   for (let i = stringCount - 1; i >= 0; i--) {
-    const openNote = tuning[i];
-    const line = Array(fretEnd - fretStart + 1).fill("---");
-
-    positions.forEach(pos => {
-      if (pos.string === i && pos.fret >= fretStart && pos.fret <= fretEnd) {
-        const idx = pos.fret - fretStart;
-        let fretTxt = pos.fret.toString();
-        if (fretTxt.length === 1) fretTxt = `-${fretTxt}-`;
-        else if (fretTxt.length === 2) fretTxt = `${fretTxt}-`;
-        line[idx] = fretTxt;
-      }
-    });
-
-    tabLines.push(openNote.toLowerCase() + "|" + line.join(""));
+    tabLines.push(tuning[i].toLowerCase() + "|" + lineMap[i].join(""));
   }
 
-  document.getElementById("tablature").textContent = tabLines.join("\n");
-}
-
-function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
-  console.log("🎼 drawTab called with fret range:", fretStart, "to", fretEnd);
-
-  const stringCount = tuning.length;
-  const tabLines = [];
-
-  for (let i = stringCount - 1; i >= 0; i--) {
-    const openNote = tuning[i];
-    const line = Array(fretEnd - fretStart + 1).fill("---");
-
-    positions.forEach(pos => {
-      if (pos.string === i && pos.fret >= fretStart && pos.fret <= fretEnd) {
-        const idx = pos.fret - fretStart;
-        let fretTxt = pos.fret.toString();
-        if (fretTxt.length === 1) fretTxt = `-${fretTxt}-`;
-        else if (fretTxt.length === 2) fretTxt = `${fretTxt}-`;
-        line[idx] = fretTxt;
-      }
-    });
-
-    tabLines.push(openNote.toLowerCase() + "|" + line.join(""));
-  }
+  console.log("→ Tablatura generada:\n" + tabLines.join("\n"));
 
   document.getElementById("tablature").textContent = tabLines.join("\n");
 }
