@@ -1,5 +1,4 @@
 function drawFretboardOnly(positions, options = {}) {
-  console.log("🖌 drawFretboardOnly(): posiciones recibidas =", positions);
   const {
     stringCount = 6,
     fretStart = 0,
@@ -7,11 +6,15 @@ function drawFretboardOnly(positions, options = {}) {
     invert = false,
     showLabels = true,
     stringLabels = [],
-    tuning = []
+    tuning = [],
+    paintAsChord = false // ← nuevo flag
   } = options;
 
   const container = document.getElementById("fretboard");
   container.innerHTML = "";
+
+  console.log("🖌 drawFretboardOnly(): posiciones recibidas =", positions);
+  console.log("🧩 Opciones:", { stringCount, fretStart, fretEnd, invert, showLabels, stringLabels, tuning, paintAsChord });
 
   const stringIndices = invert
     ? [...Array(stringCount).keys()].reverse()
@@ -91,20 +94,21 @@ function drawFretboardOnly(positions, options = {}) {
   }
 
   if (tuning.length === stringCount) {
-    drawTab(positions, tuning, fretStart, fretEnd);
+    drawTab(positions, tuning, fretStart, fretEnd, paintAsChord);
   }
 }
 
-function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
+
+function drawTab(positions, tuning, fretStart = 0, fretEnd = 12, paintAsChord = false) {
   console.log("🎼 drawTab() called");
   console.log("→ Posiciones recibidas:", positions);
   console.log("→ Tuning:", tuning);
   console.log("→ Fret range:", fretStart, "to", fretEnd);
+  console.log("→ Modo acorde activado:", paintAsChord);
 
   const stringCount = tuning.length;
   const tabLines = [];
 
-  // Debug adicional por cuerda
   const cuerdas = new Map();
   positions.forEach(p => {
     const key = `Cuerda ${p.string}`;
@@ -113,7 +117,28 @@ function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
   });
   console.log("→ Frets por cuerda:", Object.fromEntries(cuerdas));
 
-  // Lógica original (modo secuencia, línea por línea)
+  if (paintAsChord) {
+    console.log("🎯 Modo acorde activado: pintando en una sola línea");
+
+    const lines = Array(stringCount).fill("----");
+
+    positions.forEach(pos => {
+      if (!pos || pos.string == null || pos.fret == null || pos.fret < 0) return;
+      const s = pos.string;
+      const f = pos.fret;
+      lines[s] = f < 10 ? `-${f}-` : `${f}-`.slice(0, 4);
+    });
+
+    for (let i = stringCount - 1; i >= 0; i--) {
+      tabLines.push(tuning[i].toLowerCase() + "|" + lines[i]);
+    }
+
+    console.log("→ Tablatura generada (modo acorde):\n" + tabLines.join("\n"));
+    document.getElementById("tablature").textContent = tabLines.join("\n");
+    return;
+  }
+
+  // 🔁 Modo normal
   const lineMap = Array(stringCount).fill(null).map(() => Array(fretEnd - fretStart + 1).fill("---"));
 
   positions.forEach(pos => {
@@ -133,8 +158,7 @@ function drawTab(positions, tuning, fretStart = 0, fretEnd = 12) {
     tabLines.push(tuning[i].toLowerCase() + "|" + lineMap[i].join(""));
   }
 
-  console.log("→ Tablatura generada:\n" + tabLines.join("\n"));
-
+  console.log("→ Tablatura generada (modo secuencia):\n" + tabLines.join("\n"));
   document.getElementById("tablature").textContent = tabLines.join("\n");
 }
 
@@ -190,7 +214,8 @@ const chordName = firstToken.trim(); // 👈 conserva mayúsculas/minúsculas
       invert,
       showLabels: true,
       stringLabels: tuning,
-      tuning
+      tuning,
+      paintAsChord: true
     });
 
     console.log("🎯 Forma exacta encontrada:", chordName);
