@@ -342,3 +342,9 @@ body {
   color: black;
   font-weight: bold;
 }
+
+#chordCircle {
+  margin: 2em auto;
+  text-align: center;
+}
+
