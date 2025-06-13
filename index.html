@@ -45,7 +45,6 @@
 
       <input type="text" id="notesInput" placeholder="Ej. E A C o E5 G#m7 Cmaj7" oninput="drawFretboard()" style="flex: 1;" />
     </div>
-    <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala</span></p>
   </div>
 
   <div id="circleTab" class="tab-content">
@@ -83,30 +82,35 @@
     <label for="fretEnd" style="margin-left: 2em;">hasta:</label>
     <input type="range" id="fretEnd" min="0" max="24" value="12" oninput="updateFretWindow(); drawFretboard()" />
     <span id="fretEndLabel">12</span>
-  </div>
 
-  <div id="displayOptions" style="margin-top: 1em;">
     <label style="margin-right: 1em;">
       <input type="checkbox" id="invertFretboard" onchange="drawFretboard()" />
-      Mostrar mástil como tablatura (de aguda a grave)
+      Invertir mástil
     </label>
+
     <label>
       <input type="checkbox" id="shapeMode" onchange="refreshFretboard()" />
-      🎯 Mostrar forma exacta
+      Acordes
     </label>
   </div>
+
+
+  <!-- Corazon de todo Freboard, tablatura y pianito -->
 
   <div id="fretboard-wrapper"><div id="fretboard"></div></div>
   <div id="tab-wrapper"><pre id="tablature"></pre></div>
-
-  <h2 id="pianoTitle" style="margin-top: 2em;">🎹 Piano</h2>
   <div id="piano" style="position: relative; height: 160px; margin-bottom: 2em;"></div>
 
+  <!-- Teoria musical, analiza escalas y progresiones -->
+  <div id="noteOutputWrapper" style="margin-top: 1em;">
+    <p><strong>Notas:</strong> <span id="noteOutput">Selecciona una escala o introduce notas individualmente</span></p>
+  </div>
   <div id="scaleSuggestions"><strong>Escalas sugeridas:</strong><ul id="suggestionList"></ul></div>
   <div id="chordSuggestions"><strong>Acordes sugeridos:</strong><ul id="chordList"></ul></div>
 
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">v0.6</footer>
 
+  <!-- Scripts  -->
   <script src="https://unpkg.com/tone/build/Tone.js"></script>
   <script src="debug.js"></script>
   <script src="global-setup.js"></script>
@@ -122,47 +126,85 @@
   <script src="tab-editor.js" defer></script>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
-      document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      document.getElementById('btn' + tabId).classList.add('active');
+  function switchTab(tabId) {
+  // 🔄 1. Ocultamos todo el contenido de los tabs (Escalas, Círculo, CAGED, etc.)
+  document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
 
-      const isScale = (tabId === 'scalesTab');
-      const isEditor = (tabId === 'tabEditor');
+  // 🟢 2. Quitamos la clase activa de todos los botones de pestaña
+  document.querySelectorAll('.tab-buttons button').forEach(btn => btn.classList.remove('active'));
 
-      document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
-      document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
+  // ✅ 3. Activamos SOLO el tab que queremos mostrar
+  document.getElementById(tabId).classList.add('active');
+  document.getElementById('btn' + tabId).classList.add('active');
 
-      const idsToToggle = [
-        'fretboard-wrapper', 'tab-wrapper', 'piano', 'pianoTitle',
-        'notesInput', 'noteOutput', 'displayOptions'
-      ];
-      idsToToggle.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = isEditor ? 'none' : '';
-      });
+  // 🧠 4. Detectamos si estamos en la pestaña de escalas o el editor de tablaturas
+  const isScale = (tabId === 'scalesTab');
+  const isEditor = (tabId === 'tabEditor');
 
-      document.querySelectorAll('button[onclick="drawFretboard()"]').forEach(el => {
-        el.style.display = isEditor ? 'none' : '';
-      });
+  // 📋 5. Mostrar u ocultar sugerencias según el tab
+  document.getElementById('scaleSuggestions').style.display = isScale ? '' : 'none';
+  document.getElementById('chordSuggestions').style.display = isScale ? '' : 'none';
 
-      if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") initCircleOfFifths();
-      if (tabId === 'chordExplorerTab' && typeof renderChordCircle === "function") renderChordCircle();
-    }
+  // 👁️ 6. Cosas que se deben ocultar si estamos en el editor (para que no estorben)
+  const idsToToggle = [
+    'fretboard-wrapper',     // 🎸 Mástil
+    'tab-wrapper',           // 🪕 Tablatura generada
+    'piano',                 // 🎹 Piano visual
+    'pianoTitle',            // 🎹 Título del piano
+    'notesInput',            // 🎼 Input de notas o acordes
+    'noteOutputWrapper',     // 🎯 Línea que dice "Notas: C D E"
+    'displayOptions'         // ☑️ Checkboxes de visualización
+  ];
 
-    window.addEventListener("DOMContentLoaded", () => {
-      if (typeof updateTuningOptions === "function") updateTuningOptions();
-      if (typeof populateScaleSelector === "function") populateScaleSelector();
-      if (typeof updateNotesDisplay === "function") updateNotesDisplay();
-    });
+  // 🧽 7. Ocultamos o mostramos cada uno de los elementos de arriba
+  idsToToggle.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isEditor ? 'none' : '';
+  });
 
-    function updateFretWindow() {
-      const start = parseInt(document.getElementById("fretStart").value);
-      const end = parseInt(document.getElementById("fretEnd").value);
-      document.getElementById("fretStartLabel").textContent = start;
-      document.getElementById("fretEndLabel").textContent = end;
-    }
+  // 🔘 8. Si hay botones que llaman a drawFretboard(), también se ocultan en el editor
+  document.querySelectorAll('button[onclick="drawFretboard()"]')
+    .forEach(el => el.style.display = isEditor ? 'none' : '');
+
+  // 🔄 9. Inicializamos elementos especiales si se entra a ciertos tabs
+  if (tabId === 'circleTab' && typeof initCircleOfFifths === "function") {
+    initCircleOfFifths(); // 🔁 Dibuja el círculo de quintas
+  }
+
+  if (tabId === 'chordExplorerTab' && typeof renderChordCircle === "function") {
+    renderChordCircle(); // 🎸 Dibuja el círculo de acordes
+  }
+}
+
+  // 👶 Esta función se ejecuta solita cuando la página ya terminó de cargar.
+  // Es como decir: “Ya abrimos el libro, ahora sí podemos llenar las páginas”
+  window.addEventListener("DOMContentLoaded", () => {
+
+    // 🪕 Cargamos las afinaciones disponibles según el instrumento (guitarra, bajo...)
+    if (typeof updateTuningOptions === "function") updateTuningOptions();
+
+    // 📚 Rellenamos el menú desplegable de escalas (mayor, menor, dórica, etc.)
+    if (typeof populateScaleSelector === "function") populateScaleSelector();
+
+    // 🎯 Pintamos el diapasón con las notas correspondientes de entrada o escala elegida
+    if (typeof updateNotesDisplay === "function") updateNotesDisplay();
+  });
+
+  // 🎚 Esta función actualiza los numeritos que ves al mover los sliders
+  function updateFretWindow() {
+    // Sacamos el número desde el slider “Desde traste”
+    const start = parseInt(document.getElementById("fretStart").value);
+
+    // Sacamos el número desde el slider “hasta traste”
+    const end = parseInt(document.getElementById("fretEnd").value);
+
+    // Actualizamos el numerito que aparece a la izquierda del slider
+    document.getElementById("fretStartLabel").textContent = start;
+
+    // Actualizamos el numerito que aparece a la derecha del slider
+    document.getElementById("fretEndLabel").textContent = end;
+  }
+
   </script>
 
   <div id="tooltip" class="tooltip-bubble"></div>

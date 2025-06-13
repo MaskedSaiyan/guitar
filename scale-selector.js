@@ -1,14 +1,19 @@
 const scales = {
-  "Minor (Aeolian)":        [0, 2, 3, 5, 7, 8, 10],
-  "Dorian":                 [0, 2, 3, 5, 7, 9, 10],
-  "Phrygian":               [0, 1, 3, 5, 7, 8, 10],
-  "Phrygian Dominant":      [0, 1, 4, 5, 7, 8, 10],
-  "Lydian":                 [0, 2, 4, 6, 7, 9, 11],
-  "Mixolydian":             [0, 2, 4, 5, 7, 9, 10],
-  "Locrian":                [0, 1, 3, 5, 6, 8, 10],
-  "Harmonic Minor":         [0, 2, 3, 5, 7, 8, 11],
-  "Melodic Minor (Asc)":    [0, 2, 3, 5, 7, 9, 11]
+  "Mayor (Jónico)": [0, 2, 4, 5, 7, 9, 11],
+  "Menor Natural (Eólica)": [0, 2, 3, 5, 7, 8, 10],
+  "Dórica": [0, 2, 3, 5, 7, 9, 10],
+  "Frigia": [0, 1, 3, 5, 7, 8, 10],
+  "Frigia Dominante": [0, 1, 4, 5, 7, 8, 10],
+  "Lidia": [0, 2, 4, 6, 7, 9, 11],
+  "Mixolidia": [0, 2, 4, 5, 7, 9, 10],
+  "Locria": [0, 1, 3, 5, 6, 8, 10],
+  "Menor Armónica": [0, 2, 3, 5, 7, 8, 11],
+  "Menor Melódica (Ascendente)": [0, 2, 3, 5, 7, 9, 11],
+  "Pentatónica Mayor": [0, 2, 4, 7, 9],
+  "Pentatónica Menor": [0, 3, 5, 7, 10],
+  "Escala de Blues": [0, 3, 5, 6, 7, 10]
 };
+
 
 function getScaleNotes(root, intervals) {
   const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -27,26 +32,44 @@ function populateScaleSelector() {
 }
 
 function updateNotesDisplay() {
+  // 🧩 Obtenemos la nota raíz y el nombre de la escala
   const root = document.getElementById("rootSelect").value;
   const scale = document.getElementById("scaleSelect").value;
+
+  // 🧱 Buscamos los intervalos definidos para esa escala
   const intervals = scales[scale];
+
+  // 🧠 Calculamos las notas a partir de la raíz + intervalos
   const notes = getScaleNotes(root, intervals);
 
-  document.getElementById("noteOutput").textContent = notes.join(" – ");
-  document.getElementById("notesInput").value = notes.join(" ");
+  // 🖨️ Mostramos las notas en el texto visible (puede estar donde sea en el HTML)
+  const noteOutput = document.getElementById("noteOutput");
+  if (noteOutput) {
+    noteOutput.textContent = notes.join(" – ");
+  }
 
+  // ✍️ También ponemos las notas en el input, para que se puedan editar si se quiere
+  const notesInput = document.getElementById("notesInput");
+  if (notesInput) {
+    notesInput.value = notes.join(" ");
+  }
+
+  // 🎯 Resalta en el diapasón si existe esa función
   if (typeof highlightFretboard === 'function') {
     highlightFretboard(notes, root);
   }
 
+  // 🎸 Redibuja el mástil con esas notas
   if (typeof drawFretboard === 'function') {
     drawFretboard();
   }
 
+  // 🎹 También en el piano, si existe la función
   if (typeof highlightPianoNotes === 'function') {
-  highlightPianoNotes();
+    highlightPianoNotes();
+  }
 }
-}
+
 
 function showSuggestedScalesFromInput() {
   const input = getExpandedNotesFromInput().filter(n => allNotes.includes(n));
