@@ -10,7 +10,8 @@
   <!-- 🧭 TABS + Instrumento/Afinación -->
   <div class="header-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
     <div class="tab-buttons">
-      <button onclick="switchTab('scalesTab')" id="btnscalesTab" class="active">🎼 Escalas</button>
+      <button onclick="switchTab('visualizationTab')" id="btnvisualizationTab" class="active">👁️ Visualización</button>
+      <button onclick="switchTab('scalesTab')" id="btnscalesTab">🎼 Escalas</button>
       <button onclick="switchTab('circleTab')" id="btncircleTab">🔄 Círculo de Quintas</button>
       <button onclick="switchTab('chordExplorerTab')" id="btnchordExplorerTab">🧭 Explorador de Acordes</button>
       <button onclick="switchTab('cagedTab')" id="btncagedTab">🧱 Sistema CAGED</button>
@@ -30,8 +31,17 @@
     </div>
   </div>
 
+  <div id="visualizationTab" class="tab-content active">
+    <div style="display: flex; gap: 1em; flex-wrap: wrap; align-items: center;">
+      <label for="visualNoteSelect">Nota:</label>
+      <select id="visualNoteSelect" onchange="showVisualizationNote()"></select>
+
+      <span style="color: #666;">Muestra una sola nota en todo el diapasón. Las octavas entre cuerdas se remarcan automáticamente.</span>
+    </div>
+  </div>
+
   <!-- ✅ TAB Escalas -->
-  <div id="scalesTab" class="tab-content active">
+  <div id="scalesTab" class="tab-content">
     <div style="display: flex; gap: 1em; flex-wrap: wrap; align-items: center;">
       <label for="rootSelect">Nota raíz:</label>
       <select id="rootSelect" onchange="updateNotesDisplay()">
@@ -98,8 +108,12 @@
   <!-- Corazon de todo Freboard, tablatura y pianito -->
 
   <div id="fretboard-wrapper"><div id="fretboard"></div></div>
-  <div id="tab-wrapper"><pre id="tablature"></pre></div>
-  <div id="piano" style="position: relative; height: 160px; margin-bottom: 2em;"></div>
+  <div style="margin-top: 0.5em; text-align: right;">
+    <button onclick="copyCurrentTab()" style="padding: 0.3em 0.7em; font-size: 0.9em;">📋 Copiar tablatura</button>
+  </div>
+  <div id="tab-wrapper">
+    <pre id="tablature"></pre>
+  </div>
 
   <!-- Teoria musical, analiza escalas y progresiones -->
   <div id="noteOutputWrapper" style="margin-top: 1em;">
@@ -111,13 +125,11 @@
   <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8em; color: #aaa;">v0.6</footer>
 
   <!-- Scripts  -->
-  <script src="https://unpkg.com/tone/build/Tone.js"></script>
   <script src="debug.js"></script>
   <script src="global-setup.js"></script>
   <script src="caged.js"></script>
   <script src="utils.js" defer></script>
   <script src="chords.js" defer></script>
-  <script src="piano.js" defer></script>
   <script src="script.js" defer></script>
   <script src="scale-selector.js" defer></script>
   <script src="circle.js" defer></script>
@@ -149,8 +161,6 @@
   const idsToToggle = [
     'fretboard-wrapper',     // 🎸 Mástil
     'tab-wrapper',           // 🪕 Tablatura generada
-    'piano',                 // 🎹 Piano visual
-    'pianoTitle',            // 🎹 Título del piano
     'notesInput',            // 🎼 Input de notas o acordes
     'noteOutputWrapper',     // 🎯 Línea que dice "Notas: C D E"
     'displayOptions'         // ☑️ Checkboxes de visualización
@@ -174,6 +184,10 @@
   if (tabId === 'chordExplorerTab' && typeof renderChordCircle === "function") {
     renderChordCircle(); // 🎸 Dibuja el círculo de acordes
   }
+
+  if (tabId === 'visualizationTab' && typeof showVisualizationNote === "function") {
+    showVisualizationNote();
+  }
 }
 
   // 👶 Esta función se ejecuta solita cuando la página ya terminó de cargar.
@@ -186,8 +200,15 @@
     // 📚 Rellenamos el menú desplegable de escalas (mayor, menor, dórica, etc.)
     if (typeof populateScaleSelector === "function") populateScaleSelector();
 
-    // 🎯 Pintamos el diapasón con las notas correspondientes de entrada o escala elegida
-    if (typeof updateNotesDisplay === "function") updateNotesDisplay();
+    // 👁️ Preparamos el selector simple para visualizar una sola nota
+    if (typeof populateVisualizationSelector === "function") populateVisualizationSelector();
+
+    // 🎯 Abrimos la visualización simple como estado inicial real
+    if (typeof switchTab === "function") {
+      switchTab('visualizationTab');
+    } else if (typeof updateNotesDisplay === "function") {
+      updateNotesDisplay();
+    }
   });
 
   // 🎚 Esta función actualiza los numeritos que ves al mover los sliders

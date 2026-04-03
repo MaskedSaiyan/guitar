@@ -52,7 +52,7 @@ function showCagedChord() {
   // Esperar a que drawFretboard termine y luego aplicar resaltado exacto
   setTimeout(() => {
     drawFretboard();
-      highlightPianoNotes();
+    highlightPianoNotes?.();
     highlightExactFrets(cagedPositions["C"]);
   }, 50);
 }

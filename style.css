@@ -10,11 +10,14 @@ body {
   overflow-x: auto;
   max-width: 100vw;
   padding-bottom: 1em;
+  position: relative;
 }
 
 #fretboard {
   display: inline-block;
   margin-top: 2em;
+  position: relative;
+  z-index: 2;
 }
 
 .string {
@@ -73,6 +76,64 @@ body {
   font-weight: bold;
   line-height: 24px;
   color: white;
+  z-index: 5;
+}
+
+#fretboard.visualization-mode .fret.relation-start {
+  background:
+    linear-gradient(135deg, rgba(255, 159, 67, 0.22), rgba(255, 159, 67, 0.04)),
+    #fff4e8;
+}
+
+#fretboard.visualization-mode .fret.relation-target {
+  background:
+    linear-gradient(135deg, rgba(52, 152, 219, 0.22), rgba(52, 152, 219, 0.04)),
+    #eef7ff;
+}
+
+#fretboard.visualization-mode .fret.relation-start.relation-target {
+  background:
+    linear-gradient(135deg, rgba(255, 159, 67, 0.18), rgba(255, 159, 67, 0.02)),
+    linear-gradient(315deg, rgba(52, 152, 219, 0.18), rgba(52, 152, 219, 0.02)),
+    #f7f7ff;
+}
+
+#fretboard.visualization-mode .note-marker {
+  opacity: 0.4;
+}
+
+#fretboard.visualization-mode .note-marker.relation-start,
+#fretboard.visualization-mode .note-marker.relation-target {
+  opacity: 1;
+}
+
+#fretboard.visualization-mode .note-marker.relation-start {
+  box-shadow: 0 0 0 2px #d97706, 0 0 0 5px rgba(255, 159, 67, 0.28);
+}
+
+#fretboard.visualization-mode .note-marker.relation-target {
+  box-shadow: 0 0 0 2px #1f78b4, 0 0 0 5px rgba(52, 152, 219, 0.28);
+}
+
+#fretboard.visualization-mode .note-marker.relation-start.relation-target {
+  box-shadow: 0 0 0 2px #7c3aed, 0 0 0 5px rgba(124, 58, 237, 0.22);
+}
+
+.visualization-overlay {
+  position: absolute;
+  inset: 0 auto auto 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 3;
+}
+
+.visualization-arrow {
+  fill: none;
+  stroke: #6d28d9;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.82;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18));
 }
 
 .dot {
@@ -273,78 +334,7 @@ body {
   }
 }
 
-#piano {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  overflow-x: auto;
-  padding: 10px;
-  margin: 0 auto;
-  max-width: 100%;
-}
-
-.key {
-  display: inline-block;
-  position: relative;
-  height: 150px;
-  border: 1px solid #444;
-  cursor: pointer;
-  margin-right: -1px;
-  z-index: 1;
-}
-
-.note-marker {
-  position: absolute;
-  top: auto;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 22px;
-  text-align: center;
-  color: white;
-}
-
-.key-group {
-  display: inline-block;
-  position: relative;
-  width: 40px;
-  height: 150px;
-}
-
-.key.white {
-  background: white;
-  border: 1px solid #ccc;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  z-index: 1;
-}
-
-.key.black {
-  background: black;
-  width: 26px;
-  height: 90px;
-  position: absolute;
-  top: 0;
-  left: 26px;
-  z-index: 2;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.3);
-}
-
-.highlight.root .note-marker {
-  border: 2px solid red;
-  background-color: yellow;
-  color: black;
-  font-weight: bold;
-}
-
 #chordCircle {
   margin: 2em auto;
   text-align: center;
 }
-

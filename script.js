@@ -30,8 +30,167 @@ const noteColors = {
   "G#": "#00d2d3", "A": "#ff9ff3", "A#": "#c56cf0", "B": "#00cec9"
 };
 
+const noteLabels = {
+  "C": "Do (C)",
+  "C#": "Do# (C#)",
+  "D": "Re (D)",
+  "D#": "Re# (D#)",
+  "E": "Mi (E)",
+  "F": "Fa (F)",
+  "F#": "Fa# (F#)",
+  "G": "Sol (G)",
+  "G#": "Sol# (G#)",
+  "A": "La (A)",
+  "A#": "La# (A#)",
+  "B": "Si (B)"
+};
+
 function noteIndex(note) {
   return allNotes.indexOf(normalizeNote(note));
+}
+
+function populateVisualizationSelector() {
+  const select = document.getElementById("visualNoteSelect");
+  if (!select || select.options.length > 0) return;
+
+  allNotes.forEach(note => {
+    const option = document.createElement("option");
+    option.value = note;
+    option.textContent = noteLabels[note] || note;
+    select.appendChild(option);
+  });
+
+  select.value = "C";
+}
+
+function showVisualizationNote() {
+  const select = document.getElementById("visualNoteSelect");
+  const input = document.getElementById("notesInput");
+  const output = document.getElementById("noteOutput");
+  if (!select || !input) return;
+
+  const note = normalizeNote(select.value);
+  input.value = note;
+
+  if (output) {
+    output.textContent = `Visualizando ${noteLabels[note] || note}`;
+  }
+
+  if (document.getElementById("shapeMode")?.checked) {
+    document.getElementById("shapeMode").checked = false;
+  }
+
+  drawFretboard();
+}
+
+function isVisualizationModeActive() {
+  return document.getElementById("visualizationTab")?.classList.contains("active");
+}
+
+function getOctaveLinkOffset(fromNote, toNote) {
+  const delta = (noteIndex(toNote) - noteIndex(fromNote) + 12) % 12;
+  return (12 - delta) % 12;
+}
+
+function getVisualizationRelationMap(positions, tuning, inputNotes) {
+  const relationMap = new Map();
+  if (!isVisualizationModeActive() || inputNotes.length !== 1) {
+    return { relationMap, relationPairs: [] };
+  }
+
+  const positionKeys = new Set(positions.map(pos => `${pos.string}:${pos.fret}`));
+  const relationPairs = [];
+
+  const markRelation = (key, relation) => {
+    if (!relationMap.has(key)) {
+      relationMap.set(key, { start: false, target: false });
+    }
+    relationMap.get(key)[relation] = true;
+  };
+
+  positions.forEach(pos => {
+    const currentKey = `${pos.string}:${pos.fret}`;
+    const targetString = pos.string + 2;
+    if (targetString >= tuning.length) return;
+
+    const offset = getOctaveLinkOffset(tuning[pos.string], tuning[targetString]);
+    const targetKey = `${targetString}:${pos.fret + offset}`;
+
+    if (positionKeys.has(targetKey)) {
+      markRelation(currentKey, "start");
+      markRelation(targetKey, "target");
+      relationPairs.push({ from: currentKey, to: targetKey });
+    }
+  });
+
+  return { relationMap, relationPairs };
+}
+
+function clearVisualizationOverlay() {
+  document.getElementById("visualizationOverlay")?.remove();
+}
+
+function drawVisualizationOverlay(elementMap, relationPairs) {
+  clearVisualizationOverlay();
+
+  if (!isVisualizationModeActive() || relationPairs.length === 0) {
+    return;
+  }
+
+  const wrapper = document.getElementById("fretboard-wrapper");
+  const board = document.getElementById("fretboard");
+  if (!wrapper || !board) return;
+
+  const svgNS = "http://www.w3.org/2000/svg";
+  const wrapperRect = wrapper.getBoundingClientRect();
+  const overlay = document.createElementNS(svgNS, "svg");
+  overlay.setAttribute("id", "visualizationOverlay");
+  overlay.setAttribute("class", "visualization-overlay");
+  overlay.setAttribute("width", wrapper.scrollWidth);
+  overlay.setAttribute("height", wrapper.scrollHeight);
+  overlay.setAttribute("viewBox", `0 0 ${wrapper.scrollWidth} ${wrapper.scrollHeight}`);
+
+  const defs = document.createElementNS(svgNS, "defs");
+  const marker = document.createElementNS(svgNS, "marker");
+  marker.setAttribute("id", "visualizationArrowhead");
+  marker.setAttribute("markerWidth", "10");
+  marker.setAttribute("markerHeight", "10");
+  marker.setAttribute("refX", "8");
+  marker.setAttribute("refY", "3");
+  marker.setAttribute("orient", "auto");
+
+  const arrowHead = document.createElementNS(svgNS, "path");
+  arrowHead.setAttribute("d", "M0,0 L0,6 L9,3 z");
+  arrowHead.setAttribute("fill", "#6d28d9");
+  marker.appendChild(arrowHead);
+  defs.appendChild(marker);
+  overlay.appendChild(defs);
+
+  relationPairs.forEach(pair => {
+    const fromEl = elementMap.get(pair.from);
+    const toEl = elementMap.get(pair.to);
+    if (!fromEl || !toEl) return;
+
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toEl.getBoundingClientRect();
+
+    const x1 = fromRect.left - wrapperRect.left + fromRect.width / 2 + wrapper.scrollLeft;
+    const y1 = fromRect.top - wrapperRect.top + fromRect.height / 2 + wrapper.scrollTop;
+    const x2 = toRect.left - wrapperRect.left + toRect.width / 2 + wrapper.scrollLeft;
+    const y2 = toRect.top - wrapperRect.top + toRect.height / 2 + wrapper.scrollTop;
+    const elbowX = x1 + Math.max(22, Math.abs(x2 - x1) * 0.45);
+    const elbowY = y1;
+    const preTargetX = elbowX;
+    const preTargetY = y2;
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", `M ${x1} ${y1} L ${elbowX} ${elbowY} L ${preTargetX} ${preTargetY} L ${x2} ${y2}`);
+    path.setAttribute("class", "visualization-arrow");
+    path.setAttribute("marker-end", "url(#visualizationArrowhead)");
+    overlay.appendChild(path);
+  });
+
+  wrapper.appendChild(overlay);
 }
 
 function updateTuningOptions() {
@@ -115,6 +274,8 @@ if (!tuning) {
 }
 
   const stringCount = tuning.length;
+  const matchedPositions = [];
+  const elementMap = new Map();
 
   const fretStart = parseInt(document.getElementById("fretStart").value) || 0;
   const fretEnd = parseInt(document.getElementById("fretEnd").value) || 12;
@@ -124,6 +285,24 @@ if (!tuning) {
     : [...Array(stringCount).keys()];
 
   const useShapeMode = document.getElementById("shapeMode")?.checked;
+  const visualizationMode = isVisualizationModeActive() && inputNotes.length === 1 && !useShapeMode;
+
+  for (let i = 0; i < stringCount; i++) {
+    const openNote = normalizeNote(tuning[i]);
+
+    if (fretStart === 0 && inputNotes.includes(openNote)) {
+      matchedPositions.push({ string: i, fret: 0, note: openNote });
+    }
+
+    for (let fret = fretStart === 0 ? 1 : fretStart; fret <= fretEnd; fret++) {
+      const note = allNotes[(noteIndex(tuning[i]) + fret) % 12];
+      if (inputNotes.includes(normalizeNote(note))) {
+        matchedPositions.push({ string: i, fret, note: normalizeNote(note) });
+      }
+    }
+  }
+
+  const { relationMap, relationPairs } = getVisualizationRelationMap(matchedPositions, tuning, inputNotes);
 
   // 🔁 Modo normal: marcar todas las coincidencias
   container.style.gridTemplateRows = `repeat(${stringCount}, 40px)`;
@@ -148,7 +327,17 @@ if (!tuning) {
         marker.className = "note-marker";
         marker.style.backgroundColor = noteColors[noteOpen] || "#999";
         marker.textContent = noteOpen;
+        const relation = relationMap.get(`${i}:0`);
+        if (relation?.start) {
+          openFret.classList.add("relation-start");
+          marker.classList.add("relation-start");
+        }
+        if (relation?.target) {
+          openFret.classList.add("relation-target");
+          marker.classList.add("relation-target");
+        }
         openFret.appendChild(marker);
+        elementMap.set(`${i}:0`, openFret);
       }
 
       string.appendChild(openFret);
@@ -179,7 +368,17 @@ if (!tuning) {
         marker.className = "note-marker";
         marker.style.backgroundColor = noteColors[note] || "#999";
         marker.textContent = note;
+        const relation = relationMap.get(`${i}:${fret}`);
+        if (relation?.start) {
+          fretDiv.classList.add("relation-start");
+          marker.classList.add("relation-start");
+        }
+        if (relation?.target) {
+          fretDiv.classList.add("relation-target");
+          marker.classList.add("relation-target");
+        }
         fretDiv.appendChild(marker);
+        elementMap.set(`${i}:${fret}`, fretDiv);
       }
 
       string.appendChild(fretDiv);
@@ -213,9 +412,31 @@ if (!tuning) {
 
   document.getElementById("tablature").textContent = tablatureLines.join("\n");
   document.getElementById("fretboard-wrapper").scrollLeft = 0;
+
+  if (visualizationMode) {
+    container.classList.add("visualization-mode");
+    drawVisualizationOverlay(elementMap, relationPairs);
+  } else {
+    container.classList.remove("visualization-mode");
+    clearVisualizationOverlay();
+  }
+
   showSuggestedScalesFromInput?.();
   suggestChordsFromInput?.();
   if (typeof highlightPianoNotes === "function") highlightPianoNotes();
+}
+
+function copyCurrentTab() {
+  const tabText = document.getElementById("tablature")?.textContent?.trim();
+
+  if (!tabText) {
+    alert("❌ No hay tablatura para copiar.");
+    return;
+  }
+
+  navigator.clipboard.writeText(tabText)
+    .then(() => alert("✅ Tablatura copiada al portapapeles"))
+    .catch(err => alert("❌ Error al copiar: " + err));
 }
 
 function highlightShapeOnFretboard(shape, targetNotes, tuning) {
@@ -319,4 +540,3 @@ function highlightShapeOnFretboard(shape, targetNotes, tuning) {
 
   document.getElementById("tablature").textContent = tabLines.join("\n");
 }
-
